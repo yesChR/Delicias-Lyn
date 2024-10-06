@@ -1,9 +1,10 @@
 import express from 'express';
-//import { enviarId } from '../controllers/subcategoria.controller'
+import { crearSubcategoria, visualizarSubcategorias } from '../controllers/subcategoria.controller'
 const router = express.Router();
 
 //rutas
-//router.post('/:id', enviarId);
+router.post('/crear/:id', crearSubcategoria);
+router.get('/visualizar/', visualizarSubcategorias);
 
 
 //exportar todo

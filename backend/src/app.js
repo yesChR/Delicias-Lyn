@@ -6,6 +6,8 @@ import config from './config/config';
 const nodemailer = require("./routes/nodemailer.routes");
 const admin = require("./routes/usuario.routes");
 const categoria = require("./routes/categoria.routes");
+const subcategoria = require("./routes/subcategoria.routes");
+
 const app = express();
 const cors = require("cors");
 
@@ -16,9 +18,10 @@ app.set("port",config.port);
 app.use(cors());
 app.use(express.json());
 
-//routes
+//routes(Agregar todas las rutas que existan en Routes)
 app.use("/nodemailer", nodemailer);
 app.use("/usuario", admin);
 app.use("/categoria", categoria);
+app.use("/subcategoria", subcategoria);
 
 export default app;
