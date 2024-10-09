@@ -13,7 +13,7 @@ export const crearSubcategoria = async (req, res) => {
         console.log(existeCategoria);
         if (existeCategoria !== null) {// existe
             if (existeSubcategoria === null) {//no existe
-                const nuevaSubcategoria = await Subcategoria.create({ idCategoria,nombre });
+                const nuevaSubcategoria = await Subcategoria.create({ idCategoria, nombre });
                 res.status(201).json({ message: "Subcategoria creada exitosamente" });
             } else {
                 res.status(409).json({ error: "La subcategoria ya existe" })
@@ -59,26 +59,17 @@ export const filtrarPorId = async (req, res) => {
 };
 
 
-export const eliminarCategoria = async (req, res) => {
-    const { id } = req.params;
+//recordar agregar condición de si existe producto dentro
+export const eliminarSubcategoria = async (req, res) => {
+    const { idSubcategoria } = req.params;
     try {
-        const categoria = await Categoria.findByPk(id, {
-            include: {
-                model: Subcategoria,
-                as: "subcategoria",
-                attributes: ["idSubcategoria", "nombre"]
-            }
-        });//busca por id
-        if (categoria !== null) {
-            console.log(categoria);
-            if (categoria.subcategoria.length === 0) {
-                await categoria.destroy();
-                res.status(204).json({ error: "Categoria eliminada" });
-            } else {
-                res.status(409).json({ error: "La categoria contiene subcategorias" });
-            }
-        } else {
-            res.status(404).json({ error: "Categoria no encontrada" });
+        const subcategoria = await Subcategoria.findByPk(idSubcategoria);//busca por id
+        if (subcategoria !== null) {
+            await subcategoria.destroy();
+            res.status(204).json({ error: "Subcategoria eliminada" });
+        }
+        else {
+            res.status(404).json({ error: "Subcategoria no existe" });
         }
     } catch (error) {
         res.status(500).json({ error: "Error interno del servidor" });
@@ -86,22 +77,27 @@ export const eliminarCategoria = async (req, res) => {
 }
 
 
-export const editarCategoria = async (req, res) => {
-    const { id } = req.params;
-    const { nombre } = req.body; //recibe lo que modifica
+export const editarSubcategoria = async (req, res) => {
+    const { idSubcategoria } = req.params;
+    const { idCategoria } = req.params;
+    const { nombre } = req.body;
     try {
-        const existeCategoria = await Categoria.findByPk(id);
+        const existeSubcategoria = await Subcategoria.findByPk(idSubcategoria);
+        const existeCategoria = await Categoria.findByPk(idCategoria);
+        const existeNombre = await Subcategoria.findOne({ where: { nombre: nombre } });
         if (existeCategoria !== null) {
-            const existeNombre = await Categoria.findOne({ where: { nombre: nombre } });
-            if (existeNombre === null) {
-                const categoriaEditada = await Categoria.update({ nombre }, { where: { idCategoria: id } });
-                res.status(201).json({ message: "Categoria editada exitosamente" });
+            if (existeSubcategoria !== null) {
+                if (existeNombre === null) {
+                    const subcategoriaEditada = await Subcategoria.update({ nombre }, { where: { idSubcategoria: idSubcategoria } });
+                    res.status(201).json({ error: "Subcategoria editada exitosamente" });
+                } else {
+                    res.status(204).json({ error: "El nombre de la subcategoria ya existe" });
+                }
             } else {
-                res.status(409).json({ error: "El nombre de la categoria ya existe" })
+                res.status(409).json({ error: "La subcategoria seleccionada no existe" })
             }
-        }
-        else {
-            res.status(404).json({ error: "La categoria no existe" })
+        } else {
+            res.status(404).json({ error: "La categoria seleccionada no existe" })
         }
     } catch (error) {
         res.status(500).json({ error: "Error interno en el servidor" })
