@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../bd/conexion";
+import { sequelize } from "../bd_config/conexion";
 import { Categoria } from "./categoria.models";
 
 

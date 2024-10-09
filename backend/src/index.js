@@ -1,5 +1,5 @@
 import app from './app.js'
-import { sequelize } from './bd/conexion.js';
+import { sequelize } from './bd_config/conexion.js';
 
 const main = async () => {
   try {

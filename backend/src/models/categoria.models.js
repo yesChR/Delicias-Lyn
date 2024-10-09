@@ -1,5 +1,5 @@
 import { DataTypes } from "sequelize";
-import { sequelize } from "../bd/conexion";
+import { sequelize } from "../bd_config/conexion";
 import { Subcategoria } from "./subcategoria.models";
 
 export const Categoria = sequelize.define("categoria", {
@@ -10,7 +10,6 @@ export const Categoria = sequelize.define("categoria", {
     },
     nombre: DataTypes.STRING,
 });
-
 
 //Relacionar modelo con subcategoria
 //el 1...

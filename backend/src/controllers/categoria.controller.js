@@ -5,7 +5,7 @@ import { Subcategoria } from "../models/subcategoria.models";
 export const crearCategoria = async (req, res) => {
     const { nombre } = req.body;
     try {
-        const existeCategoria = await Categoria.findOne({ where: { nombre: nombre } });
+        const existeCategoria = await Categoria.findOne({ where: { nombre: nombre } }); //consulta a la bd
         if (existeCategoria === null) {
             const nuevaCategoria = await Categoria.create({ nombre });
             res.status(201).json({ message: "Categoria creada exitosamente" });

@@ -2,7 +2,7 @@ import { SELECT } from "sequelize/lib/query-types";
 import { Categoria } from "../models/categoria.models";
 import { Subcategoria } from "../models/subcategoria.models";
 
-//+*****************************************************************************************************
+//*****************************************************************************************************
 
 export const crearSubcategoria = async (req, res) => {
     const { nombre } = req.body;
