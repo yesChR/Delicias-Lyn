@@ -5,9 +5,9 @@ const router = express.Router();
 //rutas
 router.post('/crear', crearCategoria);
 router.get('/visualizar', visualizarCategorias);
-router.get('/filtrar/:id', filtrarPorId);
-router.delete('/eliminar/:id', eliminarCategoria);
-router.put('/editar/:id', editarCategoria);
+router.get('/filtrar/:idCategoria', filtrarPorId);
+router.delete('/eliminar/:idCategoria', eliminarCategoria);
+router.put('/editar/:idCategoria', editarCategoria);
 
 //exportar todo
 module.exports = router;

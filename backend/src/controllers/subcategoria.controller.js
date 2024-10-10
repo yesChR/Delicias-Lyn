@@ -1,6 +1,5 @@
-import { SELECT } from "sequelize/lib/query-types";
-import { Categoria } from "../models/categoria.models";
-import { Subcategoria } from "../models/subcategoria.models";
+import { Categoria } from "../models/categoria.model";
+import { Subcategoria } from "../models/subcategoria.model";
 
 //*****************************************************************************************************
 
@@ -47,7 +46,7 @@ export const visualizarSubcategorias = async (req, res) => {
 export const filtrarPorId = async (req, res) => {
     const { idSubcategoria } = req.params;
     try {
-        const subcategoria = await Subcategoria.findByPk(id);//busca por id
+        const subcategoria = await Subcategoria.findByPk(idSubcategoria);//busca por id
         if (subcategoria !== null) {
             res.status(200).json(subcategoria);
         } else {

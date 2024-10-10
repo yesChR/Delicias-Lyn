@@ -1,6 +1,5 @@
-import { SELECT } from "sequelize/lib/query-types";
-import { Categoria } from "../models/categoria.models";
-import { Subcategoria } from "../models/subcategoria.models";
+import { Categoria } from "../models/categoria.model";
+import { Subcategoria } from "../models/subcategoria.model";
 
 export const crearCategoria = async (req, res) => {
     const { nombre } = req.body;
@@ -35,9 +34,9 @@ export const visualizarCategorias = async (req, res) => {
 };
 
 export const filtrarPorId = async (req, res) => {
-    const { id } = req.params;
+    const { idCategoria } = req.params;
     try {
-        const categoria = await Categoria.findByPk(id);//busca por id
+        const categoria = await Categoria.findByPk(idCategoria);//busca por id
         if (categoria !== null) {
             res.status(200).json(categoria);
         } else {
@@ -48,11 +47,10 @@ export const filtrarPorId = async (req, res) => {
     }
 };
 
-
 export const eliminarCategoria = async (req, res) => {
-    const { id } = req.params;
+    const { idCategoria } = req.params;
     try {
-        const categoria = await Categoria.findByPk(id, {
+        const categoria = await Categoria.findByPk(idCategoria, {
             include: {
                 model: Subcategoria,
                 as: "subcategoria",
@@ -77,10 +75,10 @@ export const eliminarCategoria = async (req, res) => {
 
 
 export const editarCategoria = async (req, res) => {
-    const { id } = req.params;
+    const { idCategoria } = req.params;
     const { nombre } = req.body; //recibe lo que modifica
     try {
-        const existeCategoria = await Categoria.findByPk(id);
+        const existeCategoria = await Categoria.findByPk(idCategoria);
         if (existeCategoria !== null) {
             const existeNombre = await Categoria.findOne({ where: { nombre: nombre } });
             if (existeNombre === null) {

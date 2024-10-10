@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../bd_config/conexion";
-import { Subcategoria } from "./subcategoria.models";
+import { Subcategoria } from "./subcategoria.model";
 
 export const Categoria = sequelize.define("categoria", {
     idCategoria: {
@@ -10,6 +10,7 @@ export const Categoria = sequelize.define("categoria", {
     },
     nombre: DataTypes.STRING,
 });
+
 
 //Relacionar modelo con subcategoria
 //el 1...
@@ -25,8 +26,6 @@ Subcategoria.belongsTo(Categoria,{
     targetKey: "idCategoria", // La clave primaria en categoria
     as:"categoria"
 });
-
-
 
 
 
