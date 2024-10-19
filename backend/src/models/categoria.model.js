@@ -9,7 +9,10 @@ export const Categoria = sequelize.define("categoria", {
        autoIncrement:true
     },
     nombre: DataTypes.STRING,
-});
+}, {
+    freezeTableName: true, // Esto evitará que Sequelize pluralice el nombre de la tabla
+    tableName: 'categoria',   // De manera opcional, puedes especificar el nombre exacto de la tabla
+  });
 
 
 //Relacionar modelo con subcategoria

@@ -9,7 +9,10 @@ export const Provincia = sequelize.define("provincia", {
        autoIncrement:true
     },
     nombre: DataTypes.STRING,
-});
+}, {
+    freezeTableName: true, // Esto evitará que Sequelize pluralice el nombre de la tabla
+    tableName: 'provincia',   // De manera opcional, puedes especificar el nombre exacto de la tabla
+  });
 
 //el 1
 Provincia.hasMany(Canton, {

@@ -17,4 +17,7 @@ export const Pedido = sequelize.define("pedido",{
     fechaEntrega: DataTypes.DATE,
     prioridad: DataTypes.INTEGER,
     montoTotal: DataTypes.DOUBLE
-});
+}, {
+    freezeTableName: true, // Esto evitará que Sequelize pluralice el nombre de la tabla
+    tableName: 'pedido',   // De manera opcional, puedes especificar el nombre exacto de la tabla
+  });

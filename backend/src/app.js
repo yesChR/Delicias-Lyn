@@ -7,6 +7,7 @@ const nodemailer = require("./routes/nodemailer.routes");
 const admin = require("./routes/usuario.routes");
 const categoria = require("./routes/categoria.routes");
 const subcategoria = require("./routes/subcategoria.routes");
+const canton = require("./routes/canton.routes");
 
 const app = express();
 const cors = require("cors");
@@ -23,5 +24,6 @@ app.use("/nodemailer", nodemailer);
 app.use("/usuario", admin);
 app.use("/categoria", categoria);
 app.use("/subcategoria", subcategoria);
+app.use("/canton", canton);
 
 export default app;

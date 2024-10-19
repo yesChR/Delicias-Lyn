@@ -9,7 +9,10 @@ export const Estado = sequelize.define("estado", {
        autoIncrement:true
     },
     nombre: DataTypes.STRING,
-});
+}, {
+    freezeTableName: true, // Esto evitará que Sequelize pluralice el nombre de la tabla
+    tableName: 'estado',   // De manera opcional, puedes especificar el nombre exacto de la tabla
+  });
 
 //el 1
 Estado.hasMany(Pedido, {
