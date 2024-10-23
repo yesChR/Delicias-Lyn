@@ -2,6 +2,8 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Toolti
 import { EditIcon } from "../Iconos/EditIcon";
 import { DeleteIcon } from "../Iconos/DeleteIcon";
 import React from "react";
+import { CgInfo } from "react-icons/cg";
+import { BiEditAlt } from "react-icons/bi";
 
 const TablaCategoria = () => {
     const categorias = [
@@ -32,14 +34,19 @@ const TablaCategoria = () => {
             case "acciones":
                 return (
                     <div className="flex items-center justify-center gap-2">
-                        <Tooltip content="Editar">
-                            <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                                <EditIcon />
+                        <Tooltip color="danger" content="Editar">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                <BiEditAlt />
                             </span>
                         </Tooltip>
                         <Tooltip color="danger" content="Eliminar">
                             <span className="text-lg text-danger cursor-pointer active:opacity-50">
                                 <DeleteIcon />
+                            </span>
+                        </Tooltip>
+                        <Tooltip color="danger" content="Eliminar">
+                            <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                <CgInfo />
                             </span>
                         </Tooltip>
                     </div>
