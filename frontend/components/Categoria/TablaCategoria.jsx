@@ -8,18 +8,10 @@ const TablaCategoria = () => {
         {
             idCategoria: 1,
             nombre: "Donas",
-            subcategoria: [
-                { idSubcategoria: 7, nombre: "Chocolate" },
-                { idSubcategoria: 4, nombre: "Fresa" }
-            ]
         },
         {
             idCategoria: 2,
             nombre: "Pan",
-            subcategoria: [
-                { idSubcategoria: 2, nombre: "Dulce" },
-                { idSubcategoria: 3, nombre: "Salado" }
-            ]
         }
     ];
 
