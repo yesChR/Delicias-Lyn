@@ -11,12 +11,6 @@ export default function Document() {
       <body className="antialiased">
         <Main />
         <NextScript />
-        <Link
-          className="fixed bottom-5 right-5 rounded-full text-white shadow-lg hover:bg-blue-500 focus:outline-none"
-          href="https://wa.me/89135112">
-          <Image src="/whatsapp.png" width={60} height={60}
-          />
-        </Link>
       </body>
     </Html>
   );
