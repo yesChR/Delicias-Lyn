@@ -4,7 +4,7 @@ import Contenedor from "@/components/Contenedor/Contenedor";
 const GestionCategoriaPage = () => {
     return (
         <Contenedor>
-            <Categoria></Categoria> {/*El children */}
+            <Categoria></Categoria>
         </Contenedor>
     );
 }

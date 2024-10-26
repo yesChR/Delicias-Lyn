@@ -1,5 +1,4 @@
 import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/react";
 import Image from "next/image";
 import { FiSearch } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -7,13 +6,14 @@ import { IoHome } from "react-icons/io5";
 import { TiShoppingCart } from "react-icons/ti";
 import { FaUserAlt } from "react-icons/fa";
 import { Source_Serif_4 } from '@next/font/google';
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 
 const sourceSerif = Source_Serif_4({
     weight: ['600'],  // Pesos disponibles: 200, 300, 400, 500, 600, 700, 900
     subsets: ['latin'],  // Subconjuntos disponibles: latin, latin-ext
 });
 
-const NavBar = ({accionarSideBar}) => {
+const NavBar = ({ accionarSideBar }) => {
     return (
         <header>
             <div className="z-50">
@@ -76,9 +76,21 @@ const NavBar = ({accionarSideBar}) => {
                             <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                 <TiShoppingCart className="text-2xl" />
                             </Button>
-                            <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200"> {/* Eliminar ml-1 */}
-                                <FaUserAlt className="text-lg" />
-                            </Button>
+                            <Dropdown>
+                                <DropdownTrigger>
+                                    <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200"> {/* Eliminar ml-1 */}
+                                        <FaUserAlt className="text-lg" />
+                                    </Button>
+                                </DropdownTrigger>
+                                <DropdownMenu aria-label="Static Actions">
+                                    <DropdownItem key="usuario">Usuario</DropdownItem>
+                                    <DropdownItem key="cambiarContraseña">Cambiar contraseña</DropdownItem>
+                                    <DropdownItem key="resetearContraseña">Resetear contraseña</DropdownItem>
+                                    <DropdownItem key="cerrarSesion" className="text-danger" color="danger">
+                                        Cerrar sesión
+                                    </DropdownItem>
+                                </DropdownMenu>
+                            </Dropdown>
                         </div>
                     </div>
                 </div>
