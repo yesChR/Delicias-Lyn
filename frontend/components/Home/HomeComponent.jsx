@@ -1,9 +1,12 @@
-import Contenedor from "../Contenedor/Contenedor";
+import GridComponent from "./GridComponent";
+
 
 const HomeComponent = () => {
     return (
-        <h1>Hola desde home</h1>
+        <div className="p-2 flex flex-col items-center">
+            <GridComponent />
+        </div>
     );
-}
+};
 
 export default HomeComponent;
