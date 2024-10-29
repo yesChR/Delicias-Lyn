@@ -16,6 +16,8 @@ module.exports = {
         btnSideBar1: "#ffa0a3",
         btnSideBar2: "#fdc6c6",
         btnSideBar3: "#ffe8e9",
+        btnSideBar3: "#ffe8e9",
+        black: "#000",
       },
     },
   },

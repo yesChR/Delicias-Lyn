@@ -7,6 +7,7 @@ import { TiShoppingCart } from "react-icons/ti";
 import { FaUserAlt } from "react-icons/fa";
 import { Source_Serif_4 } from '@next/font/google';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
+import {Link} from "@nextui-org/react";
 
 const sourceSerif = Source_Serif_4({
     weight: ['600'],  // Pesos disponibles: 200, 300, 400, 500, 600, 700, 900
@@ -73,8 +74,9 @@ const NavBar = ({ accionarSideBar }) => {
                             </Button>
                         </div>
                         <div className="flex space-x-1 mr-5"> {/* Cambiar espacio a 1 */}
-                            <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
-                                <TiShoppingCart className="text-2xl" />
+                            <Button href={"/carrito"}
+                                    as={Link} className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
+                                    <TiShoppingCart className="text-2xl" />
                             </Button>
                             <Dropdown>
                                 <DropdownTrigger>
