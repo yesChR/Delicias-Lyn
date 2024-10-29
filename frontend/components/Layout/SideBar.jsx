@@ -86,7 +86,7 @@ const SideBar = ({ estaAbierto }) => {
 
             <div className="p-4 overflow-y-auto h-full mt-3 scroll">
                 <div className="flex flex-col justify-start gap-2">
-                    <Link href={"/productos"} className="bg-btnSideBar1 text-md shadow-md rounded-full h-[34px] flex justify-center">
+                    <Link href={"/"} className="bg-btnSideBar1 text-md shadow-md rounded-full h-[34px] flex justify-center hover:bg-btnSideBar2">
                         <div className="mt-1.5">
                             Productos
                         </div>
@@ -119,17 +119,17 @@ const SideBar = ({ estaAbierto }) => {
                     </Button>
                     {desplegarGestiones && (
                         <div className="gap-2 flex justify-start flex-col">
-                            <Link href={"/gestion-producto"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center">
+                            <Link href={"/gestion-producto"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center hover:bg-secundario">
                                 <div className="mt-1.5">
                                     Productos
                                 </div>
                             </Link>
-                            <Link href={"/gestion-categoria"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center">
+                            <Link href={"/gestion-categoria"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center  hover:bg-secundario">
                                 <div className="mt-1.5">
                                     Categorias
                                 </div>
                             </Link>
-                            <Link href={"/gestion-subcategoria"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center">
+                            <Link href={"/gestion-subcategoria"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center  hover:bg-secundario">
                                 <div className="mt-1.5">
                                     Subcategorias
                                 </div>

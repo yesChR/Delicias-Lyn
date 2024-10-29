@@ -25,7 +25,7 @@ const ProductCard = () => {
     const ventanaDetalle = useCallback(() => {
         Swal.fire({
             title: "Detalles del producto",
-            confirmButtonColor: "",
+            confirmButtonColor: "#ff6984",
             confirmButtonText: "Aceptar",
             html: "<p>El queque es de chocolate con lustre blanco y amarillo, incluye flores amarillas</p>"
         })}, []);
