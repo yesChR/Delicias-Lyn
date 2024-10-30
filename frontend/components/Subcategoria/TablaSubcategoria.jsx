@@ -26,21 +26,6 @@ const TablaSubcategoria = ({ onOpen }) => {
             idSubcategoria: 4,
             nombreCategoria: "Queques",
             nombreSubcategoria: "Tres leches"
-        },
-        {
-            idSubcategoria: 5,
-            nombreCategoria: "Queques",
-            nombreSubcategoria: "Torta fría"
-        },
-        {
-            idSubcategoria: 6,
-            nombreCategoria: "Queques",
-            nombreSubcategoria: "Brownie"
-        },
-        {
-            idSubcategoria: 7,
-            nombreCategoria: "Galletas",
-            nombreSubcategoria: "Canastita"
         }
     ];
 

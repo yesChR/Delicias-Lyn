@@ -5,16 +5,22 @@ import { useCallback } from "react";
 import Swal from "sweetalert2";
 
 const FormularioSubcategoria = () => {
-    const subcategorias = [
+    const categorias = [
         {
-            idSubcategoria: 1,
-            nombreCategoria: "Donas",
-            nombreSubcategoria: "Chocolate"
+            idCategoria: 1,
+            nombre: "Queques",
         },
         {
-            idSubcategoria: 2,
-            nombreCategoria: "Pan",
-            nombreSubcategoria: "Salado"
+            idCategoria: 2,
+            nombre: "Galletas",
+        },
+        {
+            idCategoria: 3,
+            nombre: "Panes",
+        },
+        {
+            idCategoria: 4,
+            nombre: "Bocadillos",
         }
     ];
 
@@ -35,9 +41,9 @@ const FormularioSubcategoria = () => {
                     <h2 className="text-principal font-bold text-xl flex justify-center mb-6">Nueva subcategoría</h2>
                     <Input type="text" radius="full" placeholder="Nombre" />
                     <Select placeholder="Seleccione categoría" className="max-w-xs mt-4" radius="full">
-                        {subcategorias.map((subcategoria) => (
-                            <SelectItem key={subcategoria.idSubcategoria} value={subcategoria.idSubcategoria}>
-                                {subcategoria.nombreSubcategoria}
+                        {categorias.map((categorias) => (
+                            <SelectItem key={categorias.idCategoria} value={categorias.idCategoria}>
+                                {categorias.nombre}
                             </SelectItem>
                         ))}
                     </Select>
