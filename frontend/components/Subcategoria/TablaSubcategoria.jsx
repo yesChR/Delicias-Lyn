@@ -9,13 +9,38 @@ const TablaSubcategoria = ({ onOpen }) => {
     const subcategorias = [
         {
             idSubcategoria: 1,
-            nombreCategoria: "Donas",
-            nombreSubcategoria: "Chocolate"
+            nombreCategoria: "Queques",
+            nombreSubcategoria: "Seco"
         },
         {
             idSubcategoria: 2,
-            nombreCategoria: "Pan",
-            nombreSubcategoria: "Salado"
+            nombreCategoria: "Queques",
+            nombreSubcategoria: "Tradicional"
+        },
+        {
+            idSubcategoria: 3,
+            nombreCategoria: "Queques",
+            nombreSubcategoria: "Chocolate"
+        },
+        {
+            idSubcategoria: 4,
+            nombreCategoria: "Queques",
+            nombreSubcategoria: "Tres leches"
+        },
+        {
+            idSubcategoria: 5,
+            nombreCategoria: "Queques",
+            nombreSubcategoria: "Torta fría"
+        },
+        {
+            idSubcategoria: 6,
+            nombreCategoria: "Queques",
+            nombreSubcategoria: "Brownie"
+        },
+        {
+            idSubcategoria: 7,
+            nombreCategoria: "Galletas",
+            nombreSubcategoria: "Canastita"
         }
     ];
 

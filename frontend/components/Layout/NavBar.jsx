@@ -69,9 +69,9 @@ const NavBar = ({ accionarSideBar }) => {
                             <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200" onClick={accionarSideBar}>
                                 <RxHamburgerMenu className="text-xl" />
                             </Button>
-                            <Link href="/" className="rounded-full min-w-[6px] mt-1 bg-transparent"> {/* Eliminar ml-1 */}
+                            <Button as={Link} Link href="/" className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                 <IoHome className="text-xl" />
-                            </Link>
+                            </Button>
                         </div>
                         <div className="flex space-x-1 mr-5"> {/* Cambiar espacio a 1 */}
                             <Button href={"/carrito"}
@@ -80,7 +80,7 @@ const NavBar = ({ accionarSideBar }) => {
                             </Button>
                             <Dropdown>
                                 <DropdownTrigger>
-                                    <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200"> {/* Eliminar ml-1 */}
+                                    <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                         <FaUserAlt className="text-lg" />
                                     </Button>
                                 </DropdownTrigger>

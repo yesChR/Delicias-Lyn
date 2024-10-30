@@ -2,7 +2,6 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Toolti
 import { EditIcon } from "../Iconos/EditIcon";
 import { DeleteIcon } from "../Iconos/DeleteIcon";
 import React, { useCallback } from "react";
-import { CgInfo } from "react-icons/cg";
 import { BiEditAlt } from "react-icons/bi";
 import Swal from "sweetalert2";
 
@@ -10,11 +9,19 @@ const TablaCategoria = ({ onOpen }) => {
     const categorias = [
         {
             idCategoria: 1,
-            nombre: "Donas",
+            nombre: "Queques",
         },
         {
             idCategoria: 2,
-            nombre: "Pan",
+            nombre: "Galletas",
+        },
+        {
+            idCategoria: 3,
+            nombre: "Panes",
+        },
+        {
+            idCategoria: 4,
+            nombre: "Bocadillos",
         }
     ];
 
@@ -71,15 +78,7 @@ const TablaCategoria = ({ onOpen }) => {
                                 </span>
                             </Tooltip>
                         </Button>
-                        <Button onClick={onOpen} className="bg-transparent min-w-4" size="sm">
-                            <Tooltip color="danger" content="Información">
-                                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                    <CgInfo />
-                                </span>
-                            </Tooltip>
-                        </Button>
                     </div>
-
                 );
             default:
                 return cellValue;
