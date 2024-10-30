@@ -10,7 +10,7 @@ import {
   Pagination,
 } from "@nextui-org/react";
 import React, { useState, useEffect } from "react";
-import { CgInfo } from "react-icons/cg";
+import { CgDetailsMore } from "react-icons/cg";
 
 const TablaPedidos = ({ onDetallePedido }) => {
   const [pedidos, setMisPedidos] = useState([
@@ -115,7 +115,7 @@ const TablaPedidos = ({ onDetallePedido }) => {
             >
               <Tooltip color="danger" content="Detalle">
                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <CgInfo />
+                  <CgDetailsMore />
                 </span>
               </Tooltip>
             </Button>

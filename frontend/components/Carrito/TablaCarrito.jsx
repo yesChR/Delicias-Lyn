@@ -12,9 +12,9 @@ import {
 import { DeleteIcon } from "../Iconos/DeleteIcon";
 import React, { useState, useEffect } from "react";
 import { CgInfo } from "react-icons/cg";
-import { BiEditAlt } from "react-icons/bi";
 import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
+import { MdOutlineDescription } from "react-icons/md";
 import Swal from "sweetalert2";
 
 const TablaCarrito = ({ onOpen }) => {
@@ -28,6 +28,8 @@ const TablaCarrito = ({ onOpen }) => {
       monto: 30000,
       descripcion:
         "Un delicioso queque de chocolate, esponjoso y lleno de sabor, perfecto para cualquier ocasión especial. Preparado con los mejores ingredientes, cacao de alta calidad y decorado con una suave cobertura de crema de chocolate. Ideal para compartir con amigos y familia.",
+      personalizacion:
+        "Cubierto con glaseado de chocolate y decorado con virutas de chocolate.",
     },
     {
       idProducto: 2,
@@ -38,6 +40,8 @@ const TablaCarrito = ({ onOpen }) => {
       monto: 8400,
       descripcion:
         "Nuestras donas frescas y suaves están glaseadas con una capa dulce que deleitará tu paladar. Perfectas para acompañar el café de la tarde o para un antojo rápido, estas donas son la combinación ideal de sabor y textura, hechas con cariño en nuestra pastelería.",
+      personalizacion:
+        "Glaseadas con azúcar y decoradas con confites coloridos.",
     },
     {
       idProducto: 3,
@@ -48,6 +52,7 @@ const TablaCarrito = ({ onOpen }) => {
       monto: 6000,
       descripcion:
         "El clásico postre Tres Leches, preparado con una mezcla única de tres tipos de leche, que lo hacen extremadamente suave y jugoso. Su cobertura de crema batida y su sabor perfectamente balanceado lo convierten en una opción irresistible para quienes aman los postres dulces y tradicionales.",
+      personalizacion: "Decorado con frutas frescas y un toque de canela.",
     },
     {
       idProducto: 4,
@@ -58,6 +63,8 @@ const TablaCarrito = ({ onOpen }) => {
       monto: 6000,
       descripcion:
         "Nuestro rompope artesanal es una deliciosa bebida tradicional, elaborada con leche, huevos frescos, azúcar y un toque de licor. Su sabor suave y cremoso es perfecto para disfrutar en reuniones familiares o para darle un toque especial a tus postres favoritos.",
+      personalizacion:
+        "Añadido un toque extra de canela para un sabor más intenso.",
     },
     {
       idProducto: 5,
@@ -68,6 +75,8 @@ const TablaCarrito = ({ onOpen }) => {
       monto: 20000,
       descripcion:
         "Un exquisito queque relleno de melocotón que combina la suavidad del bizcocho con la frescura de la fruta. Cada bocado está lleno de sabor gracias al relleno de melocotón dulce y jugoso, cubierto con una delicada capa de glaseado. Perfecto para celebraciones especiales y ocasiones únicas.",
+      personalizacion:
+        "Relleno extra de melocotón y decorado con rodajas de fruta fresca.",
     },
     {
       idProducto: 6,
@@ -78,6 +87,8 @@ const TablaCarrito = ({ onOpen }) => {
       monto: 6000,
       descripcion:
         "Pequeños pero llenos de sabor, nuestros cupcakes están decorados con un suave glaseado y elaborados con los ingredientes más frescos. Perfectos para cualquier ocasión, estos cupcakes son el equilibrio ideal entre un bizcocho esponjoso y un dulce toque de crema que no te dejará indiferente.",
+      personalizacion:
+        "Decorados con glaseado de vainilla y chispas de colores.",
     },
   ]);
 
@@ -131,7 +142,17 @@ const TablaCarrito = ({ onOpen }) => {
       text: producto.descripcion,
       icon: "info",
       confirmButtonColor: "#ff6984",
-      confirmButtonText: "Cerrar",
+      confirmButtonText: "Ok",
+    });
+  };
+
+  const ventanaPersonalizacion = (producto) => {
+    Swal.fire({
+      title: `${producto.nombre}`,
+      text: producto.personalizacion,
+      icon: "info",
+      confirmButtonColor: "#ff6984",
+      confirmButtonText: "Ok",
     });
   };
 
@@ -213,16 +234,29 @@ const TablaCarrito = ({ onOpen }) => {
         return (
           <div className="flex items-center justify-center gap-1">
             <Button
-              onClick={onOpen}
+              onClick={() => ventanaDescripcion(carrito)}
               className="bg-transparent min-w-4"
               size="sm"
             >
-              <Tooltip color="danger" content="Personalizar">
+              <Tooltip color="danger" content="Descripción">
                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <BiEditAlt />
+                  <CgInfo />
                 </span>
               </Tooltip>
             </Button>
+
+            <Button
+              onClick={() => ventanaPersonalizacion(carrito)}
+              className="bg-transparent min-w-4"
+              size="sm"
+            >
+              <Tooltip color="danger" content="Personalización">
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <MdOutlineDescription />
+                </span>
+              </Tooltip>
+            </Button>
+
             <Button
               onClick={ventanaEliminar}
               className="bg-transparent min-w-4"
@@ -231,17 +265,6 @@ const TablaCarrito = ({ onOpen }) => {
               <Tooltip color="danger" content="Eliminar">
                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
                   <DeleteIcon />
-                </span>
-              </Tooltip>
-            </Button>
-            <Button
-              onClick={() => ventanaDescripcion(carrito)}
-              className="bg-transparent min-w-4"
-              size="sm"
-            >
-              <Tooltip color="danger" content="Descripción">
-                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <CgInfo />
                 </span>
               </Tooltip>
             </Button>
