@@ -14,7 +14,9 @@ const FormularioProducto = () => {
         });
     }, [])
     return (
-    <Button onClick={crearProducto} radius="full" fullWidth variant="shadow" size="sm" className="bg-principal text-white flex justify-center text-2xs">Crear</Button>
+    <Button onClick={crearProducto} fullWidth radius="full" size="lg" className="bg-principal text-white flex justify-center text-2xs">
+        Crear
+    </Button>
     );
 }
 

@@ -17,8 +17,8 @@ const SalirDetalle = ({ setMostrarTablaDetalles }) => {
 
     return (
         <div className="flex justify-end">
-        <Button href={"/gestion-aceptado"} as={Link} fullWidth radius="full" size="sm" className="bg-principal text-white flex justify-center text-2xs">
-            Salir
+        <Button href={"/gestion-aceptado"} as={Link} fullWidth radius="full" size="lg" className="bg-principal text-white flex justify-left text-2xs">
+            Regresar
         </Button>
         </div>
     );

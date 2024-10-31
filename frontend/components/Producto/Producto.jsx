@@ -13,10 +13,10 @@ const Producto = () => {
             <div className="w-full lg:w-1/5"> {/* Ajustar el ancho para pantallas grandes */}
                 <FormularioProducto></FormularioProducto>
                 </div>
-            <div className="flex-col lg:flex-row w-full flex justify-center lg:gap-24 gap-4"> 
-                <div className="w-full lg:w-1/2"> {/* Ajustar el ancho para pantallas grandes */}
-                    <TablaProducto onOpen={onOpen}></TablaProducto>
-                </div> 
+            <div className="flex-col lg:flex-row w-full flex justify-center lg:gap-24 gap-4">
+            <div className="w-auto">
+                <TablaProducto onOpen={open}></TablaProducto>
+            </div>
             </div>
             <ModalProducto isOpen={isOpen} onOpenChange={onOpenChange}></ModalProducto>
         </div>

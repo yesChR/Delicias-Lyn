@@ -178,36 +178,42 @@ const TablaProducto = ({ onOpen }) => {
     }, []);
 
     return (
-        <Table className="custom-table" isStriped bottomContent={
+        <Table
+          className="custom-table"
+          isStriped
+          bottomContent={
             <div className="flex w-full justify-center mt-6">
-                <Pagination
-                    isCompact
-                    showControls
-                    showShadow
-                    color="danger"
-                    page={1}
-                    total={5}
-                />
+              <Pagination
+                isCompact
+                showControls
+                showShadow
+                color="danger"
+                page={1}
+                total={3}
+              />
             </div>
-        }>
-            <TableHeader columns={columns}>
-                {(column) => (
-                    <TableColumn key={column.uid} align={"center"}>
-                        {column.name}
-                    </TableColumn>
+          }
+        >
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn key={column.uid} align={"center"}>
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={productos}>
+            {(item) => (
+              <TableRow
+                key={item.idProducto}
+                className="text-black hover:bg-gray-200 transition duration-300"
+              >
+                {(columnKey) => (
+                  <TableCell>{renderCell(item, columnKey)}</TableCell>
                 )}
-            </TableHeader>
-            <TableBody items={productos}>
-                {(item) => (
-                    <TableRow key={item.idProducto} className="hover:bg-gray-200 transition duration-300">
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
-                    </TableRow>
-                )}
-            </TableBody>
+              </TableRow>
+            )}
+          </TableBody>
         </Table>
-    );
-}
-
+      );
+    };
 export default TablaProducto;
-
-

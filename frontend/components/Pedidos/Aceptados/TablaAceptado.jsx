@@ -114,34 +114,47 @@ const TablaAceptado = ({ onOpen }) => {
             case "fechaEntrega":
             case "tipo":
                 return <h1 style={{color: "black"}}>{cellValue}</h1>;
-            case "prioridad":
-                return (
-                    <div className="flex items-center justify-center gap-1">
-                        <Button onClick={ventanaEditarPrioridad} className="bg-transparent min-w-4" size="sm">
-                            <Tooltip color="danger" content="Editar">
-                                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                    <BiEditAlt />
-                                </span>
-                            </Tooltip>
-                        </Button>
+                case "prioridad":
+                    return (
+                        <div className="flex items-center justify-center gap-1">
+                            <Button 
+                                onClick={() => {
+                                    onOpen(); // Ejecuta onOpen al hacer clic
+                                }}
+                                className="bg-transparent min-w-4" 
+                                size="sm"
+                            >
+                                <Tooltip color="danger" content="Editar prioridad">
+                                    <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                        <BiEditAlt />
+                                    </span>
+                                </Tooltip>
+                            </Button>
                         </div>
-                );
-                case "estado":
-                return (
-                    <div className="flex items-center justify-center gap-1">
-                        <Button onClick={ventanaEditarEstado} className="bg-transparent min-w-4" size="sm">
-                            <Tooltip color="danger" content="Editar">
-                                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                    <BiEditAlt />
-                                </span>
-                            </Tooltip>
-                        </Button>
-                        </div>
-                );
+                    );
+                
+                    case "estado":
+                        return (
+                            <div className="flex items-center justify-center gap-1">
+                                <Button 
+                                    onClick={() => {
+                                        onOpen(); // Ejecuta onOpen al hacer clic
+                                    }}
+                                    className="bg-transparent min-w-4" 
+                                    size="sm"
+                                >
+                                    <Tooltip color="danger" content="Editar estado">
+                                        <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                            <BiEditAlt />
+                                        </span>
+                                    </Tooltip>
+                                </Button>
+                            </div>
+                        );
                 case "detalle":  
                 return (
                     <div className="flex items-center justify-center gap-1">
-                            <Button href={"/gestion-detallePedido"} as={Link} fullWidth radius="full" size="sm" className="bg-btnSideBar2 text-md shadow-md">
+                            <Button href={"/gestion-detallePedido"} as={Link} fullWidth radius="full" size="sm" className="bg-transparent min-w-4">
                                 <Tooltip color="danger" content="Detalle">
                                     <span className="text-lg text-danger cursor-pointer active:opacity-50">
                                         <CgInfo />
