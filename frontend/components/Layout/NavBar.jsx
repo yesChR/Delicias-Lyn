@@ -5,7 +5,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { IoHome } from "react-icons/io5";
 import { TiShoppingCart } from "react-icons/ti";
 import { FaUserAlt } from "react-icons/fa";
-import { Source_Serif_4 } from '@next/font/google';
+import { Source_Serif_4 } from "next/font/google";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import { Link } from "@nextui-org/react";
 /**31/10/2021 Albin */
