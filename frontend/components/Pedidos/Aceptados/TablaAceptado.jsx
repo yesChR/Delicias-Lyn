@@ -16,7 +16,7 @@ alert("Keyron estuvo aqui💫");
 }
 
 
-const TablaAceptado = ({ onOpen }) => {
+const TablaAceptado = ({ onOpenPrioridad, onOpenEstado} ) => {
     
     const pedidos = [
         {
@@ -118,9 +118,7 @@ const TablaAceptado = ({ onOpen }) => {
                     return (
                         <div className="flex items-center justify-center gap-1">
                             <Button 
-                                onClick={() => {
-                                    onOpen(); // Ejecuta onOpen al hacer clic
-                                }}
+                                onClick={onOpenPrioridad} // Abre el modal de Prioridad
                                 className="bg-transparent min-w-4" 
                                 size="sm"
                             >
@@ -132,25 +130,23 @@ const TablaAceptado = ({ onOpen }) => {
                             </Button>
                         </div>
                     );
-                
-                    case "estado":
-                        return (
-                            <div className="flex items-center justify-center gap-1">
-                                <Button 
-                                    onClick={() => {
-                                        onOpen(); // Ejecuta onOpen al hacer clic
-                                    }}
-                                    className="bg-transparent min-w-4" 
-                                    size="sm"
-                                >
-                                    <Tooltip color="danger" content="Editar estado">
-                                        <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                                            <BiEditAlt />
-                                        </span>
-                                    </Tooltip>
-                                </Button>
-                            </div>
-                        );
+                    
+                case "estado":
+                    return (
+                        <div className="flex items-center justify-center gap-1">
+                            <Button 
+                                onClick={onOpenEstado} // Abre el modal de Estado
+                                className="bg-transparent min-w-4" 
+                                size="sm"
+                            >
+                                <Tooltip color="danger" content="Editar estado">
+                                    <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                                        <BiEditAlt />
+                                    </span>
+                                </Tooltip>
+                            </Button>
+                        </div>
+                    );
                 case "detalle":  
                 return (
                     <div className="flex items-center justify-center gap-1">

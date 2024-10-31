@@ -2,11 +2,18 @@ import TablaAceptado from "./TablaAceptado";
 import ModalPrioridad from "./ModalPrioridad";
 import ModalEstado from "./ModalEstado";
 import { useDisclosure } from "@nextui-org/react";
+import { useState } from "react";
 
 const Aceptado = () => {
-    const { isOpen, onOpen, onOpenChange } = useDisclosure();
+    // Estados separados para cada modal
+    const [isPrioridadOpen, setIsPrioridadOpen] = useState(false);
+    const [isEstadoOpen, setIsEstadoOpen] = useState(false);
 
-    console.log("Modal isOpen:", isOpen); // Para verificar si el estado cambia
+    // Funciones para abrir y cerrar cada modal
+    const openModalPrioridad = () => setIsPrioridadOpen(true);
+    const closeModalPrioridad = () => setIsPrioridadOpen(false);
+    const openModalEstado = () => setIsEstadoOpen(true);
+    const closeModalEstado = () => setIsEstadoOpen(false);
 
     return (
         <div className="w-full flex flex-col justify-center lg:gap-10 gap-4">
@@ -15,13 +22,21 @@ const Aceptado = () => {
             </div>
             <div className="flex-col lg:flex-row w-full flex justify-center lg:gap-24 gap-4">
                 <div className="w-auto">
-                    {/* Pasar onOpen como propiedad a TablaAceptado */}
-                    <TablaAceptado onOpen={onOpen}></TablaAceptado>
+                    {/* Pasar funciones de apertura como propiedades a TablaAceptado */}
+                    <TablaAceptado 
+                        onOpenPrioridad={openModalPrioridad} 
+                        onOpenEstado={openModalEstado}
+                    />
+                    <ModalPrioridad 
+                        isOpen={isPrioridadOpen} 
+                        onOpenChange={closeModalPrioridad} 
+                    />
+                    <ModalEstado 
+                        isOpen={isEstadoOpen} 
+                        onOpenChange={closeModalEstado} 
+                    />
                 </div>
             </div>
-            {/* Modal se muestra si isOpen es true */}
-            <ModalPrioridad isOpen={isOpen} onOpenChange={onOpenChange}></ModalPrioridad>
-            <ModalEstado isOpen={isOpen} onOpenChange={onOpenChange}></ModalEstado>
         </div>
     );
 }
