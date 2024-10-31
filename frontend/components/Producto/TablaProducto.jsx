@@ -209,3 +209,5 @@ const TablaProducto = ({ onOpen }) => {
 }
 
 export default TablaProducto;
+
+
