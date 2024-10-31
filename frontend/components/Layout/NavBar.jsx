@@ -8,6 +8,13 @@ import { FaUserAlt } from "react-icons/fa";
 import { Source_Serif_4 } from '@next/font/google';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import {Link} from "@nextui-org/react";
+/**31/10/2021 Albin */
+import LoginModal from "../Usuario/Auth"; // Asegúrate de especificar la ruta correcta
+import ResetModal from "../Usuario/Reset"; // Asegúrate de especificar la ruta correcta
+import ChangePasswordModal from "../Usuario/ChangePassword"; // Asegúrate de especificar la ruta correcta
+import { useState } from "react";
+
+/** */
 
 const sourceSerif = Source_Serif_4({
     weight: ['600'],  // Pesos disponibles: 200, 300, 400, 500, 600, 700, 900
@@ -15,6 +22,10 @@ const sourceSerif = Source_Serif_4({
 });
 
 const NavBar = ({ accionarSideBar }) => {
+    const [isLoginOpen, setIsLoginOpen] = useState(false);
+    const [isResetOpen, setIsResetOpen] = useState(false);
+    const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+    
     return (
         <header>
             <div className="z-50">
@@ -58,7 +69,9 @@ const NavBar = ({ accionarSideBar }) => {
                             </div>
                             {/* Enlace que ocupa 1/4 del espacio */}
                             <div className="w-1/4 lg:ml-10 ml-8">
-                                <Link href={"/"} className="text-white hover:underline">Nosotros</Link>
+                                <Link href="/sobre-nosotros" className="text-white hover:underline">
+                                        <div>Nosotros</div>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -85,9 +98,10 @@ const NavBar = ({ accionarSideBar }) => {
                                     </Button>
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="Static Actions">
+                                <DropdownItem key="login" onPress={() => setIsLoginOpen(true)}>Iniciar sesión</DropdownItem>
                                     <DropdownItem key="usuario">Usuario</DropdownItem>
-                                    <DropdownItem key="cambiarContraseña">Cambiar contraseña</DropdownItem>
-                                    <DropdownItem key="resetearContraseña">Resetear contraseña</DropdownItem>
+                                    <DropdownItem key="cambiarContraseña" onPress={() => setIsChangePasswordOpen(true)}>Cambiar contraseña</DropdownItem>
+                                    <DropdownItem key="resetearContraseña" onPress={() => setIsResetOpen(true)}>Resetear contraseña</DropdownItem>
                                     <DropdownItem key="cerrarSesion" className="text-danger" color="danger">
                                         Cerrar sesión
                                     </DropdownItem>
@@ -98,7 +112,32 @@ const NavBar = ({ accionarSideBar }) => {
                 </div>
             </div>
 
+       {/* Modales */}
+       <ResetModal
+                isOpen={isResetOpen}
+                onOpenChange={setIsResetOpen}
+                onLoginOpen={() => {
+                    setIsResetOpen(false); // Cerrar el modal de restablecimiento
+                    setIsLoginOpen(true); // Abrir el modal de inicio de sesión
+                }}
+            />
 
+            <LoginModal
+                isOpen={isLoginOpen}
+                onOpenChange={setIsLoginOpen}
+                onResetOpen={() => {
+                    setIsLoginOpen(false); // Cerrar el modal de inicio de sesión
+                    setIsResetOpen(true); // Abrir el modal de restablecimiento
+                }}
+            />
+
+            <ChangePasswordModal
+                isOpen={isChangePasswordOpen}
+                onOpenChange={setIsChangePasswordOpen}
+                onChangePassword={() => {
+                    setIsChangePasswordOpen(true); // Esta función puede ser modificada para abrir otros modales si es necesario
+                }}
+            />
 
         </header>
     );
