@@ -7,7 +7,7 @@ import { TiShoppingCart } from "react-icons/ti";
 import { FaUserAlt } from "react-icons/fa";
 import { Source_Serif_4 } from '@next/font/google';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
-import {Link} from "@nextui-org/react";
+import { Link } from "@nextui-org/react";
 /**31/10/2021 Albin */
 import LoginModal from "../Usuario/Auth"; // Asegúrate de especificar la ruta correcta
 import ResetModal from "../Usuario/Reset"; // Asegúrate de especificar la ruta correcta
@@ -25,7 +25,7 @@ const NavBar = ({ accionarSideBar }) => {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isResetOpen, setIsResetOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-    
+
     return (
         <header>
             <div className="z-50">
@@ -70,7 +70,7 @@ const NavBar = ({ accionarSideBar }) => {
                             {/* Enlace que ocupa 1/4 del espacio */}
                             <div className="w-1/4 lg:ml-10 ml-8">
                                 <Link href="/sobre-nosotros" className="text-white hover:underline">
-                                        <div>Nosotros</div>
+                                    <div>Nosotros</div>
                                 </Link>
                             </div>
                         </div>
@@ -88,8 +88,8 @@ const NavBar = ({ accionarSideBar }) => {
                         </div>
                         <div className="flex space-x-1 mr-5"> {/* Cambiar espacio a 1 */}
                             <Button href={"/carrito"}
-                                    as={Link} className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
-                                    <TiShoppingCart className="text-2xl" />
+                                as={Link} className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
+                                <TiShoppingCart className="text-2xl" />
                             </Button>
                             <Dropdown>
                                 <DropdownTrigger>
@@ -98,8 +98,8 @@ const NavBar = ({ accionarSideBar }) => {
                                     </Button>
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="Static Actions">
-                                <DropdownItem key="login" onPress={() => setIsLoginOpen(true)}>Iniciar sesión</DropdownItem>
-                                    <DropdownItem key="usuario">Usuario</DropdownItem>
+                                    <DropdownItem key="usuario">Nombre Usuario</DropdownItem>
+                                    <DropdownItem key="login" onPress={() => setIsLoginOpen(true)}>Iniciar sesión</DropdownItem>
                                     <DropdownItem key="cambiarContraseña" onPress={() => setIsChangePasswordOpen(true)}>Cambiar contraseña</DropdownItem>
                                     <DropdownItem key="resetearContraseña" onPress={() => setIsResetOpen(true)}>Resetear contraseña</DropdownItem>
                                     <DropdownItem key="cerrarSesion" className="text-danger" color="danger">
@@ -112,8 +112,8 @@ const NavBar = ({ accionarSideBar }) => {
                 </div>
             </div>
 
-       {/* Modales */}
-       <ResetModal
+            {/* Modales */}
+            <ResetModal
                 isOpen={isResetOpen}
                 onOpenChange={setIsResetOpen}
                 onLoginOpen={() => {
