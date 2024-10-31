@@ -1,7 +1,7 @@
 import { Modal, ModalContent, Input, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
 import { useCallback } from "react";
 import Swal from "sweetalert2";
-
+import { Select, SelectItem } from "@nextui-org/react";
 
 const ModalSubcategoria = ({ isOpen, onOpenChange }) => {
     const ventanaEditar = useCallback(() => {
@@ -12,6 +12,25 @@ const ModalSubcategoria = ({ isOpen, onOpenChange }) => {
             timer: 1000
         });
     }, []);
+
+    const categorias = [
+        {
+            idCategoria: 1,
+            nombre: "Queques",
+        },
+        {
+            idCategoria: 2,
+            nombre: "Galletas",
+        },
+        {
+            idCategoria: 3,
+            nombre: "Panes",
+        },
+        {
+            idCategoria: 4,
+            nombre: "Bocadillos",
+        }
+    ];
 
     return (
         <>
@@ -25,6 +44,13 @@ const ModalSubcategoria = ({ isOpen, onOpenChange }) => {
                                     <div className="w-full mt-6 flex justify-center">
                                         <div className="w-3/4">
                                             <Input type="text" radius="full" placeholder="Nombre" />
+                                            <Select placeholder="Seleccione categoría" className="max-w-xs mt-4" radius="full">
+                                                {categorias.map((categorias) => (
+                                                    <SelectItem key={categorias.idCategoria} value={categorias.idCategoria}>
+                                                        {categorias.nombre}
+                                                    </SelectItem>
+                                                ))}
+                                            </Select>
                                         </div>
                                     </div>
                                 </div>

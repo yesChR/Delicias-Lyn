@@ -46,7 +46,7 @@ const FormularioSubcategoria = () => {
                                 {categorias.nombre}
                             </SelectItem>
                         ))}
-                    </Select>
+                    </Select> 
                     <div className="w-full mt-6 flex justify-center">
                         <div className="w-1/2">
                             <Button onClick={crearSubcategoria} radius="full" fullWidth variant="shadow" size="sm" className="bg-principal text-white flex justify-center text-2xs">Crear</Button>
