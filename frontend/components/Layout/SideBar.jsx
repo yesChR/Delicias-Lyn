@@ -144,7 +144,7 @@ const SideBar = ({ estaAbierto }) => {
                         <div className="gap-2 flex justify-start flex-col">
                             {estados.map((estado) => (
                                 <div key={estado.idEstado} className="gap-2 flex justify-start flex-col">
-                                    <Button fullWidth radius="full" size="sm" className="bg-btnSideBar2 text-md shadow-md">
+                                    <Button href={"/gestion-aceptado"} as={Link} fullWidth radius="full" size="sm" className="bg-btnSideBar2 text-md shadow-md">
                                         {estado.nombre}
                                     </Button>
                                 </div>
