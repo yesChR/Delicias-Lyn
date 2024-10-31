@@ -7,6 +7,7 @@ import { TiShoppingCart } from "react-icons/ti";
 import { FaUserAlt } from "react-icons/fa";
 import { Source_Serif_4 } from '@next/font/google';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
+import {Link} from "@nextui-org/react";
 
 const sourceSerif = Source_Serif_4({
     weight: ['600'],  // Pesos disponibles: 200, 300, 400, 500, 600, 700, 900
@@ -57,7 +58,7 @@ const NavBar = ({ accionarSideBar }) => {
                             </div>
                             {/* Enlace que ocupa 1/4 del espacio */}
                             <div className="w-1/4 lg:ml-10 ml-8">
-                                <a className="text-white hover:underline">Nosotros</a>
+                                <Link href={"/"} className="text-white hover:underline">Nosotros</Link>
                             </div>
                         </div>
                     </div>
@@ -68,17 +69,18 @@ const NavBar = ({ accionarSideBar }) => {
                             <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200" onClick={accionarSideBar}>
                                 <RxHamburgerMenu className="text-xl" />
                             </Button>
-                            <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200"> {/* Eliminar ml-1 */}
+                            <Button as={Link} href="/" className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                 <IoHome className="text-xl" />
                             </Button>
                         </div>
                         <div className="flex space-x-1 mr-5"> {/* Cambiar espacio a 1 */}
-                            <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
-                                <TiShoppingCart className="text-2xl" />
+                            <Button href={"/carrito"}
+                                    as={Link} className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
+                                    <TiShoppingCart className="text-2xl" />
                             </Button>
                             <Dropdown>
                                 <DropdownTrigger>
-                                    <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200"> {/* Eliminar ml-1 */}
+                                    <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                         <FaUserAlt className="text-lg" />
                                     </Button>
                                 </DropdownTrigger>

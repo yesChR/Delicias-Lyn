@@ -30,18 +30,46 @@ const SideBar = ({ estaAbierto }) => {
     const categorias = [
         {
             idCategoria: 1,
-            nombre: "Donas",
+            nombre: "Galletas",
             subcategoria: [
-                { idSubcategoria: 7, nombre: "Chocolate" },
-                { idSubcategoria: 4, nombre: "Fresa" }
+                { idSubcategoria: 7, nombre: "Alfajores" },
+                { idSubcategoria: 4, nombre: "Canastita" },
+                { idSubcategoria: 4, nombre: "Chispas de choco..." },
+                { idSubcategoria: 4, nombre: "Personalizadas" }
             ]
         },
         {
             idCategoria: 2,
-            nombre: "Pan",
+            nombre: "Panes",
             subcategoria: [
-                { idSubcategoria: 2, nombre: "Dulce" },
-                { idSubcategoria: 3, nombre: "Salado" }
+                { idSubcategoria: 2, nombre: "Casero" },
+                { idSubcategoria: 3, nombre: "Gatos" },
+                { idSubcategoria: 3, nombre: "Rollos de crema" },
+                { idSubcategoria: 3, nombre: "Rollos de canela" },
+            ]
+        },
+        {
+            idCategoria: 3,
+            nombre: "Queques",
+            subcategoria: [
+                { idSubcategoria: 2, nombre: "Seco" },
+                { idSubcategoria: 3, nombre: "Tradicional" },
+                { idSubcategoria: 3, nombre: "Chocolate" },
+                { idSubcategoria: 3, nombre: "Tres leches" },
+                { idSubcategoria: 3, nombre: "Torta fría" },
+                { idSubcategoria: 3, nombre: "Brownies" }
+            ]
+        },
+        {
+            idCategoria: 4,
+            nombre: "Bocadillos",
+            subcategoria: [
+                { idSubcategoria: 2, nombre: "Rollos de salchi..." },
+                { idSubcategoria: 3, nombre: "Canastas de atún" },
+                { idSubcategoria: 3, nombre: "Empanaditas" },
+                { idSubcategoria: 3, nombre: "Mini flautas" },
+                { idSubcategoria: 3, nombre: "Pañuelos" },
+                { idSubcategoria: 3, nombre: "Mini donas" }
             ]
         }
     ];
@@ -86,7 +114,7 @@ const SideBar = ({ estaAbierto }) => {
 
             <div className="p-4 overflow-y-auto h-full mt-3 scroll">
                 <div className="flex flex-col justify-start gap-2">
-                    <Link href={"/productos"} className="bg-btnSideBar1 text-md shadow-md rounded-full h-[34px] flex justify-center">
+                    <Link href={"/"} className="bg-btnSideBar1 text-md shadow-md rounded-full h-[34px] flex justify-center hover:bg-btnSideBar2">
                         <div className="mt-1.5">
                             Productos
                         </div>
@@ -104,7 +132,7 @@ const SideBar = ({ estaAbierto }) => {
                                     {desplegarSubcategorias === categoria.idCategoria && (
                                         <div className="gap-2 flex justify-start flex-col"> {/* Agrega un margen para anidar mejor */}
                                             {categoria.subcategoria.map((sub) => (
-                                                <Button key={sub.idSubcategoria} fullWidth radius="full" size="sm" className="bg-btnSideBar3 text-md shadow-md">
+                                                <Button href={"/categoria-productos"} as={Link} key={sub.idSubcategoria} fullWidth radius="full" size="sm" className="bg-btnSideBar3 text-md shadow-md">
                                                     {sub.nombre}
                                                 </Button>
                                             ))}
@@ -119,17 +147,17 @@ const SideBar = ({ estaAbierto }) => {
                     </Button>
                     {desplegarGestiones && (
                         <div className="gap-2 flex justify-start flex-col">
-                            <Link href={"/gestion-producto"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center">
+                            <Link href={"/gestion-producto"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center hover:bg-secundario">
                                 <div className="mt-1.5">
                                     Productos
                                 </div>
                             </Link>
-                            <Link href={"/gestion-categoria"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center">
+                            <Link href={"/gestion-categoria"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center  hover:bg-secundario">
                                 <div className="mt-1.5">
                                     Categorias
                                 </div>
                             </Link>
-                            <Link href={"/gestion-subcategoria"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center">
+                            <Link href={"/gestion-subcategoria"} className="bg-btnSideBar2 text-md shadow-md rounded-full h-[34px] flex justify-center  hover:bg-secundario">
                                 <div className="mt-1.5">
                                     Subcategorias
                                 </div>
@@ -151,8 +179,18 @@ const SideBar = ({ estaAbierto }) => {
                             ))}
                         </div>
                     )}
-                    <Button fullWidth radius="full" size="sm" className="bg-btnSideBar1 text-md shadow-md">
+                    <Button href={"/mis-pedidos"}
+                        as={Link}
+                        fullWidth radius="full"
+                        size="sm"
+                        className="bg-btnSideBar1 text-md shadow-md">
                         Mis pedidos
+                    </Button>
+                    <Button
+                        fullWidth radius="full"
+                        size="sm"
+                        className="bg-btnSideBar1 text-md shadow-md">
+                        Informe
                     </Button>
                 </div>
             </div>

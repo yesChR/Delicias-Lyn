@@ -3,11 +3,10 @@ import ModalSubcategoria from "./Modal";
 import TablaSubcategoria from "./TablaSubcategoria";
 import { useDisclosure } from "@nextui-org/react";
 
-
 const Subcategoria = () => {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     return (
-        <div className="w-full flex flex-col justify-center lg:gap-10 gap-4">
+        <div className="w-full flex flex-col justify-center lg:gap-10 gap-4 py-6">
             <div className="text-principal font-bold lg:text-3xl text-2xl flex justify-center mt-6">
                 <h1>Subcategorías</h1>
             </div>
