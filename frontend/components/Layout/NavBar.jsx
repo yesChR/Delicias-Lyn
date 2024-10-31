@@ -69,7 +69,7 @@ const NavBar = ({ accionarSideBar }) => {
                             <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200" onClick={accionarSideBar}>
                                 <RxHamburgerMenu className="text-xl" />
                             </Button>
-                            <Button as={Link} Link href="/" className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
+                            <Button as={Link} href="/" className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                 <IoHome className="text-xl" />
                             </Button>
                         </div>

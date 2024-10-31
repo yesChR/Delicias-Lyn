@@ -186,6 +186,12 @@ const SideBar = ({ estaAbierto }) => {
                         className="bg-btnSideBar1 text-md shadow-md">
                         Mis pedidos
                     </Button>
+                    <Button
+                        fullWidth radius="full"
+                        size="sm"
+                        className="bg-btnSideBar1 text-md shadow-md">
+                        Informe
+                    </Button>
                 </div>
             </div>
         </div>
