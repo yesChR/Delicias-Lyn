@@ -15,7 +15,7 @@ const Producto = () => {
                 </div>
             <div className="flex-col lg:flex-row w-full flex justify-center lg:gap-24 gap-4">
             <div className="w-auto">
-                <TablaProducto onOpen={open}></TablaProducto>
+                <TablaProducto onOpen={onOpen}></TablaProducto>
             </div>
             </div>
             <ModalProducto isOpen={isOpen} onOpenChange={onOpenChange}></ModalProducto>
