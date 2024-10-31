@@ -8,7 +8,10 @@ import { AiFillApple } from "react-icons/ai";
 import Swal from "sweetalert2";
 import { EyeIcon } from "../Iconos/EyeIcon";
 import { useDisclosure } from "@nextui-org/react";
-
+/** */
+import ModalEditarProducto from "./GestionProducto";
+import { IoIosAddCircle } from "react-icons/io";
+import { useState } from "react";
 
 const message = () => {
 alert("Keyron estuvo aqui💫");
@@ -16,6 +19,16 @@ alert("Keyron estuvo aqui💫");
 
 
 const TablaProducto = ({ onOpen }) => {
+
+    const [isModalEditProductoOpen, setIsModalEditProductoOpen] = useState(false);
+
+    const [isModalOpen, setModalOpen] = useState(false);
+    const [isEditing, setIsEditing] = useState(false); // Estado para determinar si es edición o creación
+    const openEditModal = () => {
+        setIsEditing(true); // Modo edición
+        setModalOpen(true);
+    };
+
     
     const productos = [
         {
@@ -155,7 +168,7 @@ const TablaProducto = ({ onOpen }) => {
             case "acciones":
                 return (
                     <div className="flex items-center justify-center gap-1">
-                        <Button onClick={onOpen} className="bg-transparent min-w-4" size="sm">
+                        <Button  onClick={openEditModal} className="bg-transparent min-w-4" size="sm">
                             <Tooltip color="danger" content="Editar">
                                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
                                     <BiEditAlt />
@@ -178,6 +191,7 @@ const TablaProducto = ({ onOpen }) => {
     }, []);
 
     return (
+        <>
         <Table
           className="custom-table"
           isStriped
@@ -214,6 +228,12 @@ const TablaProducto = ({ onOpen }) => {
             )}
           </TableBody>
         </Table>
+          <ModalEditarProducto
+          isOpen={isModalOpen}
+          onOpenChange={setModalOpen}
+          modo={isEditing} // Pasa el estado aquí
+      />
+        </>
       );
     };
 export default TablaProducto;
