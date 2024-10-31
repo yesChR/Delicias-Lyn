@@ -62,7 +62,7 @@ const TablaProducto = ({ onOpen }) => {
         { name: "Cantidad", uid: "cantidad" },
         { name: "Precio", uid: "precio" },
         { name: "Personalización", uid: "personalizacion" },
-        { name: "tipo", uid: "tipo" },
+        { name: "Tipo", uid: "tipo" },
     ];
 
     // Actualiza el método para recibir el detalle completo y mostrar solo la personalización
