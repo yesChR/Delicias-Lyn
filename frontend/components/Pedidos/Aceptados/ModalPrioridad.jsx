@@ -1,4 +1,4 @@
-import { Modal, ModalContent, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
+import { Modal, ModalContent, ModalBody, ModalFooter, Button, Select, SelectItem } from "@nextui-org/react";
 import { useCallback } from "react";
 import Swal from "sweetalert2";
 
@@ -13,42 +13,37 @@ const ModalPrioridad = ({ isOpen, onOpenChange }) => {
     }, []);
 
     return (
-        <>
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalBody>
-                                <div className="p-4 mt-4 text-black">
-                                    <h2 className="text-principal font-bold text-xl flex justify-center mb-8">
-                                        Editar Prioridad
-                                    </h2>
-                                    <div className="w-full mt-6 flex justify-center">
-                                        <div className="w-3/4">
-                                            <select 
-                                                id="prioridad" 
-                                                className="swal2-select w-full p-2 text-black border border-gray-300 rounded">
-                                                <option value="grande">Alta</option>
-                                                <option value="mediano">Media</option>
-                                                <option value="pequeño">Baja</option>
-                                            </select>
-                                        </div>
+        <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+            <ModalContent>
+                {(onClose) => (
+                    <>
+                        <ModalBody>
+                            <div className="p-4 mt-4">
+                                <h2 className="text-principal font-bold text-xl flex justify-center mb-8">Editar Prioridad</h2>
+                                <div className="w-full mt-6 flex justify-center">
+                                    <div className="w-3/4">
+                                        <Select placeholder="Seleccione prioridad" className="max-w-xs mt-4" radius="full">
+                                            <SelectItem value="Alta">Alta</SelectItem>
+                                            <SelectItem value="Media">Media</SelectItem>
+                                            <SelectItem value="Baja">Baja</SelectItem>
+                                        </Select>
                                     </div>
                                 </div>
-                            </ModalBody>
-                            <ModalFooter className="flex justify-center">
-                                <Button color="danger" variant="light" onPress={onClose}>
-                                    Cerrar
-                                </Button>
-                                <Button onClick={ventanaEditarPrioridad} color="danger" onPress={onClose}>
-                                    Editar
-                                </Button>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
-        </>
+                            </div>
+                        </ModalBody>
+                        <ModalFooter className="flex justify-center">
+                            <Button color="danger" variant="light" onPress={onClose}>
+                                Cerrar
+                            </Button>
+                            <Button onClick={() => { ventanaEditarPrioridad(); onClose(); }} color="danger">
+                                Editar
+                            </Button>
+                        </ModalFooter>
+                    </>
+                )}
+            </ModalContent>
+        </Modal>
     );
 }
+
 export default ModalPrioridad;
