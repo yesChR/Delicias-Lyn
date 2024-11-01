@@ -9,7 +9,7 @@ import Swal from "sweetalert2";
 import { EyeIcon } from "../Iconos/EyeIcon";
 import { useDisclosure } from "@nextui-org/react";
 /** */
-import ModalEditarProducto from "./GestionProducto";
+import ModalEditarProducto from "./ModalGestionProducto";
 import { IoIosAddCircle } from "react-icons/io";
 import { useState } from "react";
 

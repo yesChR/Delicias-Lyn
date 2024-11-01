@@ -5,7 +5,7 @@ import { IoPersonCircle } from "react-icons/io5";
 const TestimonialsSection = ({ currentCards }) => {
     return (
         <div className="max-w-7xl mx-auto p-4">
-            <h2 style={{ color: 'rgb(255, 105, 132)', marginTop: '45px',  marginBottom: '20px', fontWeight: 'bold', fontSize: '25px', textAlign: 'center' }}>Testimonios</h2>
+            <h2 style={{ color: 'rgb(255, 105, 132)', marginTop: '25px',  marginBottom: '20px', fontWeight: 'bold', fontSize: '25px', textAlign: 'center' }}>Testimonios</h2>
             <div className="contenedor-cartas flex flex-col md:flex-row justify-center items-center gap-6">
                 {currentCards.map((card) => (
                     <Card key={card.id} className="w-full md:w-1/3 lg:w-1/4 min-h-[200px] mx-auto" style={{ width: '80%', minHeight: '100px' }}>

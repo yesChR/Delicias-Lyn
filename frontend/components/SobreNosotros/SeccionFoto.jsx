@@ -7,7 +7,7 @@ import { Card, CardBody, Image } from "@nextui-org/react";
 const CardsSection = () => {
     return (
         <div className="contenedor-cartas flex flex-col md:flex-row justify-center items-stretch gap-6 p-4 mt-8 max-w-7xl mx-auto" 
-        style={{ gap: "1.5rem" }}>
+        style={{ gap: "2rem" }}>
             <Card className="w-full md:w-1/3 lg:w-1/4 min-h-[300px]">
                 <CardBody className="p-0">
                     <Image

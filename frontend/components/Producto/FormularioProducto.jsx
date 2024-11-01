@@ -1,7 +1,7 @@
 import { Button } from "@nextui-org/react";
 import { useCallback } from "react";
 import Swal from "sweetalert2";
-import ModalCreateProducto from "./GestionProducto";
+import ModalCreateProducto from "./ModalGestionProducto";
 import { useState } from "react";
 
 const FormularioProducto = () => {
