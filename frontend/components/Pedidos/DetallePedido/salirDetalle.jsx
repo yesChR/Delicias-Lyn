@@ -11,17 +11,24 @@ const SalirDetalle = ({ setMostrarTablaDetalles }) => {
             showConfirmButton: false,
             timer: 1000
         }).then(() => {
-            setMostrarTablaDetalles(false); // Oculta la tabla de detalles
+            setMostrarTablaDetalles(false);
         });
     }, [setMostrarTablaDetalles]);
 
     return (
-        <div className="flex justify-end">
-        <Button href={"/gestion-aceptado"} as={Link} fullWidth radius="full" size="lg" className="bg-principal text-white flex justify-left text-2xs">
-            Regresar
-        </Button>
+        <div className="flex justify-end w-full">
+            <Button 
+                href={"/gestion-aceptado"} 
+                as={Link} 
+                fullWidth={false} // Asegúrate de que no ocupe todo el ancho
+                radius="full" 
+                size="lg" // Cambia el tamaño a "lg" como el botón Crear
+                className="bg-principal text-white text-2xs mr-4" // Ajusta la clase para que se vea igual
+            >
+                Regresar
+            </Button>
         </div>
     );
-}
+};
 
 export default SalirDetalle;

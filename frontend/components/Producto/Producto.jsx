@@ -10,15 +10,15 @@ const Producto = () => {
             <div className="text-principal font-bold lg:text-3xl text-2xl flex justify-center mt-6">
                 <h1>Producto</h1>
             </div>
-            <div className="w-full lg:w-1/5"> {/* Ajustar el ancho para pantallas grandes */}
-                <FormularioProducto></FormularioProducto>
-                </div>
+            <div className="w-full flex justify-end lg:w-auto mb-4"> {/* Ajustar el contenedor para alinear a la derecha */}
+                <FormularioProducto />
+            </div>
             <div className="flex-col lg:flex-row w-full flex justify-center lg:gap-24 gap-4">
-            <div className="w-auto">
-                <TablaProducto onOpen={onOpen}></TablaProducto>
+                <div className="w-auto">
+                    <TablaProducto onOpen={onOpen} />
+                </div>
             </div>
-            </div>
-            <ModalProducto isOpen={isOpen} onOpenChange={onOpenChange}></ModalProducto>
+            <ModalProducto isOpen={isOpen} onOpenChange={onOpenChange} />
         </div>
     );
 }
