@@ -12,6 +12,7 @@ import {
   Input,
 } from "@nextui-org/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 const InputFieldText = ({ placeholder, type = "text", name, value, onChange }) => (
   <Input
@@ -34,7 +35,7 @@ const InputFieldText = ({ placeholder, type = "text", name, value, onChange }) =
   />
 );
 
-const PasswordInput = ({ placeholder, value, onChange }) => {
+const PasswordInput = ({ placeholder, value, onChange, name }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -58,6 +59,7 @@ const PasswordInput = ({ placeholder, value, onChange }) => {
       type={showPassword ? "text" : "password"}
       value={value}
       onChange={onChange}
+      name={name} // Asegúrate de que el name se pase correctamente
       variant="bordered"
     />
   );
@@ -87,24 +89,21 @@ const InputNewPasswordForm = ({ formData, handleChange }) => (
 );
 
 const InputTokenForm = ({ formData, handleChange }) => (
-  <>
-
-    <InputFieldText
-      placeholder="Ingresa el código de verificación"
-      name="verificationCode" // Cambiado a "verificationCode" para mayor claridad
-      value={formData.verificationCode}
-      onChange={handleChange}
-    />
-  </>
+  <InputFieldText
+    placeholder="Ingresa el código de verificación"
+    name="verificationCode"
+    value={formData.verificationCode}
+    onChange={handleChange}
+  />
 );
 
 export default function AuthModal({ isOpen, onOpenChange }) {
-  const [isGetReset, setIsReset] = useState(true); // Estado inicial es true para mostrar el formulario de inicio de sesión
+  const [isGetReset, setIsReset] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
-    verificationCode: "", // Asegúrate de incluir este campo
+    verificationCode: "",
   });
 
   const handleChange = (e) => {
@@ -112,30 +111,27 @@ export default function AuthModal({ isOpen, onOpenChange }) {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  
   const handleNext = () => {
-    // Lógica para el botón "Siguiente"
     console.log("Avanzar a la siguiente etapa");
-    setIsReset(false); // Cambia a la siguiente pantalla o estado si es necesario
+    setIsReset(false);
   };
 
-  const mensaje = () => {
-    onOpenChange(false); // Cierra el modal al enviar
-
-    alert('Exitosamente');
-  }
-
-
-
-  const handleSubmit = () => {
-    alert(JSON.stringify(formData, null, 2));
-    onOpenChange(false); // Cierra el modal al enviar
+  const handleRecover = () => {
+    Swal.fire({
+      icon: "success",
+      title: "Recuperación exitosa",
+      text: "Tu contraseña ha sido reseteada correctamente.",
+      showConfirmButton: false,
+      timer: 1500,
+    }).then(() => {
+      onOpenChange(false);
+    });
   };
 
   useEffect(() => {
     if (isOpen) {
-      setIsReset(true); // Restablece a inicio de sesión cada vez que se abra el modal
-      setFormData({ // Opcional: restablece los campos del formulario
+      setIsReset(true);
+      setFormData({
         email: "",
         password: "",
         confirmPassword: "",
@@ -145,9 +141,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
   }, [isOpen]);
 
   return (
-    <Modal isOpen={isOpen} onOpenChange={onOpenChange}
-      placement="top-center"
-    >
+    <Modal isOpen={isOpen} onOpenChange={onOpenChange} placement="top-center">
       <ModalContent>
         <ModalHeader
           style={{
@@ -189,24 +183,24 @@ export default function AuthModal({ isOpen, onOpenChange }) {
                 fontSize: "17px",
                 borderRadius: "20px",
               }}
-              auto flat onPress={handleNext}>
+              auto flat onClick={handleNext}>
               Siguiente
-            </Button>) : (
-                     <Button
-                     style={{
-                       marginTop: "10px",
-                       marginBottom: "20px",
-                       backgroundColor: "rgb(255,105,132)",
-                       color: "#ffffff",
-                       width: "50%",
-                       fontSize: "17px",
-                       borderRadius: "20px",
-                     }}
-                     auto flat onPress={mensaje}>
-                     Recuperar
-                   </Button>
+            </Button>
+          ) : (
+            <Button
+              style={{
+                marginTop: "10px",
+                marginBottom: "20px",
+                backgroundColor: "rgb(255,105,132)",
+                color: "#ffffff",
+                width: "50%",
+                fontSize: "17px",
+                borderRadius: "20px",
+              }}
+              auto flat onClick={handleRecover}>
+              Recuperar
+            </Button>
           )}
-
         </ModalFooter>
       </ModalContent>
     </Modal>

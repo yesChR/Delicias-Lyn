@@ -3,21 +3,37 @@
  * 
  */
 
+import { useCallback } from "react";
+import Swal from "sweetalert2";
 
 import { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Asegúrate de importar FaEye y FaEyeSlash
-import { LockIcon } from "../Iconos/LockIcon"; // Icono del candado, si se usa
 
 export default function ChangePasswordModal({ isOpen, onOpenChange }) {
-    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-    const [showNewPassword, setShowNewPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    // Funciones para alternar la visibilidad de cada campo de contraseña
-    const toggleCurrentPasswordVisibility = () => setShowCurrentPassword((prev) => !prev);
-    const toggleNewPasswordVisibility = () => setShowNewPassword((prev) => !prev);
-    const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prev) => !prev);
+  // Funciones para alternar la visibilidad de cada campo de contraseña
+  const toggleCurrentPasswordVisibility = () => setShowCurrentPassword((prev) => !prev);
+  const toggleNewPasswordVisibility = () => setShowNewPassword((prev) => !prev);
+  const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prev) => !prev);
+
+  const ventana = useCallback((title, message) => {
+    Swal.fire({
+      icon: "success",
+      title: title, // Dynamic title from argument
+      text: message, // Dynamic text from argument
+      showConfirmButton: false,
+      timer: 1000
+    });
+  }, []);
+
+
+  const ventanaCambioContraseña = () => {
+    ventana("Contraseña actualizada correctamente", "Los cambios se han guardado correctamente.");
+  };
 
 
   return (
@@ -87,7 +103,7 @@ export default function ChangePasswordModal({ isOpen, onOpenChange }) {
                 type={showNewPassword ? "text" : "password"}
                 variant="bordered"
               />
-     <Input
+              <Input
                 classNames={{
                   inputWrapper: [
                     "border-[rgb(255_105_132)]",
@@ -127,7 +143,10 @@ export default function ChangePasswordModal({ isOpen, onOpenChange }) {
                   fontSize: "17px",
                   borderRadius: "20px",
                 }}
-                onPress={onClose}
+                onClick={() => {
+                  ventanaCambioContraseña(); // Call your function to change the password
+                  onClose(); // Call onClose as a function
+                }}
               >
                 Actualizar
               </Button>

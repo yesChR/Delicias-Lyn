@@ -4,7 +4,6 @@
  * 
  * Componente para crear y editar productos
  */
-
 import { useCallback } from "react";
 import Swal from "sweetalert2";
 
@@ -35,10 +34,20 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
     const [tipo, setTipo] = useState('');
     const [descripcion, setDescripcion] = useState('');
 
-    const opciones = [
-        { label: "Opción 1", value: "opcion1" },
-        { label: "Opción 2", value: "opcion2" },
-        { label: "Opción 3", value: "opcion3" },
+    const categorias = [
+        { label: "Galletas", value: "opcion1" },
+        { label: "Panes", value: "opcion2" },
+        { label: "Queques", value: "opcion3" },
+        { label: "Bocadillos", value: "opcion4" },
+
+    ];
+
+    const subcategorias = [
+        { label: "Seco", value: "opcion1" },
+        { label: "Tradicional", value: "opcion2" },
+        { label: "Chocolate", value: "opcion3" },
+        { label: "Tres leches", value: "opcion4" },
+
     ];
 
     const estadoPedido = [
@@ -59,6 +68,7 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
         }
     };
 
+
     const ventanaEditar = useCallback(() => {
         Swal.fire({
             icon: "success",
@@ -76,6 +86,7 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
             timer: 1000
         });
     }, []);
+
 
 
     const getModalTitle = () => {
@@ -126,15 +137,15 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
                     <div style={modalStyles.inputContainer}>
                         {currentPage === 1 && (
                             <>
-                                <InputGroup label="Código:" value={codigo} setValue={setCodigo} />
-                                <InputGroup label="Precio:" type="number" value={precio} setValue={setPrecio} />
-                                <InputGroup label="Nombre:" value={nombre} setValue={setNombre} />
+                                <InputGroup label="Código" value={codigo} setValue={setCodigo} />
+                                <InputGroup label="Precio" type="number" value={precio} setValue={setPrecio} />
+                                <InputGroup label="Nombre" value={nombre} setValue={setNombre} />
                                 <FileInput fileInputRef={fileInputRef} seleccionarImagen={seleccionarImagen} />
-                                <AutocompleteGroup className="border" label="Categoría:" options={opciones} setValue={setCategoria} />
-                                <AutocompleteGroup label="Subcategoría:" options={opciones} setValue={setSubcategoria} />
-                                <AutocompleteGroup label="Estado:" options={estadoPedido} setValue={setEstado} />
-                                <AutocompleteGroup label="Tipo:" options={opciones} setValue={setTipo} />
-                                <InputDescription label="Descripción:" value={descripcion} setValue={setDescripcion} />
+                                <AutocompleteGroup label="Categoría" options={categorias} setValue={setCategoria} />
+                                <AutocompleteGroup label="Subcategoría" options={subcategorias} setValue={setSubcategoria} />
+                                <AutocompleteGroup label="Estado" options={estadoPedido} setValue={setEstado} />
+                                <AutocompleteGroup label="Tipo" options={categorias} setValue={setTipo} />
+                                <InputDescription label="Descripción" value={descripcion} setValue={setDescripcion} />
                             </>
                         )}
                         {currentPage === 2 && (
@@ -191,19 +202,11 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
 // Componente de Input con etiqueta
 const InputGroup = ({ label, value, setValue, type = "text" }) => (
     <div style={{ flex: '1 1 45%' }}>
-        <label style={{ paddingLeft: '10px', marginBottom: '5px', fontSize: '14px' }}>{label}</label>
         <Input
-            classNames={{
-                inputWrapper: [
-                    "rounded-[25px]",
-                    "min-h-[35px]",
-                    "border-[rgb(255_105_132)]",
-                    "hover:border-[rgb(255_80_100)]",
-                    "focus:border-[rgb(255_95_130)]",
-                    "group-data-[focus=true]:border-[rgb(255_95_100)]",
-                    "bg-[rgb(244,244,245)]",
-                ],
-            }}
+
+            className="max-w-xs"
+            label={label}
+            color="danger"
             type={type}
             variant="bordered"
             value={value}
@@ -215,36 +218,37 @@ const InputGroup = ({ label, value, setValue, type = "text" }) => (
 
 const InputDescription = ({ label, value, setValue, type = "text" }) => (
     <div style={{ flex: '1 1 100%' }}>
-        <label style={{ paddingLeft: '10px', marginBottom: '5px', fontSize: '14px' }}>{label}</label>
         <Input
+            color='danger'
+
             classNames={{
                 inputWrapper: [
-                    "rounded-[25px]",
+                    "max-w-full",
                     "min-h-[35px]",
                     "border-[rgb(255_105_132)]",
                     "hover:border-[rgb(255_80_100)]",
                     "focus:border-[rgb(255_95_130)]",
-                    "group-data-[focus=true]:border-[rgb(255_95_100)]",
-                    "bg-[rgb(244,244,245)]",
                 ],
             }}
             type={type}
             variant="bordered"
             value={value}
             onChange={(e) => setValue(e.target.value)}
+            label={label}
         />
     </div>
 );
 
-// Componente de Autocomplete
 const AutocompleteGroup = ({ label, options, setValue }) => (
     <div style={{ flex: '1 1 48%' }}>
-        <label style={{ paddingLeft: '10px', marginBottom: '5px', fontSize: '14px' }}>{label}</label>
         <Autocomplete
             isRequired
             defaultItems={options}
-            placeholder="Seleccione"
+            label={label}
+            variant="bordered"
             className="max-w-xs"
+            placeholder="Seleccione"
+            color="danger"
             onChange={(_, value) => setValue(value)}
         >
             {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
@@ -252,10 +256,12 @@ const AutocompleteGroup = ({ label, options, setValue }) => (
     </div>
 );
 
+
+
 // Componente de entrada de archivo
+
 const FileInput = ({ fileInputRef, seleccionarImagen }) => (
-    <div style={{ flex: '1 1 48%' }}>
-        <label style={{ paddingLeft: '10px', marginBottom: '5px', fontSize: '14px' }}>Imagen:</label>
+    <div style={{ flex: '1 1 45%' }}>
         <input
             type="file"
             ref={fileInputRef}
@@ -264,12 +270,15 @@ const FileInput = ({ fileInputRef, seleccionarImagen }) => (
             accept="image/*"
         />
         <Button
+            style={{ height: '100%' }}
             onClick={() => fileInputRef.current.click()}
-            className="w-full border-2 border-[rgb(255,105,132)] bg-[rgb(244,244,245)]"
+            className="max-w-xs w-full border-2 border-[rgb(220, 53, 69)] bg-white"
             color="default"
             variant="flat"
         >
-            <span className="text-gray-500">Seleccionar imagen</span>
+            <span style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'rgb(220, 53, 69)', height: '40px', padding: '0', margin: '0' }}>
+                Seleccionar imagen
+            </span>
         </Button>
     </div>
 );

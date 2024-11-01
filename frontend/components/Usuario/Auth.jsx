@@ -1,10 +1,3 @@
-
-/**
- * Albin Liang 29/10/2024
- * 
- */
-
-
 import { useState } from "react";
 import {
   Modal,
@@ -15,8 +8,9 @@ import {
   Button,
   Input,
 } from "@nextui-org/react";
-import { MailIcon } from "../Iconos/MailIcon"; // Asegúrate de que se importe el icono correcto
-import { FaEye, FaEyeSlash, FaTimes } from "react-icons/fa"; // Asegúrate de importar FaTimes
+import { MailIcon } from "../Iconos/MailIcon"; 
+import { FaEye, FaEyeSlash } from "react-icons/fa"; 
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 const InputField = ({ placeholder, type = "text", name, value, onChange, endContent }) => (
   <Input
@@ -36,7 +30,7 @@ const InputField = ({ placeholder, type = "text", name, value, onChange, endCont
     name={name}
     value={value}
     onChange={onChange}
-    endContent={endContent} // Incluir endContent para iconos
+    endContent={endContent}
   />
 );
 
@@ -66,50 +60,18 @@ const LoginForm = ({ formData, handleChange, togglePasswordVisibility, showPassw
 
 const RegisterForm = ({ formData, handleChange }) => (
   <>
-    <InputField
-      placeholder="Nombre"
-      name="nombre"
-      value={formData.nombre}
-      onChange={handleChange}
-    />
-    <InputField
-      placeholder="Primer apellido"
-      name="primerApellido"
-      value={formData.primerApellido}
-      onChange={handleChange}
-    />
-    <InputField
-      placeholder="Segundo apellido"
-      name="segundoApellido"
-      value={formData.segundoApellido}
-      onChange={handleChange}
-    />
-    <InputField
-      placeholder="Teléfono"
-      name="telefono"
-      value={formData.telefono}
-      onChange={handleChange}
-    />
-    <InputField
-      placeholder="Correo electrónico"
-      name="correoElectronico"
-      type="email"
-      value={formData.correoElectronico}
-      onChange={handleChange}
-    />
-    <InputField
-      placeholder="Contraseña"
-      name="contrasena"
-      type="password"
-      value={formData.contrasena}
-      onChange={handleChange}
-    />
+    <InputField placeholder="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} />
+    <InputField placeholder="Primer apellido" name="primerApellido" value={formData.primerApellido} onChange={handleChange} />
+    <InputField placeholder="Segundo apellido" name="segundoApellido" value={formData.segundoApellido} onChange={handleChange} />
+    <InputField placeholder="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} />
+    <InputField placeholder="Correo electrónico" name="correoElectronico" type="email" value={formData.correoElectronico} onChange={handleChange} />
+    <InputField placeholder="Contraseña" name="contrasena" type="password" value={formData.contrasena} onChange={handleChange} />
   </>
 );
 
 export default function AuthModal({ isOpen, onOpenChange }) {
-  const [isLogin, setIsLogin] = useState(true); // Alternar entre inicio de sesión y registro
-  const [showPassword, setShowPassword] = useState(false); // Estado de visibilidad de la contraseña
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     correoElectronico: '',
     contrasena: '',
@@ -129,8 +91,21 @@ export default function AuthModal({ isOpen, onOpenChange }) {
   };
 
   const handleSubmit = () => {
-    alert(JSON.stringify(formData, null, 2)); // Mostrar datos del formulario en una alerta
-    // Restablecer los datos del formulario después de la presentación
+    if (isLogin) {
+      alert(JSON.stringify(formData, null, 2)); // Show alert for login
+    } else {
+      // Show SweetAlert for registration
+      Swal.fire({
+        title: '¡Registro exitoso!',
+        text: 'Te has registrado correctamente.',
+        icon: 'success',
+        confirmButtonText: 'Aceptar',
+        timer: 1000
+
+      });
+    }
+    
+    // Reset form data after submission
     setFormData({
       nombre: '',
       primerApellido: '',
@@ -142,7 +117,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
   };
 
   const handleToggle = () => {
-    setIsLogin((prev) => !prev); // Alternar entre inicio de sesión y registro
+    setIsLogin((prev) => !prev); // Toggle between login and register
   };
 
   return (
@@ -155,9 +130,6 @@ export default function AuthModal({ isOpen, onOpenChange }) {
       <ModalContent>
         {(onClose) => (
           <>
-            {/* Botón de cierre personalizado */}
-            <button onClick={onClose}  >
-            </button>
             <ModalHeader
               style={{
                 display: "flex",
