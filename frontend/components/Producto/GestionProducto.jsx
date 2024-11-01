@@ -5,6 +5,8 @@
  * Componente para crear y editar productos
  */
 
+import { useCallback } from "react";
+import Swal from "sweetalert2";
 
 import {
     Modal,
@@ -56,6 +58,24 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
             alert(file.name);
         }
     };
+
+    const ventanaEditar = useCallback(() => {
+        Swal.fire({
+            icon: "success",
+            title: "Producto editado exitosamente",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    }, []);
+
+    const ventanaCrear = useCallback(() => {
+        Swal.fire({
+            icon: "success",
+            title: "Producto creado exitosamente",
+            showConfirmButton: false,
+            timer: 1000
+        });
+    }, []);
 
 
     const getModalTitle = () => {
@@ -110,7 +130,7 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
                                 <InputGroup label="Precio:" type="number" value={precio} setValue={setPrecio} />
                                 <InputGroup label="Nombre:" value={nombre} setValue={setNombre} />
                                 <FileInput fileInputRef={fileInputRef} seleccionarImagen={seleccionarImagen} />
-                                <AutocompleteGroup label="Categoría:" options={opciones} setValue={setCategoria} />
+                                <AutocompleteGroup className="border" label="Categoría:" options={opciones} setValue={setCategoria} />
                                 <AutocompleteGroup label="Subcategoría:" options={opciones} setValue={setSubcategoria} />
                                 <AutocompleteGroup label="Estado:" options={estadoPedido} setValue={setEstado} />
                                 <AutocompleteGroup label="Tipo:" options={opciones} setValue={setTipo} />
@@ -118,21 +138,21 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
                             </>
                         )}
                         {currentPage === 2 && (
-                       <CheckboxGroup 
-                       size="lg" 
-                       label="Seleccionar tamaños"
-                       classNames={{
-                         wrapper: "gap-4", // Aumenta el espacio entre los Checkboxes
-                         label: "text-xl mb-3", // Aumenta el tamaño del texto de la etiqueta
-                         icon: "text-2xl", // Aumenta el tamaño del icono dentro del Checkbox
-                       }}
-                     >
-                       <Checkbox color="danger" value="Pequeño">Pequeño</Checkbox>
-                       <Checkbox color="danger" value="Mediano">Mediano</Checkbox>
-                       <Checkbox color="danger" value="12 porciones">12 porciones</Checkbox>
-                       <Checkbox color="danger" value="Dos pisos">Dos pisos</Checkbox>
-                       <Checkbox color="danger" value="30 porciones">30 porciones</Checkbox>
-                     </CheckboxGroup>
+                            <CheckboxGroup
+                                size="lg"
+                                label="Seleccionar tamaños"
+                                classNames={{
+                                    wrapper: "gap-4", // Aumenta el espacio entre los Checkboxes
+                                    label: "text-xl mb-3", // Aumenta el tamaño del texto de la etiqueta
+                                    icon: "text-2xl", // Aumenta el tamaño del icono dentro del Checkbox
+                                }}
+                            >
+                                <Checkbox color="danger" value="Pequeño">Pequeño</Checkbox>
+                                <Checkbox color="danger" value="Mediano">Mediano</Checkbox>
+                                <Checkbox color="danger" value="12 porciones">12 porciones</Checkbox>
+                                <Checkbox color="danger" value="Dos pisos">Dos pisos</Checkbox>
+                                <Checkbox color="danger" value="30 porciones">30 porciones</Checkbox>
+                            </CheckboxGroup>
 
                         )}
                     </div>
@@ -153,9 +173,9 @@ export default function GestionProductosModal({ isOpen, onOpenChange, modo }) {
                         style={{ marginLeft: 'auto', marginTop: '20px' }}
                         onClick={() => {
                             if (modo) {
-                                alert("Producto editado")
+                                ventanaEditar();
                             } else {
-                                alert("Producto creado")
+                                ventanaCrear();
                             }
                             onOpenChange(false);
                         }}
