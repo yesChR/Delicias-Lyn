@@ -10,9 +10,9 @@ const categoria = require("./routes/categoria.routes");
 const subcategoria = require("./routes/subcategoria.routes");
 const canton = require("./routes/canton.routes");
 const informe = require("./routes/informe.routes");
-const pedido = require("./routes/pedido.routes"); 
-const producto = require("./routes/producto.routes"); 
-const carrito = require("./routes/carrito.routes");
+//const pedido = require("./routes/pedido.routes"); 
+//const producto = require("./routes/producto.routes"); 
+//const carrito = require("./routes/carrito.routes");
 
 const app = express();
 const cors = require("cors");
@@ -32,8 +32,8 @@ app.use("/categoria", categoria);
 app.use("/subcategoria", subcategoria);
 app.use("/canton", canton);
 app.use("/informe", informe);
-app.use("/pedido", pedido); 
-app.use("/producto", producto); 
-app.use("/carrito", carrito); 
+//app.use("/pedido", pedido); 
+//app.use("/producto", producto); 
+//app.use("/carrito", carrito); 
 
 export default app;

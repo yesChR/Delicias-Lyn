@@ -1,5 +1,5 @@
-import { Pedido } from "../models/pedido.model";
 import jsPDF from "jspdf";
+import { Pedido } from "../models/pedido.model";
 
 export const generarInformeVentas = async (req, res) => {
     const { periodo } = req.params; // "diario", "mensual", o "anual"
