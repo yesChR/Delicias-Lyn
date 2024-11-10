@@ -92,7 +92,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
 
   const handleSubmit = () => {
     if (isLogin) {
-      alert(JSON.stringify(formData, null, 2)); // Show alert for login
+     // alert(JSON.stringify(formData, null, 2)); // Show alert for login
     } else {
       // Show SweetAlert for registration
       Swal.fire({
