@@ -11,7 +11,7 @@ export const Subcategoria = sequelize.define("subcategoria", {
     },
     nombre: DataTypes.STRING,
 }, {
-    freezeTableName: true, // Esto evitará que Sequelize pluralice el nombre de la tabla
-    tableName: 'subcategoria',   // De manera opcional, puedes especificar el nombre exacto de la tabla
+    freezeTableName: true, 
+    tableName: 'subcategoria', 
   });
 

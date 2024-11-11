@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../bd_config/conexion";
 import { Distrito } from "./distrito.model";
+import { Direccion } from "./direccion.model";
 
 export const Canton = sequelize.define("canton", {
     idCanton: {
@@ -10,20 +11,34 @@ export const Canton = sequelize.define("canton", {
     },
     nombre: DataTypes.STRING,
 }, {
-    freezeTableName: true, // Esto evitará que Sequelize pluralice el nombre de la tabla
-    tableName: 'canton',   // De manera opcional, puedes especificar el nombre exacto de la tabla
+    freezeTableName: true, 
+    tableName: 'canton',   
 });
 
 //el 1
 Canton.hasMany(Distrito, {
-    foreignKey: 'idCanton',
+    foreignKey: 'idCanton', 
     sourceKey: 'idCanton',
-    as: 'distrito'
+    as: 'distrito' 
 });
 
 //va al muchos
 Distrito.belongsTo(Canton, {
-    foreignKey: 'idCanton',
-    targetKey: 'idCanton',
+    foreignKey: 'idCanton', 
+    targetKey: 'idCanton', 
+    as: 'canton'
+});
+
+//el 1
+Canton.hasMany(Direccion, {
+    foreignKey: 'idCanton', 
+    sourceKey: 'idCanton',
+    as: 'direccion' 
+});
+
+//va al muchos
+Direccion.belongsTo(Canton, {
+    foreignKey: 'idCanton', 
+    targetKey: 'idCanton', 
     as: 'canton'
 });

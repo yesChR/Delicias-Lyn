@@ -7,7 +7,6 @@ import {
 } from '../controllers/auth.controller'
 const router = express.Router();
 
-
 router.post('/registrar/', registrar);
 router.post('/iniciar-sesion', iniciarSesion);
 router.post('/cerrar-sesion/', cerrarSesion);

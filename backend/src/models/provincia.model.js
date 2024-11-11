@@ -1,6 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../bd_config/conexion";
-import { Canton } from "./canton.model"
+import { Canton } from "./canton.model";
+import { Direccion } from "./direccion.model";
 
 export const Provincia = sequelize.define("provincia", {
     idProvincia: {
@@ -10,8 +11,8 @@ export const Provincia = sequelize.define("provincia", {
     },
     nombre: DataTypes.STRING,
 }, {
-    freezeTableName: true, // Esto evitará que Sequelize pluralice el nombre de la tabla
-    tableName: 'provincia',   // De manera opcional, puedes especificar el nombre exacto de la tabla
+    freezeTableName: true, 
+    tableName: 'provincia',   
   });
 
 //el 1
@@ -23,6 +24,20 @@ Provincia.hasMany(Canton, {
 
 //va al muchos
 Canton.belongsTo(Provincia, {
+    foreignKey: 'idProvincia', 
+    targetKey: 'idProvincia', 
+    as: 'provincia'
+});
+
+//el 1
+Provincia.hasMany(Direccion, {
+    foreignKey: 'idProvincia', 
+    sourceKey: 'idProvincia',
+    as: 'direccion' 
+});
+
+//va al muchos
+Direccion.belongsTo(Provincia, {
     foreignKey: 'idProvincia', 
     targetKey: 'idProvincia', 
     as: 'provincia'
