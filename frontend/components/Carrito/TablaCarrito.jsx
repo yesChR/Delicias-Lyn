@@ -110,7 +110,7 @@ const TablaCarrito = ({ onOpen }) => {
     { name: "Tamaño", uid: "tamanio" },
     { name: "Cantidad", uid: "cantidad" },
     { name: "Precio", uid: "precio" },
-    { name: "Monto", uid: "monto" },
+    { name: "Total", uid: "monto" },
     { name: "Acciones", uid: "acciones" },
   ];
 

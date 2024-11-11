@@ -13,9 +13,9 @@ const distrito = require("./routes/distrito.routes");
 const provincia = require("./routes/provincia.routes");
 const direccion = require("./routes/direccion.routes");
 const informe = require("./routes/informe.routes");
+const carrito = require("./routes/carrito.routes");
 //const pedido = require("./routes/pedido.routes"); 
 //const producto = require("./routes/producto.routes"); 
-//const carrito = require("./routes/carrito.routes");
 
 const app = express();
 const cors = require("cors");
@@ -38,8 +38,8 @@ app.use("/distrito", distrito);
 app.use("/provincia", provincia);
 app.use("/direccion", direccion);
 app.use("/informe", informe);
+app.use("/carrito", carrito); 
 //app.use("/pedido", pedido); 
 //app.use("/producto", producto); 
-//app.use("/carrito", carrito); 
 
 export default app;
