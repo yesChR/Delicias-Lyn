@@ -3,6 +3,8 @@ import bcrypt from "bcrypt"; // Importar bcrypt correctamente
 import jwt from 'jsonwebtoken'; // Si estás usando ES6 modules
 import config from "../config/config";
 import transporter from "../config/nodemailer";
+import crypto from 'crypto';
+
 
 /**
  * Funciones:
@@ -174,8 +176,6 @@ export const cambiarContraseña = async (req, res) => {
 
 
 
-
-// Solicitar recuperación de contraseña
 export const solicitarRecuperacion = async (req, res) => {
     const { correo } = req.body;
 
@@ -185,26 +185,34 @@ export const solicitarRecuperacion = async (req, res) => {
             return res.status(404).json({ message: 'Usuario no encontrado.' });
         }
 
-        const token = jwt.sign({ id: usuario.idUsuario }, config.authjwtsecret, { expiresIn: '10m' });
+        // Generar un código de recuperación aleatorio
+        const codigoVerificacion = crypto.randomInt(100000, 999999).toString();
+
+        // Expiración del código en 10 minutos (600000 ms)
+        const expiracion = Date.now() + 60000; // 30 segundos
+
+        // Guardar el código y la expiración en el token
+        await Usuario.update(
+            { token: `${codigoVerificacion}-${expiracion}` }, // Código y expiración concatenados
+            { where: { idUsuario: usuario.idUsuario } }
+        );
+
+     
 
 
         const formato = {
             from: config.email,
             to: correo,
             subject: 'Recuperación de contraseña',
-            text: `Recibiste el código o token para restablcer la contraseña`,
             html: `
-            <p>Tu token de restablecimiento de contraseña es:</p>
-            <div style="background-color: #f4f4f4; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-family: monospace; font-size: 14px; color: #333; white-space: pre-wrap; word-wrap: break-word;">
-                <strong>${token}</strong>
-            </div>
-            <p style="font-size: 14px; color: #555;">
-                Debes copiar el token manualmente</b>
-            </p>
-        `
-
+                <p>Hola,</p>
+                <p>Tu código de recuperación es:</p>
+                <h2 style="font-size: 24px; font-weight: bold;">${codigoVerificacion}</h2>
+                <p>Este código expirará en <strong>60 segundos</strong>, por lo que te recomendamos ingresarlo lo antes posible.</p>
+                <p>Si no solicitaste este cambio, por favor ignora este correo.</p>
+            `
         };
-
+        
         await transporter.sendMail(formato);
 
         res.status(200).json({ message: 'Correo de recuperación enviado. Verifica tu bandeja de entrada.' });
@@ -216,33 +224,40 @@ export const solicitarRecuperacion = async (req, res) => {
 
 
 
-
-// Resetear contraseña
 export const resetearContraseña = async (req, res) => {
-    const { token, nuevaContraseña } = req.body;
+    const { correo, codigoIngresado, nuevaContraseña } = req.body;
 
     try {
-        // Validación de token
-        if (!token) {
-            return res.status(400).json({ message: 'Token es requerido' });
+        // Validación del correo, código ingresado y nueva contraseña
+        if (!correo || !codigoIngresado || !nuevaContraseña) {
+            return res.status(400).json({ message: 'El correo, código y la nueva contraseña son requeridos' });
         }
 
-        // Verificar y decodificar el token
-        let datosDecodificados;
-        try {
-            datosDecodificados = jwt.verify(token, config.authjwtsecret);
-        } catch (err) {
-            return res.status(400).json({ message: 'Token inválido o expirado' });
-        }
-
-        // Buscar usuario basado en el payload del token
-        const usuario = await Usuario.findOne({ where: { idUsuario: datosDecodificados.id } });
+        // Buscar el usuario con el correo proporcionado
+        const usuario = await Usuario.findOne({ where: { correo } });
 
         if (!usuario) {
-            return res.status(404).json({ message: 'Usuario no encontrado' });
+            return res.status(400).json({ message: 'Correo no encontrado' });
         }
 
-        // Validar la nueva contraseña (ejemplo: mínimo 8 caracteres)
+        if (usuario.token === null) {
+            return res.status(400).json({ message: 'Código de verificación no válido' });
+
+        }
+        // Verificar si el código coincide con el token almacenado en la base de datos
+        const [codigo, expiracion] = usuario.token.split('-');
+        if (codigo !== codigoIngresado) {
+            return res.status(400).json({ message: 'Código de verificación no válido' });
+        }
+
+
+
+        // Verificar si el código ha expirado
+        if (Date.now() > Number(expiracion)) {
+            return res.status(400).json({ message: 'El código ha expirado' });
+        }
+
+        // Validar la nueva contraseña (por ejemplo, mínimo 8 caracteres)
         if (nuevaContraseña.length < 8) {
             return res.status(400).json({ message: 'La nueva contraseña debe tener al menos 8 caracteres' });
         }
@@ -250,10 +265,27 @@ export const resetearContraseña = async (req, res) => {
         // Cifrar la nueva contraseña
         const contraseñaCifrada = await bcrypt.hash(nuevaContraseña, 10);
 
-        // Actualizar la contraseña del usuario
-        await Usuario.update({ contraseña: contraseñaCifrada }, { where: { idUsuario: usuario.idUsuario } });
+        // Actualizar la contraseña del usuario y marcar el token como "expirado" o "usado"
+        await Usuario.update(
+            {
+                contraseña: contraseñaCifrada,
+                token: 'token_default', // Marcar el token como expirado
+            },
+            { where: { idUsuario: usuario.idUsuario } }
+        );
 
-        // Responder con éxito
+
+        const mailOptions = {
+            from: config.email,
+            to: correo,
+            subject: 'Contraseña restablecida exitosamente',
+            text: 'Tu contraseña ha sido restablecida correctamente.',
+            html: '<p>Tu contraseña ha sido restablecida exitosamente.</p>',
+        };
+
+        // Enviar el correo
+        await transporter.sendMail(mailOptions);
+
         res.status(200).json({ message: 'Contraseña restablecida exitosamente.' });
     } catch (error) {
         console.error('Error al restablecer la contraseña:', error);

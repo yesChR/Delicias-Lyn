@@ -8,9 +8,10 @@ import {
   Button,
   Input,
 } from "@nextui-org/react";
-import { MailIcon } from "../Iconos/MailIcon"; 
-import { FaEye, FaEyeSlash } from "react-icons/fa"; 
+import { MailIcon } from "../Iconos/MailIcon";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from 'sweetalert2'; // Import SweetAlert2
+import ResetPasswordModal from './Reset'; // Asegúrate de que el componente ResetPasswordModal esté importado correctamente
 
 const InputField = ({ placeholder, type = "text", name, value, onChange, endContent }) => (
   <Input
@@ -58,14 +59,25 @@ const LoginForm = ({ formData, handleChange, togglePasswordVisibility, showPassw
   </>
 );
 
-const RegisterForm = ({ formData, handleChange }) => (
+const RegisterForm = ({ formData, handleChange,togglePasswordVisibility, showPassword }) => (
   <>
     <InputField placeholder="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} />
     <InputField placeholder="Primer apellido" name="primerApellido" value={formData.primerApellido} onChange={handleChange} />
     <InputField placeholder="Segundo apellido" name="segundoApellido" value={formData.segundoApellido} onChange={handleChange} />
     <InputField placeholder="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} />
     <InputField placeholder="Correo electrónico" name="correoElectronico" type="email" value={formData.correoElectronico} onChange={handleChange} />
-    <InputField placeholder="Contraseña" name="contrasena" type="password" value={formData.contrasena} onChange={handleChange} />
+    <InputField
+      placeholder="Contraseña"
+      name="contrasena"
+      type={showPassword ? "text" : "password"}
+      value={formData.contrasena}
+      onChange={handleChange}
+      endContent={
+        <div onClick={togglePasswordVisibility} style={{ cursor: "pointer" }}>
+          {showPassword ? <FaEyeSlash className="text-2xl text-default-400" /> : <FaEye className="text-2xl text-default-400" />}
+        </div>
+      }
+    />
   </>
 );
 
@@ -81,6 +93,8 @@ export default function AuthModal({ isOpen, onOpenChange }) {
     telefono: '',
   });
 
+  const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
+
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
@@ -92,20 +106,18 @@ export default function AuthModal({ isOpen, onOpenChange }) {
 
   const handleSubmit = () => {
     if (isLogin) {
-     // alert(JSON.stringify(formData, null, 2)); // Show alert for login
+      // Aquí puedes agregar lógica para hacer login
+      console.log("Iniciar sesión con", formData);
     } else {
-      // Show SweetAlert for registration
       Swal.fire({
         title: '¡Registro exitoso!',
         text: 'Te has registrado correctamente.',
         icon: 'success',
         confirmButtonText: 'Aceptar',
-        timer: 1000
-
+        timer: 1000,
       });
     }
-    
-    // Reset form data after submission
+
     setFormData({
       nombre: '',
       primerApellido: '',
@@ -116,90 +128,130 @@ export default function AuthModal({ isOpen, onOpenChange }) {
     });
   };
 
-  const handleToggle = () => {
-    setIsLogin((prev) => !prev); // Toggle between login and register
+  const handleToggleLogin = () => {
+    setIsLogin((prev) => !prev); // Cambiar entre login y registro
+  };
+
+  const handleForgotPassword = () => {
+    setIsResetPasswordModalOpen(true); // Abre el modal de restablecer contraseña
+    onOpenChange(false); // Cierra el modal de login
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onOpenChange={onOpenChange}
-      placement="top-center"
-      style={{ borderRadius: "20px" }}
-    >
-      <ModalContent>
-        {(onClose) => (
-          <>
-            <ModalHeader
+    <>
+      <Modal
+        isOpen={isOpen}
+        onOpenChange={onOpenChange}
+        placement="top-center"
+        style={{ borderRadius: "20px" }}
+      >
+        <ModalContent>
+          <ModalHeader
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "25px",
+              marginTop: "25px",
+              marginBottom: "5px",
+              color: "rgb(255,105,132)",
+            }}
+          >
+            {isLogin ? "Iniciar Sesión" : "Registro"}
+          </ModalHeader>
+          <ModalBody style={{ marginLeft: "5%", marginRight: "5%", gap: "20px" }}>
+            {isLogin ? (
+              <LoginForm
+                formData={formData}
+                handleChange={handleChange}
+                togglePasswordVisibility={togglePasswordVisibility}
+                showPassword={showPassword}
+              />
+            ) : (
+              <RegisterForm   formData={formData}
+              handleChange={handleChange}
+              togglePasswordVisibility={togglePasswordVisibility}
+              showPassword={showPassword}
+              />
+            )}
+          </ModalBody>
+          <ModalFooter
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+            }}
+          >
+            <Button
               style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "25px",
-                marginTop: "25px",
-                marginBottom: "5px",
-                color: "rgb(255,105,132)",
+                marginTop: "10px",
+                backgroundColor: "rgb(255,105,132)",
+                color: "#ffffff",
+                width: "50%",
+                fontSize: "17px",
+                borderRadius: "20px",
+              }}
+              onPress={() => {
+                handleSubmit();
+                onOpenChange(false); // Cierra el modal de login
               }}
             >
-              {isLogin ? "Iniciar Sesión" : "Registro"}
-            </ModalHeader>
-            <ModalBody style={{ marginLeft: "5%", marginRight: "5%", gap: "20px" }}>
-              {isLogin ? (
-                <LoginForm
-                  formData={formData}
-                  handleChange={handleChange}
-                  togglePasswordVisibility={togglePasswordVisibility}
-                  showPassword={showPassword}
-                />
-              ) : (
-                <RegisterForm
-                  formData={formData}
-                  handleChange={handleChange}
-                />
-              )}
-            </ModalBody>
-            <ModalFooter
+              {isLogin ? "Iniciar" : "Registrarse"}
+            </Button>
+
+            <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                gap: '10px',
               }}
             >
-              <Button
-                style={{
-                  marginTop: "10px",
-                  backgroundColor: "rgb(255,105,132)",
-                  color: "#ffffff",
-                  width: "50%",
-                  fontSize: "17px",
-                  borderRadius: "20px",
-                }}
-                onPress={() => {
-                  handleSubmit();
-                  onClose();
-                }}
-              >
-                {isLogin ? "Iniciar" : "Registrarse"}
-              </Button>
               <Button
                 style={{
                   marginBottom: "5px",
                   backgroundColor: "white",
                   color: "blue",
-                  width: "50%",
                   textDecoration: "underline",
+                  width: "auto",
+                  padding: "10px 20px",
+                  padding: '0',
                 }}
-                onPress={handleToggle}
+                onPress={handleToggleLogin}
               >
                 {isLogin ? "Regístrate" : "¿Ya tienes una cuenta?"}
               </Button>
-            </ModalFooter>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+
+              {isLogin && (
+                <Button
+                  style={{
+                    marginBottom: "5px",
+                    backgroundColor: "white",
+                    color: "blue",
+                    textDecoration: "underline",
+                    width: "auto",
+                    padding: "10px 20px",
+                    padding: '0',
+                  }}
+                  onClick={handleForgotPassword} // Esto cerrará el modal de login y abrirá el de reset
+                >
+                  ¿Olvidaste tu cuenta?
+                </Button>
+              )}
+            </div>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      {/* Modal de Reset Password */}
+      <ResetPasswordModal
+        isOpen={isResetPasswordModalOpen}
+        onOpenChange={setIsResetPasswordModalOpen}
+      />
+    </>
   );
 }
