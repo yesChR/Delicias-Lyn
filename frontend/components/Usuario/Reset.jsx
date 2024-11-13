@@ -59,13 +59,13 @@ const PasswordInput = ({ placeholder, value, onChange, name }) => {
       type={showPassword ? "text" : "password"}
       value={value}
       onChange={onChange}
-      name={name} // Asegúrate de que el name se pase correctamente
+      name={name}
       variant="bordered"
     />
   );
 };
 
-const InputNewPasswordForm = ({ formData, handleChange }) => (
+const InputEmailForm = ({ formData, handleChange }) => (
   <>
     <InputFieldText
       placeholder="Correo electrónico"
@@ -73,6 +73,20 @@ const InputNewPasswordForm = ({ formData, handleChange }) => (
       value={formData.email}
       onChange={handleChange}
     />
+  </>
+);
+
+const InputTokenForm = ({ formData, handleChange }) => (
+  <InputFieldText
+    placeholder="Ingresa el código de verificación"
+    name="verificationCode"
+    value={formData.verificationCode}
+    onChange={handleChange}
+  />
+);
+
+const InputNewPasswordForm = ({ formData, handleChange }) => (
+  <>
     <PasswordInput
       placeholder="Nueva contraseña"
       name="password"
@@ -88,17 +102,8 @@ const InputNewPasswordForm = ({ formData, handleChange }) => (
   </>
 );
 
-const InputTokenForm = ({ formData, handleChange }) => (
-  <InputFieldText
-    placeholder="Ingresa el código de verificación"
-    name="verificationCode"
-    value={formData.verificationCode}
-    onChange={handleChange}
-  />
-);
-
 export default function AuthModal({ isOpen, onOpenChange }) {
-  const [isGetReset, setIsReset] = useState(true);
+  const [step, setStep] = useState(1); // Track current step (1: email, 2: token, 3: password)
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -112,8 +117,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
   };
 
   const handleNext = () => {
-    console.log("Avanzar a la siguiente etapa");
-    setIsReset(false);
+    setStep((prev) => prev + 1); // Go to next step
   };
 
   const handleRecover = () => {
@@ -124,13 +128,13 @@ export default function AuthModal({ isOpen, onOpenChange }) {
       showConfirmButton: false,
       timer: 1500,
     }).then(() => {
-      onOpenChange(false);
+      onOpenChange(false); // Close the modal after successful recovery
     });
   };
 
   useEffect(() => {
     if (isOpen) {
-      setIsReset(true);
+      setStep(1); // Reset to step 1 (email)
       setFormData({
         email: "",
         password: "",
@@ -158,10 +162,14 @@ export default function AuthModal({ isOpen, onOpenChange }) {
           Solicitar recuperación
         </ModalHeader>
         <ModalBody>
-          {isGetReset ? (
-            <InputNewPasswordForm formData={formData} handleChange={handleChange} />
-          ) : (
+          {step === 1 && (
+            <InputEmailForm formData={formData} handleChange={handleChange} />
+          )}
+          {step === 2 && (
             <InputTokenForm formData={formData} handleChange={handleChange} />
+          )}
+          {step === 3 && (
+            <InputNewPasswordForm formData={formData} handleChange={handleChange} />
           )}
         </ModalBody>
         <ModalFooter
@@ -171,12 +179,12 @@ export default function AuthModal({ isOpen, onOpenChange }) {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px',
-          }}>
-          {isGetReset ? (
+          }}
+        >
+          {step < 3 ? (
             <Button
               style={{
                 marginTop: "10px",
-                marginBottom: "20px",
                 backgroundColor: "rgb(255,105,132)",
                 color: "#ffffff",
                 width: "50%",
@@ -190,7 +198,6 @@ export default function AuthModal({ isOpen, onOpenChange }) {
             <Button
               style={{
                 marginTop: "10px",
-                marginBottom: "20px",
                 backgroundColor: "rgb(255,105,132)",
                 color: "#ffffff",
                 width: "50%",
@@ -201,6 +208,20 @@ export default function AuthModal({ isOpen, onOpenChange }) {
               Recuperar
             </Button>
           )}
+
+          <Button
+            style={{
+              backgroundColor: "white",
+              color: "blue",
+              textDecoration: "underline",
+              width: "auto",
+              padding: "10px 20px",
+              padding: '0',
+            }}
+            onClick={() => onOpenChange(false)} // Close the modal
+          >
+            Cancelar
+          </Button>
         </ModalFooter>
       </ModalContent>
     </Modal>
