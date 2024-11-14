@@ -73,7 +73,6 @@ export const eliminarCategoria = async (req, res) => {
     }
 }
 
-
 export const editarCategoria = async (req, res) => {
     const { idCategoria } = req.params;
     const { nombre } = req.body; //recibe lo que modifica
@@ -82,7 +81,7 @@ export const editarCategoria = async (req, res) => {
         if (existeCategoria !== null) {
             const existeNombre = await Categoria.findOne({ where: { nombre: nombre } });
             if (existeNombre === null) {
-                const categoriaEditada = await Categoria.update({ nombre }, { where: { idCategoria: id } });
+                const categoriaEditada = await Categoria.update({ nombre }, { where: { idCategoria: idCategoria } });
                 res.status(201).json({ message: "Categoria editada exitosamente" });
             } else {
                 res.status(409).json({ error: "El nombre de la categoria ya existe" })

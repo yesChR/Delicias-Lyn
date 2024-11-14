@@ -1,37 +1,39 @@
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Button, Pagination } from "@nextui-org/react";
-import { EditIcon } from "../Iconos/EditIcon";
 import { DeleteIcon } from "../Iconos/DeleteIcon";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { BiEditAlt } from "react-icons/bi";
 import Swal from "sweetalert2";
 
-const TablaCategoria = ({ onOpen }) => {
-    const categorias = [
-        {
-            idCategoria: 1,
-            nombre: "Queques",
-        },
-        {
-            idCategoria: 2,
-            nombre: "Galletas",
-        },
-        {
-            idCategoria: 3,
-            nombre: "Panes",
-        },
-        {
-            idCategoria: 4,
-            nombre: "Bocadillos",
-        }
-    ];
-
+const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
+    const [categorias, setCategorias] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const numElementos = 5;
     const columns = [
         { name: "#", uid: "idCategoria" },
         { name: "Nombre", uid: "nombre" },
         { name: "Acciones", uid: "acciones" },
     ];
 
-    const ventanaEliminar = useCallback(() => {
+    const onEditar = (categoria) => {
+        setCategoriaSelect(categoria);
+        onOpen();
+    };
+
+    //para jalar datos de la bd se usa useEffect y fetch
+    useEffect(() => {
+        const visualizarCategorias = async () => {
+            try {
+                const resp = await fetch("http://localhost:4000/categoria/visualizar");
+                const datos = await resp.json();
+                setCategorias(datos);
+            } catch (error) {
+                console.error("Error al obtener categorías", error);
+            }
+        };
+        visualizarCategorias();
+    }, [refrescar]);
+
+    const ventanaEliminar = useCallback((idCategoria) => {
         Swal.fire({
             title: "¿Desea eliminar esta categoría?",
             icon: "warning",
@@ -42,13 +44,38 @@ const TablaCategoria = ({ onOpen }) => {
             cancelButtonText: "No",
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    title: "Categoría eliminada correctamente!",
-                    icon: "success",
-                    confirmButtonColor: "#fdc6c6",
-                    showConfirmButton: false,
-                    timer: 1000
-                });
+                fetch(`http://localhost:4000/categoria/eliminar/${idCategoria}`, { method: 'DELETE' })
+                    .then(response => {
+                        if (response.ok) {
+                            // Filtrar la categoría eliminada de la lista sin hacer una nueva solicitud a la API
+                            setCategorias(prevCategorias => prevCategorias.filter(categoria => categoria.idCategoria !== idCategoria));
+                            Swal.fire({
+                                title: "Categoría eliminada correctamente!",
+                                icon: "success",
+                                confirmButtonColor: "#fdc6c6",
+                                showConfirmButton: false,
+                                timer: 1000
+                            });
+                        } else {
+                            Swal.fire({
+                                title: "La categoría contiene subcategorias o productos",
+                                icon: "error",
+                                confirmButtonColor: "#fdc6c6",
+                                showConfirmButton: false,
+                                timer: 1000
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error al eliminar la categoría", error);
+                        Swal.fire({
+                            title: "Error al eliminar la categoría",
+                            icon: "error",
+                            confirmButtonColor: "#fdc6c6",
+                            showConfirmButton: false,
+                            timer: 1000
+                        });
+                    });
             }
         });
     }, []);
@@ -64,14 +91,14 @@ const TablaCategoria = ({ onOpen }) => {
             case "acciones":
                 return (
                     <div className="flex items-center justify-center gap-1">
-                        <Button onClick={onOpen} className="bg-transparent min-w-4" size="sm">
+                        <Button onClick={() => onEditar(categoria)} className="bg-transparent min-w-4" size="sm">
                             <Tooltip color="danger" content="Editar">
                                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
                                     <BiEditAlt />
                                 </span>
                             </Tooltip>
                         </Button>
-                        <Button onClick={ventanaEliminar} className="bg-transparent min-w-4" size="sm">
+                        <Button onClick={() => ventanaEliminar(categoria.idCategoria)} className="bg-transparent min-w-4" size="sm">
                             <Tooltip color="danger" content="Eliminar">
                                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
                                     <DeleteIcon />
@@ -85,6 +112,9 @@ const TablaCategoria = ({ onOpen }) => {
         }
     }, []);
 
+    // Datos paginados agregado nuevo, segmenta los datos por pagina realizando una copia
+    const datosPaginados = categorias.slice((currentPage - 1) * numElementos, currentPage * numElementos);
+
     return (
         <Table className="custom-table" isStriped bottomContent={
             <div className="flex w-full justify-center mt-6">
@@ -93,8 +123,12 @@ const TablaCategoria = ({ onOpen }) => {
                     showControls
                     showShadow
                     color="danger"
-                    page={1}
-                    total={5}
+                    page={currentPage} // El valor actual de la página
+                    total={Math.max(1, Math.ceil(categorias.length / numElementos))}//definimos el total
+                    onChange={(page) => {
+                        setCurrentPage(page); // Actualiza el estado al seleccionar una página
+                    }}
+                    initialPage={1}//le decimos que inicia en 1
                 />
             </div>
         }>
@@ -105,7 +139,8 @@ const TablaCategoria = ({ onOpen }) => {
                     </TableColumn>
                 )}
             </TableHeader>
-            <TableBody items={categorias}>
+            {/*Cambie categorias por datos paginados */}
+            <TableBody items={datosPaginados}>
                 {(item) => (
                     <TableRow key={item.idCategoria} className="hover:bg-gray-200 transition duration-300">
                         {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
