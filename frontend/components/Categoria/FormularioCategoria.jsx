@@ -6,6 +6,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 const FormularioCategoria = ({ recargar }) => {
+    //aqui tengo el valor de la ruta del .env
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
     //validaciones para formulario, definir campos
     const schemaCategoria = Yup.object({
         nombre: Yup.string()
@@ -19,13 +22,12 @@ const FormularioCategoria = ({ recargar }) => {
             nombre: ""
         },
         validationSchema: schemaCategoria,  // validaciones para formulario
-        enableReinitialize: true,  // muestra los cambios con forme escribo en el campo
+        enableReinitialize: true,  // muestra los cambios conforme escribo en el campo
         onSubmit: async (values) => {
             // Si el formulario es inválido, bloquea boton
             if (!formik.isValid) return;
             try {
-                const response = await fetch(
-                    `http://localhost:4000/categoria/crear`,
+                const response = await fetch(`${apiUrl}/categoria/crear`,
                     {
                         method: 'POST',
                         headers: {
@@ -63,17 +65,6 @@ const FormularioCategoria = ({ recargar }) => {
             }
         }
     });
-
-
-    const crearCategoria = useCallback(() => {
-        //crear las condiciones luego
-        Swal.fire({
-            icon: "success",
-            title: "Categoría creada exitosamente",
-            showConfirmButton: false,
-            timer: 1000
-        });
-    }, [])
 
     return (
         <Card>

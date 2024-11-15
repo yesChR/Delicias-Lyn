@@ -4,7 +4,7 @@ import { filtrarPorId } from '../controllers/categoria.controller';
 const router = express.Router();
 
 //rutas
-router.post('/crear/:idCategoria', crearSubcategoria);
+router.post('/crear', crearSubcategoria);
 router.get('/visualizar/', visualizarSubcategorias);
 router.get('/filtrar/:idSubcategoria', filtrarPorId);
 router.delete('/eliminar/:idSubcategoria', eliminarSubcategoria);

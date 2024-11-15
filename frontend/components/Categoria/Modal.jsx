@@ -4,6 +4,9 @@ import Swal from "sweetalert2";
 import * as Yup from "yup";
 
 const ModalCategoria = ({ isOpen, onOpenChange, categoriaSelect, recargar }) => {
+    //aqui tengo el valor de la ruta del .env
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
     const schemaCategoria = Yup.object({
         nombre: Yup.string()
             .required("El nombre es requerido")
@@ -22,7 +25,7 @@ const ModalCategoria = ({ isOpen, onOpenChange, categoriaSelect, recargar }) => 
 
             try {
                 const response = await fetch(
-                    `http://localhost:4000/categoria/editar/${categoriaSelect.idCategoria}`,
+                    `${apiUrl}/categoria/editar/${categoriaSelect.idCategoria}`,
                     {
                         method: 'PUT',
                         headers: {

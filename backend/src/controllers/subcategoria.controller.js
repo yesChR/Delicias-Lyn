@@ -1,11 +1,10 @@
 import { Categoria } from "../models/categoria.model";
 import { Subcategoria } from "../models/subcategoria.model";
-
-//*****************************************************************************************************
+import { Op } from 'sequelize';
 
 export const crearSubcategoria = async (req, res) => {
     const { nombre } = req.body;
-    const { idCategoria } = req.params;
+    const { idCategoria } = req.body;
     try {
         const existeSubcategoria = await Subcategoria.findOne({ where: { nombre: nombre } });
         const existeCategoria = await Categoria.findByPk(idCategoria);
@@ -81,25 +80,35 @@ export const editarSubcategoria = async (req, res) => {
     const { idCategoria } = req.params;
     const { nombre } = req.body;
     try {
-        const existeSubcategoria = await Subcategoria.findByPk(idSubcategoria);
+        const existeSubcategoria = await Subcategoria.findByPk(idSubcategoria);   
         const existeCategoria = await Categoria.findByPk(idCategoria);
-        const existeNombre = await Subcategoria.findOne({ where: { nombre: nombre } });
+        const existeNombre = await Subcategoria.findOne({
+            where: {
+                nombre: nombre,
+                idSubcategoria: { [Op.ne]: idSubcategoria }
+            }
+        });
+
         if (existeCategoria !== null) {
             if (existeSubcategoria !== null) {
                 if (existeNombre === null) {
-                    const subcategoriaEditada = await Subcategoria.update({ nombre }, { where: { idSubcategoria: idSubcategoria } });
-                    res.status(201).json({ error: "Subcategoria editada exitosamente" });
+                    const subcategoriaEditada = await Subcategoria.update(
+                        { nombre, idCategoria },
+                        { where: { idSubcategoria: idSubcategoria } }
+                    );
+                    res.status(201).json({ error: "Subcategoría editada exitosamente" });
                 } else {
-                    res.status(204).json({ error: "El nombre de la subcategoria ya existe" });
+                    res.status(409).json({ error: "El nombre de la subcategoría ya existe" });
                 }
             } else {
-                res.status(409).json({ error: "La subcategoria seleccionada no existe" })
+                res.status(409).json({ error: "La subcategoría seleccionada no existe" });
             }
         } else {
-            res.status(404).json({ error: "La categoria seleccionada no existe" })
+            res.status(404).json({ error: "La categoría seleccionada no existe" });
         }
     } catch (error) {
-        res.status(500).json({ error: "Error interno en el servidor" })
+        console.error("Error al editar subcategoría", error);
+        res.status(500).json({ error: "Error interno en el servidor" });
     }
 };
 

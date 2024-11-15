@@ -5,6 +5,9 @@ import { BiEditAlt } from "react-icons/bi";
 import Swal from "sweetalert2";
 
 const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
+    //aqui tengo el valor de la ruta del .env
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
     const [categorias, setCategorias] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const numElementos = 5;
@@ -23,7 +26,7 @@ const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
     useEffect(() => {
         const visualizarCategorias = async () => {
             try {
-                const resp = await fetch("http://localhost:4000/categoria/visualizar");
+                const resp = await fetch(`${apiUrl}/categoria/visualizar`);
                 const datos = await resp.json();
                 setCategorias(datos);
             } catch (error) {
@@ -44,7 +47,7 @@ const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
             cancelButtonText: "No",
         }).then((result) => {
             if (result.isConfirmed) {
-                fetch(`http://localhost:4000/categoria/eliminar/${idCategoria}`, { method: 'DELETE' })
+                fetch(`${apiUrl}/categoria/eliminar/${idCategoria}`, { method: 'DELETE' })
                     .then(response => {
                         if (response.ok) {
                             // Filtrar la categoría eliminada de la lista sin hacer una nueva solicitud a la API
