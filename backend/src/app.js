@@ -14,8 +14,9 @@ const provincia = require("./routes/provincia.routes");
 const direccion = require("./routes/direccion.routes");
 const informe = require("./routes/informe.routes");
 const carrito = require("./routes/carrito.routes");
+const producto = require("./routes/producto.routes"); 
 //const pedido = require("./routes/pedido.routes"); 
-//const producto = require("./routes/producto.routes"); 
+
 
 const app = express();
 const cors = require("cors");
@@ -39,7 +40,7 @@ app.use("/provincia", provincia);
 app.use("/direccion", direccion);
 app.use("/informe", informe);
 app.use("/carrito", carrito); 
+app.use("/producto", producto); 
 //app.use("/pedido", pedido); 
-//app.use("/producto", producto); 
 
 export default app;
