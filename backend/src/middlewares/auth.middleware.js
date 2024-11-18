@@ -1,14 +1,14 @@
 // middlewares/auth.middleware.js
 import jwt from 'jsonwebtoken';
+// middlewares/auth.middleware.js
+import rateLimit from 'express-rate-limit';
+
+
 
 /**
- * 
- *  Este archivo sirve para comprobar si el token recibido es válido o que este autenticado el usuario que lo
- * envio.
- * 
- *  Si el token es válido, extrae el ID de usuario (idUsuario) y el rol (rol) del token decodificado .
- * 
- * Al final la funcion se usa para proteger las rutas en donde solo usuarios autorizados pueden accederlos.
+ * Middleware para validar el token JWT y verificar si el usuario está autenticado.
+ * Si el token es válido, extrae el ID de usuario (idUsuario) y el rol (rol) del token decodificado.
+ * Este middleware protege las rutas que solo los usuarios autorizados pueden acceder.
  */
 
 
@@ -32,4 +32,10 @@ export const validarToken = (req, res, next) => {
     });
 };
 
+
+export const limitarIntentos = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutos (corrige el comentario de 15 minutos)
+    max: 5, // Límite de 5 solicitudes por IP
+    message: 'Demasiados intentos, por favor intente de nuevo más tarde.'
+});
 

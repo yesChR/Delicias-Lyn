@@ -189,7 +189,7 @@ export const solicitarRecuperacion = async (req, res) => {
         const codigoVerificacion = crypto.randomInt(100000, 999999).toString();
 
         // Expiración del código en 10 minutos (600000 ms)
-        const expiracion = Date.now() + 60000; // 30 segundos
+        const expiracion = Date.now() + 5 * 60000; // 5 minutos
 
         // Guardar el código y la expiración en el token
         await Usuario.update(
@@ -197,22 +197,22 @@ export const solicitarRecuperacion = async (req, res) => {
             { where: { idUsuario: usuario.idUsuario } }
         );
 
-     
+
 
 
         const formato = {
             from: config.email,
             to: correo,
-            subject: 'Recuperación de contraseña',
+            subject: 'DeliciasLyn - Recuperación de contraseña',
             html: `
-                <p>Hola,</p>
-                <p>Tu código de recuperación es:</p>
+                <p style="color: rgb(249,0,124); font-weight: bold;">DeliciasLyn</p>
+                <p>Hola, tu código de recuperación es:</p>
                 <h2 style="font-size: 24px; font-weight: bold;">${codigoVerificacion}</h2>
-                <p>Este código expirará en <strong>60 segundos</strong>, por lo que te recomendamos ingresarlo lo antes posible.</p>
+                <p>Este código expirará en <strong>cinco minutos</strong>, por lo que te recomendamos ingresarlo lo antes posible.</p>
                 <p>Si no solicitaste este cambio, por favor ignora este correo.</p>
             `
         };
-        
+
         await transporter.sendMail(formato);
 
         res.status(200).json({ message: 'Correo de recuperación enviado. Verifica tu bandeja de entrada.' });

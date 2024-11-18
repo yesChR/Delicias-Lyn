@@ -1,6 +1,6 @@
-import { Producto } from "../models/producto.model";  // Asegúrate de tener el modelo adecuado para Producto
-import { Categoria } from "../models/categoria.model";  // Importar modelos relacionados si es necesario
-import { Subcategoria } from "../models/subcategoria.model";  // Importar subcategoría si es necesario
+import { Producto } from "../models/producto.model"; // Modelo del producto
+import { Categoria } from "../models/categoria.model"; // Modelo de la categoría
+import { Subcategoria } from "../models/subcategoria.model"; // Modelo de la subcategoría
 
 // Crear producto
 export const crearProducto = async (req, res) => {
@@ -30,12 +30,12 @@ export const visualizarProductos = async (req, res) => {
             include: [
                 {
                     model: Categoria,
-                    as: "categoria",  // Relación con la categoría
+                    as: "categoria", // Relación con la categoría
                     attributes: ["idCategoria", "nombre"]
                 },
                 {
                     model: Subcategoria,
-                    as: "subcategoria",  // Relación con la subcategoría
+                    as: "subcategoria", // Relación con la subcategoría
                     attributes: ["idSubcategoria", "nombre"]
                 }
             ]
@@ -46,12 +46,12 @@ export const visualizarProductos = async (req, res) => {
     }
 };
 
-// Filtrar producto por nombre
-export const filtrarProductoPorNombre = async (req, res) => {
-    const { nombre } = req.params;
+// Filtrar producto por ID
+export const filtrarProductoPorId = async (req, res) => {
+    const { id } = req.params;
     try {
         const producto = await Producto.findOne({
-            where: { nombre: nombre },
+            where: { idProducto: id },
             include: [
                 {
                     model: Categoria,
@@ -75,14 +75,14 @@ export const filtrarProductoPorNombre = async (req, res) => {
     }
 };
 
-// Eliminar producto por nombre
-export const eliminarProducto = async (req, res) => {
-    const { nombre } = req.params;
+// Eliminar producto por ID
+export const eliminarProductoPorId = async (req, res) => {
+    const { id } = req.params;
     try {
-        const producto = await Producto.findOne({ where: { nombre: nombre } });
+        const producto = await Producto.findByPk(id);
         if (producto) {
             await producto.destroy();
-            res.status(204).json({ message: "Producto eliminado" });
+            res.status(200).json({ message: "Producto eliminado exitosamente" });
         } else {
             res.status(404).json({ error: "Producto no encontrado" });
         }
@@ -91,38 +91,38 @@ export const eliminarProducto = async (req, res) => {
     }
 };
 
-// Editar producto por nombre
-export const editarProducto = async (req, res) => {
-    const { nombre } = req.params;  // Nombre del producto actual que se busca
-    const { idCategoria, idSubcategoria, nuevoNombre, descripcion, precio, personalizacion, imagen, tipo, estado } = req.body;  // Recibe los datos del cuerpo de la solicitud
+// Editar producto por ID
+export const editarProductoPorId = async (req, res) => {
+    const { id } = req.params;
+    const { nuevoNombre, descripcion, precio, personalizacion, imagen, tipo, estado, idCategoria, idSubcategoria } = req.body;
+    
+    console.log(`ID del producto: ${id}`);
+    console.log(`Datos para actualizar:`, req.body);
 
     try {
-        // Buscar el producto por nombre
-        const productoExistente = await Producto.findOne({ where: { nombre } });
-        
+        const productoExistente = await Producto.findByPk(id);
+
         if (productoExistente) {
-            // Preparamos los datos a actualizar, solo con los campos que han sido modificados
             const datosAActualizar = {};
 
             if (nuevoNombre) datosAActualizar.nombre = nuevoNombre;
-            if (idCategoria) datosAActualizar.idCategoria = idCategoria;
-            if (idSubcategoria) datosAActualizar.idSubcategoria = idSubcategoria;
             if (descripcion) datosAActualizar.descripcion = descripcion;
             if (precio) datosAActualizar.precio = precio;
             if (personalizacion) datosAActualizar.personalizacion = personalizacion;
             if (imagen) datosAActualizar.imagen = imagen;
             if (tipo) datosAActualizar.tipo = tipo;
             if (estado) datosAActualizar.estado = estado;
+            if (idCategoria) datosAActualizar.idCategoria = idCategoria;
+            if (idSubcategoria) datosAActualizar.idSubcategoria = idSubcategoria;
 
-            // Realiza la actualización de los campos que se han modificado
-            await Producto.update(datosAActualizar, { where: { nombre } });
+            await Producto.update(datosAActualizar, { where: { idProducto: id } });
             res.status(200).json({ message: "Producto editado exitosamente" });
-
         } else {
             res.status(404).json({ error: "Producto no encontrado" });
         }
     } catch (error) {
-        console.error(error);  // Para ver detalles del error en la consola
+        console.error("Error:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
+
