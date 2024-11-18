@@ -4,7 +4,7 @@ import { Producto } from '../models/producto.model';
 
 //  Agregar un Producto al Carrito
 export const agregarProductoCarrito = async (req, res) => {
-    const { idUsuario, idProducto, cantidad } = req.body;
+    const { idUsuario, idProducto, idTamaño, cantidad, personalizacion } = req.body;
 
     try {
         // Buscar si ya existe el producto en el carrito del usuario
@@ -25,8 +25,10 @@ export const agregarProductoCarrito = async (req, res) => {
             const nuevoProductoEnCarrito = await Carrito.create({
                 idUsuario,
                 idProducto,
+                idTamaño,
                 cantidad,
-                montoXCantidad: producto.precio * cantidad
+                montoXCantidad: producto.precio * cantidad,
+                personalizacion
             });
             productoEnCarrito = nuevoProductoEnCarrito;
         }
@@ -66,8 +68,8 @@ export const visualizarCarrito = async (req, res) => {
 
 //  Actualizar la Cantidad de un Producto en el Carrito
 export const actualizarCantidadCarrito = async (req, res) => {
-    const { idUsuario, idProducto } = req.body;
-    const { nuevaCantidad } = req.body;
+    const {idProducto } = req.params;
+    const { idUsuario, nuevaCantidad} = req.body;
 
     try {
         const productoEnCarrito = await Carrito.findOne({ where: { idUsuario, idProducto } });
@@ -89,10 +91,10 @@ export const actualizarCantidadCarrito = async (req, res) => {
 
 //  Eliminar un Producto del Carrito
 export const eliminarProductoCarrito = async (req, res) => {
-    const { idUsuario, idProducto } = req.params;
+    const {idProducto } = req.params;
 
     try {
-        const productoEnCarrito = await Carrito.findOne({ where: { idUsuario, idProducto } });
+        const productoEnCarrito = await Carrito.findOne({ where: {idProducto } });
 
         if (!productoEnCarrito) {
             return res.status(404).json({ error: 'Producto no encontrado en el carrito del usuario' });

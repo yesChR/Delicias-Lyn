@@ -1,21 +1,20 @@
 import express from 'express';
 //import { enviarId } from '../controllers/carrito.controller'
 
-// -> Si descomentan el import da errorshh al no existir producto xD
-// import { 
-//     agregarProductoCarrito, 
-//     visualizarCarrito, 
-//     actualizarCantidadCarrito, 
-//     eliminarProductoCarrito 
-// } from '../controllers/carrito.controller';
+import { 
+    agregarProductoCarrito, 
+    visualizarCarrito, 
+    actualizarCantidadCarrito, 
+    eliminarProductoCarrito 
+} from '../controllers/carrito.controller';
 
 const router = express.Router();
 
 //rutas
-// router.post('/carrito', agregarProductoCarrito);
-// router.get('/carrito/:idUsuario', visualizarCarrito);
-// router.put('/carrito', actualizarCantidadCarrito);
-// router.delete('/carrito/:idUsuario/:idProducto', eliminarProductoCarrito);
+router.post('/agregar', agregarProductoCarrito);
+router.get('/visualizar/:idUsuario', visualizarCarrito);
+router.put('/editar/:idProducto', actualizarCantidadCarrito);
+router.delete('/eliminar/:idProducto', eliminarProductoCarrito);
 
 //exportar todo
 module.exports = router;
