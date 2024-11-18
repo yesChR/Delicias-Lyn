@@ -25,7 +25,8 @@ export const visualizarCategorias = async (req, res) => {
                     model: Subcategoria,
                     as: "subcategoria",
                     attributes: ["idSubcategoria", "nombre"]
-                }
+                },
+                order: [['nombre', 'ASC']]
             });
         res.status(200).json(categorias);
     } catch (error) {

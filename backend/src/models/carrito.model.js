@@ -5,6 +5,11 @@ import { Producto } from './producto.model';
 
 // Definir el modelo para la tabla relacional Carrito
 export const Carrito = sequelize.define('carrito', {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     idUsuario: {
         type: DataTypes.INTEGER,
         references: {
@@ -20,7 +25,8 @@ export const Carrito = sequelize.define('carrito', {
         }
     },
     cantidad: DataTypes.INTEGER,
-    montoXCantidad: DataTypes.DOUBLE,
+    montoXCantidad: DataTypes.DOUBLE, 
+    personalizacion: DataTypes.STRING
 }, {
     freezeTableName: true,
     tableName: 'carrito',

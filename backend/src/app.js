@@ -15,7 +15,8 @@ const direccion = require("./routes/direccion.routes");
 const informe = require("./routes/informe.routes");
 const carrito = require("./routes/carrito.routes");
 const producto = require("./routes/producto.routes"); 
-//const pedido = require("./routes/pedido.routes"); 
+const estado = require("./routes/estado.routes");
+const pedido = require("./routes/pedido.routes"); 
 
 
 const app = express();
@@ -41,6 +42,7 @@ app.use("/direccion", direccion);
 app.use("/informe", informe);
 app.use("/carrito", carrito); 
 app.use("/producto", producto); 
-//app.use("/pedido", pedido); 
+app.use("/estado",estado);
+app.use("/pedido", pedido); 
 
 export default app;

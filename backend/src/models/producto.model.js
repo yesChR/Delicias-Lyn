@@ -2,6 +2,7 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../bd_config/conexion";
 import { Categoria } from "./categoria.model";  // Importamos el modelo de Categoria
 import { Subcategoria } from "./subcategoria.model";  // Importamos el modelo de Subcategoria
+import { DetallePedido } from "./detallePedido.model";
 
 export const Producto = sequelize.define("producto", {
     idProducto: {
@@ -35,10 +36,6 @@ export const Producto = sequelize.define("producto", {
         type: DataTypes.DOUBLE,
         allowNull: false,
     },
-    personalizacion: {
-        type: DataTypes.STRING(255),
-        allowNull: true,
-    },
     imagen: {
         type: DataTypes.STRING(255),
         allowNull: true,
@@ -69,4 +66,19 @@ Producto.belongsTo(Subcategoria, {
     targetKey: 'idSubcategoria',
     as: 'subcategoria'
 });
+
+//el 1
+Producto.hasMany(DetallePedido, {
+    foreignKey: 'idProducto',
+    sourceKey: 'idProducto',
+    as: 'detalle'
+});
+
+//va al muchos
+DetallePedido.belongsTo(Producto, {
+    foreignKey: 'idProducto',
+    targetKey: 'idProducto',
+    as: 'producto'
+});
+
 

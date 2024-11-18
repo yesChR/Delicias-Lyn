@@ -1,6 +1,5 @@
 import { Distrito } from "../models/distrito.model";
 
-
 export const visualizarDistrito = async (req, res) => {
     try {
         const distrito = await Distrito.findAll();

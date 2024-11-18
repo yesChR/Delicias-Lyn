@@ -33,7 +33,8 @@ export const visualizarSubcategorias = async (req, res) => {
                     model: Categoria,
                     as: "categoria",
                     attributes: ["idCategoria", "nombre"]
-                }
+                },
+                order: [['nombre', 'ASC']]
             });
         res.status(200).json(subcategorias);
     } catch (error) {
@@ -70,6 +71,7 @@ export const eliminarSubcategoria = async (req, res) => {
             res.status(404).json({ error: "Subcategoria no existe" });
         }
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 }

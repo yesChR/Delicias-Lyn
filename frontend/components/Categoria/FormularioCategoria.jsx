@@ -23,7 +23,7 @@ const FormularioCategoria = ({ recargar }) => {
         },
         validationSchema: schemaCategoria,  // validaciones para formulario
         enableReinitialize: true,  // muestra los cambios conforme escribo en el campo
-        onSubmit: async (values) => {
+        onSubmit: async (values, {resetForm}) => {
             // Si el formulario es inválido, bloquea boton
             if (!formik.isValid) return;
             try {
@@ -44,6 +44,7 @@ const FormularioCategoria = ({ recargar }) => {
                         timer: 1000
                     });
                     recargar();
+                    resetForm();
                 } else {
                     Swal.fire({
                         title: "Ya existe la categoría",

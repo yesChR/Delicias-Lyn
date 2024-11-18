@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../bd_config/conexion";
-
+import { Pedido } from "./pedido.model";
 
 export const Usuario = sequelize.define("usuario", {
     idUsuario: {
@@ -22,4 +22,16 @@ export const Usuario = sequelize.define("usuario", {
     timestamps: false // Opcional: si no necesitas campos createdAt y updatedAt
 });
 
+//el 1
+Usuario.hasMany(Pedido, {
+    foreignKey: 'idUsuario', 
+    sourceKey: 'idUsuario', 
+    as: 'pedidos' 
+});
 
+//va al muchos
+Pedido.belongsTo(Usuario, {
+    foreignKey: 'idUsuario', 
+    targetKey: 'idUsuario', 
+    as: 'usuario'
+});

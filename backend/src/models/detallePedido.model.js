@@ -1,26 +1,18 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../bd_config/conexion";
 
-export const DetallePedido = sequelize.define("detallePedido",{
+export const DetallePedido = sequelize.define("detalleXPedido", {
+    id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
     cantidad: DataTypes.INTEGER,
-    montoXCantidad: DataTypes.DOUBLE
+    montoXCantidad: DataTypes.DOUBLE,
+    personalizacion: DataTypes.STRING
 }, {
-    freezeTableName: true, 
-    tableName: 'detallePedido',   
-  });
-
-
-//Relación muchos a muchos
-/*
-Pedido.belongsToMany(Producto, {
-    through: DetallePedido,
-    foreignKey: 'pedidoId',
-    //otherKey: 'productoId'
+    freezeTableName: true,
+    tableName: 'detallexpedido',
 });
 
-Producto.belongsToMany(Pedido, {
-    through: DetallePedido,
-    foreignKey: 'productoId',
-    otherKey: 'pedidoId'
-});
-*/
+

@@ -5,17 +5,20 @@ import { Subcategoria } from "../models/subcategoria.model";  // Importar subcat
 // Crear producto
 export const crearProducto = async (req, res) => {
     const { idCategoria, idSubcategoria, nombre, descripcion, precio, personalizacion, imagen, tipo, estado } = req.body;
+    console.log(req.body);
     try {
         const productoExistente = await Producto.findOne({ where: { nombre: nombre } });
         if (!productoExistente) {
             const nuevoProducto = await Producto.create({
                 idCategoria, idSubcategoria, nombre, descripcion, precio, personalizacion, imagen, tipo, estado
             });
+            console.log(nuevoProducto);
             res.status(201).json({ message: "Producto creado exitosamente" });
         } else {
             res.status(409).json({ error: "El producto ya existe" });
         }
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: "Error interno en el servidor" });
     }
 };

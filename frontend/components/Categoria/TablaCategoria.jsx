@@ -83,12 +83,15 @@ const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
         });
     }, []);
 
-    const renderCell = React.useCallback((categoria, columnKey) => {
+    const renderCell = React.useCallback((categoria, index, columnKey) => {
         const cellValue = categoria[columnKey];
-
+    
+        // Calculamos el índice global considerando la página actual
+        const globalIndex = (currentPage - 1) * numElementos + index + 1;
+    
         switch (columnKey) {
             case "idCategoria":
-                return <h1>{cellValue}</h1>;
+                return <h1>{globalIndex}</h1>;  // Usamos globalIndex en lugar de index
             case "nombre":
                 return <h1>{cellValue}</h1>;
             case "acciones":
@@ -113,8 +116,9 @@ const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
             default:
                 return cellValue;
         }
-    }, []);
-
+    }, [currentPage, numElementos]);  // Asegúrate de que `currentPage` y `numElementos` estén en el array de dependencias
+    
+    
     // Datos paginados agregado nuevo, segmenta los datos por pagina realizando una copia
     const datosPaginados = categorias.slice((currentPage - 1) * numElementos, currentPage * numElementos);
 
@@ -143,12 +147,12 @@ const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
                 )}
             </TableHeader>
             {/*Cambie categorias por datos paginados */}
-            <TableBody items={datosPaginados}>
-                {(item) => (
+            <TableBody>
+                {datosPaginados.map((item, index) => (
                     <TableRow key={item.idCategoria} className="hover:bg-gray-200 transition duration-300">
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                        {(columnKey) => <TableCell>{renderCell(item, index, columnKey)}</TableCell>}
                     </TableRow>
-                )}
+                ))}
             </TableBody>
         </Table>
     );

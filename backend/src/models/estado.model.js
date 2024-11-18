@@ -16,14 +16,14 @@ export const Estado = sequelize.define("estado", {
 
 //el 1
 Estado.hasMany(Pedido, {
-    foreignKey: 'idEstado', // Clave foránea en Pedido
-    sourceKey: 'idEstado', // Clave primaria en Estado
-    as: 'pedidos' // Alias para acceder a los pedidos de un estado
+    foreignKey: 'idEstado', 
+    sourceKey: 'idEstado', 
+    as: 'pedidos' 
 });
 
 //va al muchos
 Pedido.belongsTo(Estado, {
-    foreignKey: 'idEstado', // Clave foránea en Pedido
-    targetKey: 'idEstado', // Clave primaria en Estado
-    as: 'estado' // Alias para acceder al estado de un pedido
+    foreignKey: 'idEstado', 
+    targetKey: 'idEstado', 
+    as: 'estado'
 });

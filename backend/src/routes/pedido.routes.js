@@ -1,10 +1,12 @@
 import express from 'express';
-//import { enviarId } from '../controllers/pedido.controller'
+import { crearPedido, visualizarPedidos, editarEstado, editarPrioridad } from '../controllers/pedido.controller'
 const router = express.Router();
 
 //rutas
-//router.post('/:id', enviarId);
-
+router.post('/crear', crearPedido);
+router.get('/visualizar', visualizarPedidos);
+router.put('/editarEstado/:idPedido', editarEstado);
+router.put('/editarPrioridad/:idPedido', editarPrioridad);
 
 //exportar todo
 module.exports = router;

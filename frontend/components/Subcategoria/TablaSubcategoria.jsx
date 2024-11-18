@@ -86,11 +86,14 @@ const TablaSubcategoria = ({ onOpen, setSubcategoriaSelect, refrescar }) => {
         });
     }, []);
 
-    const renderCell = React.useCallback((subcategoria, columnKey) => {
+    const renderCell = React.useCallback((subcategoria,index, columnKey) => {
+
         const cellValue = subcategoria[columnKey];
+        // Calculamos el índice global considerando la página actual
+        const globalIndex = (currentPage - 1) * numElementos + index + 1;
         switch (columnKey) {
             case "idSubcategoria":
-                return <h1>{cellValue}</h1>;
+                return <h1>{globalIndex}</h1>;
             case "nombre":
                 return <h1>{cellValue}</h1>;
             case "categoria":
@@ -117,7 +120,7 @@ const TablaSubcategoria = ({ onOpen, setSubcategoriaSelect, refrescar }) => {
             default:
                 return cellValue;
         }
-    }, []);
+    }, [currentPage, numElementos]);
 
     // Datos paginados agregado nuevo, segmenta los datos por pagina realizando una copia
     const datosPaginados = subcategorias.slice((currentPage - 1) * numElementos, currentPage * numElementos);
@@ -147,12 +150,12 @@ const TablaSubcategoria = ({ onOpen, setSubcategoriaSelect, refrescar }) => {
                     </TableColumn>
                 )}
             </TableHeader>
-            <TableBody items={datosPaginados}>
-                {(item) => (
+            <TableBody>
+                {datosPaginados.map((item, index) => (
                     <TableRow key={item.idSubcategoria} className="hover:bg-gray-200 transition duration-300">
-                        {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}
+                        {(columnKey) => <TableCell>{renderCell(item, index, columnKey)}</TableCell>}
                     </TableRow>
-                )}
+                ))}
             </TableBody>
         </Table>
     );

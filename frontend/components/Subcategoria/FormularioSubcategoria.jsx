@@ -62,8 +62,8 @@ const FormularioSubcategoria = ({ recargar }) => {
         },
         validationSchema: schemaSubcategoria,  // validaciones para formulario
         enableReinitialize: true,  // muestra los cambios conforme escribo en el campo
-        onSubmit: async (values) => {
-            console.log(values);
+        onSubmit: async (values, { resetForm }) => {
+
             if (!formik.isValid) return;
             try {
                 const response = await fetch(`${apiUrl}/subcategoria/crear`,
@@ -83,6 +83,7 @@ const FormularioSubcategoria = ({ recargar }) => {
                         showConfirmButton: false,
                         timer: 1000
                     });
+                    resetForm();
                     recargar();
                 } else {
                     Swal.fire({
@@ -126,6 +127,7 @@ const FormularioSubcategoria = ({ recargar }) => {
                         {/* Mostrar un Select solo si las categorías están cargadas */}
                         {!loading ? (
                             <Select
+                                key={formik.values.idCategoria}
                                 name="idCategoria"
                                 value={formik.values.idCategoria}
                                 onChange={formik.handleChange}
