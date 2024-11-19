@@ -194,38 +194,221 @@ export const visualizarPedidos = async (req, res) => {
     }
 };
 
+
+const generarMensajeEstado = (idEstado, pedido) => {
+    let mensajeCorreo = '';
+    const montoTotal = pedido.montoTotal;
+    const anticipo = montoTotal * 0.5;
+
+    // Estilos básicos en línea
+    const estiloGeneral = `
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                color: #333;
+                line-height: 1.6;
+            }
+            .container {
+                max-width: 600px;
+                margin: 0 auto;
+                padding: 20px;
+                background-color: #f9f9f9;
+                border-radius: 10px;
+                border: 1px solid #ddd;
+            }
+            h2 {
+                color: #2c3e50;
+            }
+            p {
+                font-size: 16px;
+            }
+            strong {
+                color: #e74c3c;
+            }
+            .highlight {
+                font-weight: bold;
+                color: #3498db;
+            }
+            .invoice-table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            .invoice-table th, .invoice-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: left;
+            }
+            .invoice-table th {
+                background-color: #2c3e50;
+                color: white;
+            }
+            .footer {
+                margin-top: 30px;
+                font-size: 14px;
+                text-align: center;
+                color: #7f8c8d;
+            }
+        </style>
+    `;
+
+    switch (idEstado) {
+        case 1: // Pendiente de revisión
+            mensajeCorreo = `
+                ${estiloGeneral}
+                <div class="container">
+                    <p>Hola <strong>${pedido.nombre}</strong>,</p>
+                    <p>Su pedido <strong>${pedido.idPedido}</strong> está actualmente en estado: <strong>Pendiente de revisión</strong>.</p>
+                    <p>Estamos revisando su pedido y le notificaremos cuando haya actualizaciones.</p>
+                    <p>Gracias por su paciencia.</p>
+                </div>
+            `;
+            break;
+
+        case 2: // Aprobado
+            mensajeCorreo = `
+                ${estiloGeneral}
+                <div class="container">
+                    <p>Hola <strong>${pedido.nombre}</strong>,</p>
+                    <p>¡Su pedido <strong>${pedido.idPedido}</strong> ha sido aprobado!</p>
+                    <p>Gracias por elegirnos. Su pedido será procesado y pronto recibirá más detalles.</p>
+                    <div class="footer">¡Gracias por su confianza!</div>
+                </div>
+            `;
+            break;
+
+        case 3: // Rechazado
+            mensajeCorreo = `
+                ${estiloGeneral}
+                <div class="container">
+                    <p>Hola <strong>${pedido.nombre}</strong>,</p>
+                    <p>Lamentablemente, su pedido <strong>${pedido.idPedido}</strong> ha sido <strong>Rechazado</strong>.</p>
+                    <p>Disculpe los inconvenientes. Si necesita más información, no dude en contactarnos.</p>
+                    <div class="footer">Gracias por su comprensión.</div>
+                </div>
+            `;
+            break;
+
+        case 4: // Pendiente de pago
+            mensajeCorreo = `
+                ${estiloGeneral}
+                <div class="container">
+                    <p>Hola <strong>${pedido.nombre}</strong>,</p>
+                    <p>Su pedido <strong>${pedido.idPedido}</strong> está pendiente de pago.</p>
+                    <p>El monto total es de <strong class="highlight">${montoTotal}</strong>, debe realizar el pago del 50% que corresponde a <strong class="highlight">${anticipo}</strong>, 
+                    al número de SINPE <strong>89135112</strong> para continuar con el proceso. Favor adjuntar la captura a Whatsapp al mismo número de SINPE.</p>
+                    <p>¡Gracias por su preferencia! Estamos listos para continuar cuando complete el pago.</p>
+                    <div class="footer">Quedamos a su disposición para cualquier consulta.</div>
+                </div>
+            `;
+            break;
+
+        case 5: // Anticipo pagado
+            mensajeCorreo = `
+                ${estiloGeneral}
+                <div class="container">
+                    <p>Hola <strong>${pedido.nombre}</strong>,</p>
+                    <p>Hemos recibido un anticipo del 50% de su pedido <strong>${pedido.idPedido}</strong>. El monto pagado es de <strong class="highlight">${anticipo}</strong>.</p>
+                    <p>El saldo pendiente es de <strong class="highlight">${anticipo}</strong>, que debe ser pagado para completar el pedido.</p>
+                    <p>Por favor, complete el pago al número de SINPE <strong>89135112</strong> y adjuntar la captura a Whatsapp al mismo número de SINPE.</p>
+                    <div class="footer">Gracias por su pago. Quedamos a la espera del saldo.</div>
+                </div>
+            `;
+            break;
+
+        case 6: // Pagado
+            mensajeCorreo = `
+                ${estiloGeneral}
+                <div class="container">
+                    <p>Hola <strong>${pedido.nombre}</strong>,</p>
+                    <p>¡Su pedido <strong>${pedido.idPedido}</strong> ha sido pagado en su totalidad! El monto total de <strong class="highlight">${montoTotal}</strong> ha sido recibido correctamente.</p>
+                    <p>Gracias por su compra. El proceso de envío comenzará en breve.</p>
+                    <div class="footer">¡Gracias por elegirnos!</div>
+                </div>
+            `;
+            break;
+
+        case 7: // Pedido terminado (Factura)
+            const detallesPedido = pedido.detalle.map(detalle =>
+                `<tr><td>${detalle.producto.nombre}</td><td>${detalle.cantidad}</td><td>${detalle.montoXCantidad}</td></tr>`
+            ).join('');
+            mensajeCorreo = `
+                ${estiloGeneral}
+                <div class="container">
+                    <p>Hola <strong>${pedido.nombre}</strong>,</p>
+                    <p>El pedido <strong>${pedido.idPedido}</strong> ha sido completado y está listo para su entrega.</p>
+                    <br>
+                    <table class="invoice-table">
+                        <thead>
+                            <tr>
+                                <th> Producto </th>
+                                <th> Cantidad </th>
+                                <th> Precio </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${detallesPedido}
+                        </tbody>
+                    </table>
+                    <br>
+                    <p><strong>Total a Pagar: ${montoTotal}</strong></p>
+                    <div class="footer">¡Gracias por su preferencia! Esperamos que haya disfrutado de su experiencia con nosotros.</div>
+                </div>
+            `;
+            break;
+    }
+
+    return mensajeCorreo;
+};
+
+
+
+
+// Función principal para editar el estado
 export const editarEstado = async (req, res) => {
     const { idPedido } = req.params;
     const { idEstado } = req.body;
-    try {
-        const existePedido = await Pedido.findByPk(idPedido);
-        if (existePedido !== null) {
-            const existeEstado = await Estado.findByPk(idEstado);
-            if (existeEstado !== null) {
-                const estadoPedidoEdit = await Pedido.update({ idEstado }, { where: { idPedido: idPedido } });
-                const formato = {
-                    from: config.email,
-                    to: existePedido.correo,
-                    subject: 'Delicias Lyn',
-                    html: `
-                        <p>Hola ${existePedido.nombre}, el estado de su pedido <strong>${idPedido}</strong> 
-                        a cambiado a: ${existeEstado.nombre}.</p>
-                    `
-                };
 
-                await transporter.sendMail(formato);
-                res.status(201).json({ message: "Estado del pedido editado exitosamente" });
-            } else {
-                res.status(404).json({ error: "El estado no existe" });
-            }
+    try {
+        const existePedido = await Pedido.findByPk(idPedido, {
+            include: [
+                { model: Estado, as: 'estado' },
+                { model: DetallePedido, as: 'detalle',
+                    include:[
+                        { model: Producto, as: 'producto' },
+                    ]
+                }
+            ]
+        });
+
+        if (existePedido === null) {
+            return res.status(404).json({ error: "El pedido no existe" });
         }
-        else {
-            res.status(404).json({ error: "El pedido no existe" });
+
+        const existeEstado = await Estado.findByPk(idEstado);
+        if (existeEstado === null) {
+            return res.status(404).json({ error: "El estado no existe" });
         }
+        await Pedido.update({ idEstado }, { where: { idPedido } });
+        const mensajeCorreo = generarMensajeEstado(idEstado, existePedido);
+
+        // Enviar el correo con el mensaje correspondiente
+        const formato = {
+            from: config.email,
+            to: existePedido.correo,
+            subject: `Delicias Lyn - Actualización de su pedido ${idPedido}`,
+            html: mensajeCorreo
+        };
+
+        await transporter.sendMail(formato);
+
+        res.status(201).json({ message: "Estado del pedido editado exitosamente y notificación enviada." });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: "Error interno en el servidor" });
     }
 }
+
 
 export const editarPrioridad = async (req, res) => {
     const { idPedido } = req.params;
