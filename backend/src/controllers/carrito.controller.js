@@ -1,6 +1,7 @@
 import { Carrito } from '../models/carrito.model';
 import { Usuario } from '../models/usuario.model';
 import { Producto } from '../models/producto.model';
+import { Tamaño } from '../models/tamaño.model';
 
 //  Agregar un Producto al Carrito
 export const agregarProductoCarrito = async (req, res) => {
@@ -41,30 +42,44 @@ export const agregarProductoCarrito = async (req, res) => {
 
 //  Visualizar el carrito de un usuario
 // -> Pendiente los tamañosxProducto, que es tabla relacional <-
-export const visualizarCarrito = async (req, res) => {
+export const visualizarCarrito = async (req, res) => { 
     const { idUsuario } = req.params;
 
     try {
-        const usuario = await Usuario.findByPk(idUsuario, {
-            include: {
-                model: Producto,
-                as: 'productosEnCarrito',
-                attributes: ['idProducto', 'nombre', 'precio'],
-                through: {
-                    attributes: ['cantidad', 'montoXCantidad'],
-                }
-            }
+        const carrito = await Carrito.findAll({
+            where: { idUsuario },
+            attributes: ["id", "idProducto", "idTamaño", "cantidad", "montoXCantidad", "personalizacion"]
         });
 
-        if (!usuario) {
-            return res.status(404).json({ error: 'Usuario no encontrado' });
+        if (!carrito) {
+            return res.status(404).json({ error: 'Carrito no encontrado para el usuario' });
         }
 
-        return res.status(200).json(usuario.productosEnCarrito);
+        //Obtener productos y tamaños para cada ítem del carrito
+        const carritoCompleto = await Promise.all(
+            carrito.map(async (item) => {
+                const producto = await Producto.findByPk(item.idProducto, {
+                    attributes: ["nombre", "precio", "descripcion"]
+                });
+
+                const tamaño = await Tamaño.findByPk(item.idTamaño, {
+                    attributes: ["nombre"]
+                });
+
+                return {
+                    ...item.dataValues,
+                    producto,
+                    tamaño
+                };
+            })
+        );
+
+        return res.status(200).json(carritoCompleto);
     } catch (error) {
         return res.status(500).json({ error: 'Error al visualizar el carrito del usuario' });
     }
 };
+
 
 //  Actualizar la Cantidad de un Producto en el Carrito
 export const actualizarCantidadCarrito = async (req, res) => {
@@ -91,10 +106,10 @@ export const actualizarCantidadCarrito = async (req, res) => {
 
 //  Eliminar un Producto del Carrito
 export const eliminarProductoCarrito = async (req, res) => {
-    const {idProducto } = req.params;
+    const { idUsuario, idProducto } = req.params;
 
     try {
-        const productoEnCarrito = await Carrito.findOne({ where: {idProducto } });
+        const productoEnCarrito = await Carrito.findOne({ where: { idUsuario, idProducto } });
 
         if (!productoEnCarrito) {
             return res.status(404).json({ error: 'Producto no encontrado en el carrito del usuario' });

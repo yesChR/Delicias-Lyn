@@ -2,7 +2,6 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../bd_config/conexion';
 import { Usuario } from './usuario.model';
 import { Producto } from './producto.model';
-// import { Tamaño } from './tamaño.model';
 
 // Definir el modelo para la tabla relacional Carrito
 export const Carrito = sequelize.define('carrito', {
@@ -25,13 +24,6 @@ export const Carrito = sequelize.define('carrito', {
             key: 'idProducto',
         }
     },
-    // idTamaño: {
-    //     type: DataTypes.INTEGER,
-    //     references: {
-    //         model: Tamaño,
-    //         key: 'idTamaño'
-    //     }
-    // },
     cantidad: DataTypes.INTEGER,
     montoXCantidad: DataTypes.DOUBLE, 
     personalizacion: DataTypes.STRING
@@ -48,11 +40,7 @@ Usuario.belongsToMany(Producto, {
     as: 'productosEnCarrito' 
 });
 
-/**
- * as: 'productosEnCarrito' -> Desde el controlador se utiliza, ya 
- * que posee los productos del carrito de ese usuario específico
- * 
- */
+
 
 Producto.belongsToMany(Usuario, {
     through: Carrito,
@@ -60,20 +48,3 @@ Producto.belongsToMany(Usuario, {
     otherKey: 'idUsuario',
     as: 'usuariosConCarrito' //
 });
-
-/**
- * as: 'usuariosConCarrito' -> Es una forma de decir: Los usuarios que tienen
- * en su carrito ese producto específico, de momento no es útil pero puede serlo después LOL.
- * 
- */
-
-// Relación con Tamaño
-// Carrito.belongsTo(Tamaño, {
-//     foreignKey: 'idTamaño',
-//     as: 'tamano'
-// });
-
-// Tamaño.hasMany(Carrito, {
-//     foreignKey: 'idTamaño',
-//     as: 'carritos'
-// });
