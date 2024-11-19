@@ -1,5 +1,4 @@
 import express from 'express';
-//import { enviarId } from '../controllers/carrito.controller'
 
 import { 
     agregarProductoCarrito, 
@@ -14,7 +13,7 @@ const router = express.Router();
 router.post('/agregar', agregarProductoCarrito);
 router.get('/visualizar/:idUsuario', visualizarCarrito);
 router.put('/editar/:idProducto', actualizarCantidadCarrito);
-router.delete('/eliminar/:idProducto', eliminarProductoCarrito);
+router.delete('/eliminar/:idUsuario/:idProducto', eliminarProductoCarrito);
 
 //exportar todo
 module.exports = router;
