@@ -18,79 +18,22 @@ import { MdOutlineDescription } from "react-icons/md";
 import Swal from "sweetalert2";
 
 const TablaCarrito = ({ onOpen }) => {
-  const [carrito, setCarrito] = useState([
-    {
-      idProducto: 1,
-      nombre: "Queque de chocolate",
-      tamanio: "Mediano",
-      cantidad: 2,
-      precio: 15000,
-      monto: 30000,
-      descripcion:
-        "Un delicioso queque de chocolate, esponjoso y lleno de sabor, perfecto para cualquier ocasión especial. Preparado con los mejores ingredientes, cacao de alta calidad y decorado con una suave cobertura de crema de chocolate. Ideal para compartir con amigos y familia.",
-      personalizacion:
-        "Cubierto con glaseado de chocolate y decorado con virutas de chocolate.",
-    },
-    {
-      idProducto: 2,
-      nombre: "Donas",
-      tamanio: "Pequeño",
-      cantidad: 12,
-      precio: 700,
-      monto: 8400,
-      descripcion:
-        "Nuestras donas frescas y suaves están glaseadas con una capa dulce que deleitará tu paladar. Perfectas para acompañar el café de la tarde o para un antojo rápido, estas donas son la combinación ideal de sabor y textura, hechas con cariño en nuestra pastelería.",
-      personalizacion:
-        "Glaseadas con azúcar y decoradas con confites coloridos.",
-    },
-    {
-      idProducto: 3,
-      nombre: "Tres Leches",
-      tamanio: "Mediano",
-      cantidad: 1,
-      precio: 6000,
-      monto: 6000,
-      descripcion:
-        "El clásico postre Tres Leches, preparado con una mezcla única de tres tipos de leche, que lo hacen extremadamente suave y jugoso. Su cobertura de crema batida y su sabor perfectamente balanceado lo convierten en una opción irresistible para quienes aman los postres dulces y tradicionales.",
-      personalizacion: "Decorado con frutas frescas y un toque de canela.",
-    },
-    {
-      idProducto: 4,
-      nombre: "Rompope",
-      tamanio: "1 Litro",
-      cantidad: 2,
-      precio: 3000,
-      monto: 6000,
-      descripcion:
-        "Nuestro rompope artesanal es una deliciosa bebida tradicional, elaborada con leche, huevos frescos, azúcar y un toque de licor. Su sabor suave y cremoso es perfecto para disfrutar en reuniones familiares o para darle un toque especial a tus postres favoritos.",
-      personalizacion:
-        "Añadido un toque extra de canela para un sabor más intenso.",
-    },
-    {
-      idProducto: 5,
-      nombre: "Queque relleno melocotón",
-      tamanio: "Grande",
-      cantidad: 1,
-      precio: 20000,
-      monto: 20000,
-      descripcion:
-        "Un exquisito queque relleno de melocotón que combina la suavidad del bizcocho con la frescura de la fruta. Cada bocado está lleno de sabor gracias al relleno de melocotón dulce y jugoso, cubierto con una delicada capa de glaseado. Perfecto para celebraciones especiales y ocasiones únicas.",
-      personalizacion:
-        "Relleno extra de melocotón y decorado con rodajas de fruta fresca.",
-    },
-    {
-      idProducto: 6,
-      nombre: "Cupcake",
-      tamanio: "Normal",
-      cantidad: 5,
-      precio: 1200,
-      monto: 6000,
-      descripcion:
-        "Pequeños pero llenos de sabor, nuestros cupcakes están decorados con un suave glaseado y elaborados con los ingredientes más frescos. Perfectos para cualquier ocasión, estos cupcakes son el equilibrio ideal entre un bizcocho esponjoso y un dulce toque de crema que no te dejará indiferente.",
-      personalizacion:
-        "Decorados con glaseado de vainilla y chispas de colores.",
-    },
-  ]);
+  //ApiURL
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  const [carrito, setCarrito] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const numElementos = 5;
+
+  const columns = [
+    { name: "# Producto", uid: "idProducto" },
+    { name: "Nombre", uid: "nombre" },
+    { name: "Tamaño", uid: "tamaño" },
+    { name: "Cantidad", uid: "cantidad" },
+    { name: "Precio", uid: "precio" },
+    { name: "Total", uid: "montoXCantidad" },
+    { name: "Acciones", uid: "acciones" },
+  ];
 
   //No borrar sino da error de hidratacion del HTML xD
   const [isClient, setIsClient] = useState(false);
@@ -99,22 +42,30 @@ const TablaCarrito = ({ onOpen }) => {
     setIsClient(true);
   }, []);
 
+  useEffect(() => {
+    const fetchCarrito = async () => {
+      try {
+        const response = await fetch(`${apiUrl}/carrito/visualizar/2`);
+        if (response.ok) {
+          const data = await response.json();
+          setCarrito(data);
+        }
+      } catch (error) {
+        console.error("Error al cargar los productos del carrito", error);
+      }
+    };
+    fetchCarrito();
+  }, []);
+
+  // console.log(carrito[0].idUsuario);
+  // console.log(carrito[0].idProducto);
+
   //No borrar sino da error de hidratacion del HTML xD
   if (!isClient) {
     return <div>Cargando...</div>;
   }
 
-  const columns = [
-    { name: "# Producto", uid: "idProducto" },
-    { name: "Nombre", uid: "nombre" },
-    { name: "Tamaño", uid: "tamanio" },
-    { name: "Cantidad", uid: "cantidad" },
-    { name: "Precio", uid: "precio" },
-    { name: "Total", uid: "monto" },
-    { name: "Acciones", uid: "acciones" },
-  ];
-
-  const ventanaEliminar = () => {
+  const ventanaEliminar = (idUsuario, idProducto) => {
     Swal.fire({
       title: "¿Desea eliminar este producto?",
       icon: "warning",
@@ -125,70 +76,140 @@ const TablaCarrito = ({ onOpen }) => {
       cancelButtonText: "No",
     }).then((result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Producto eliminado correctamente!",
-          icon: "success",
-          confirmButtonColor: "#fdc6c6",
-          showConfirmButton: false,
-          timer: 1000,
-        });
+        fetch(`${apiUrl}/carrito/eliminar/${idUsuario}/${idProducto}`, {
+          method: "DELETE",
+        })
+        .then((response) => {
+          if (response.ok) {
+            setCarrito((prevCarrito) => {
+              const updatedCarrito = prevCarrito.filter(
+                (item) => item.idProducto !== idProducto
+              );
+
+              //Para que actualice mejor si la paginación se queda sin elementos al eliminar
+              const maxPage = Math.max(1, Math.ceil(updatedCarrito.length / numElementos));
+              if (currentPage > maxPage) {
+                setCurrentPage(maxPage);
+              }
+
+              return updatedCarrito;
+            });
+
+
+
+              Swal.fire({
+                title: "Producto eliminado correctamente!",
+                icon: "success",
+                confirmButtonColor: "#fdc6c6",
+                showConfirmButton: false,
+                timer: 1000,
+              });
+            } else {
+              Swal.fire({
+                title: "Error al eliminar el producto",
+                icon: "error",
+                confirmButtonColor: "#fdc6c6",
+                showConfirmButton: false,
+                timer: 1000,
+              });
+            }
+          })
+          .catch((error) => {
+            console.error("Error al eliminar el producto", error);
+            Swal.fire({
+              title: "Error al eliminar el producto",
+              icon: "error",
+              confirmButtonColor: "#fdc6c6",
+              showConfirmButton: false,
+              timer: 1000,
+            });
+          });
       }
     });
   };
 
-  const ventanaDescripcion = (producto) => {
+  const ventanaDescripcion = (carrito) => {
     Swal.fire({
-      title: `${producto.nombre}`,
-      text: producto.descripcion,
+      title: `${carrito.producto.nombre}`,
+      text: carrito.producto.descripcion,
       icon: "info",
       confirmButtonColor: "#ff6984",
       confirmButtonText: "Ok",
     });
   };
 
-  const ventanaPersonalizacion = (producto) => {
+  const ventanaPersonalizacion = (carrito) => {
     Swal.fire({
-      title: `${producto.nombre}`,
-      text: producto.personalizacion,
+      title: `${carrito.producto.nombre}`,
+      text: carrito.personalizacion,
       icon: "info",
       confirmButtonColor: "#ff6984",
       confirmButtonText: "Ok",
     });
   };
 
-  const modificarCantidad = (idProducto, operacion) => {
-    setCarrito((prevCarrito) =>
-      prevCarrito.map((item) => {
-        if (item.idProducto === idProducto) {
-          let nuevaCantidad = item.cantidad;
+  const modificarCantidad = async (idUsuario, idProducto, operacion) => {
+    try {
+      // Encontrar el producto en el carrito para obtener la cantidad actual
+      const producto = carrito.find((item) => item.idProducto === idProducto);
+      if (!producto) return;
 
-          if (operacion === "incrementar") {
-            nuevaCantidad += 1;
-          } else if (operacion === "decrementar" && item.cantidad > 1) {
-            nuevaCantidad -= 1;
-          }
+      let nuevaCantidad = producto.cantidad;
 
-          return {
-            ...item,
-            cantidad: nuevaCantidad,
-            monto: nuevaCantidad * item.precio,
-          };
-        }
-        return item;
-      })
-    );
+      if (operacion === "incrementar") {
+        nuevaCantidad += 1;
+      } else if (operacion === "decrementar" && nuevaCantidad > 1) {
+        nuevaCantidad -= 1;
+      } else {
+        return;
+      }
+
+      const response = await fetch(`${apiUrl}/carrito/editar/${idProducto}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ idUsuario, nuevaCantidad }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        setCarrito((prevCarrito) =>
+          prevCarrito.map((item) =>
+            item.idProducto === idProducto
+              ? {
+                  ...item,
+                  cantidad: data.cantidad,
+                  montoXCantidad: data.montoXCantidad,
+                }
+              : item
+          )
+        );
+      } else {
+        console.error(
+          "Error al actualizar la cantidad del producto en el carrito"
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Error al actualizar la cantidad del producto en el carrito",
+        error
+      );
+    }
   };
 
-  const renderCell = (carrito, columnKey) => {
-    const cellValue = carrito[columnKey];
+  const renderCell = (carrito, index, columnKey) => {
+    // Calculamos el índice global considerando la página actual
+    const globalIndex = (currentPage - 1) * numElementos + index + 1;
 
     switch (columnKey) {
-      case "idProducto":
-        return <h1>{cellValue}</h1>;
+      case "id":
+        return <h1>{globalIndex}</h1>;
       case "nombre":
-        return <h1>{cellValue}</h1>;
-      case "tamanio":
-        return <h1>{cellValue}</h1>;
+        return <h1>{carrito.producto.nombre}</h1>;
+      case "tamaño":
+        return <h1>{carrito.tamaño.nombre}</h1>;
       case "cantidad":
         return (
           <div className="flex items-center justify-center gap-1">
@@ -196,7 +217,11 @@ const TablaCarrito = ({ onOpen }) => {
               className="bg-transparent min-w-4"
               size="sm"
               onClick={() =>
-                modificarCantidad(carrito.idProducto, "decrementar")
+                modificarCantidad(
+                  carrito.idUsuario,
+                  carrito.idProducto,
+                  "decrementar"
+                )
               }
             >
               <Tooltip color="danger" content="Quitar">
@@ -207,15 +232,18 @@ const TablaCarrito = ({ onOpen }) => {
             </Button>
 
             <div className="w-10 text-center">
-              <h1>{cellValue}</h1>
+              <h1>{carrito.cantidad}</h1>
             </div>
 
-            {/* <h1 className="ml-2 mr-2">{cellValue}</h1> */}
             <Button
               className="bg-transparent min-w-4"
               size="sm"
               onClick={() =>
-                modificarCantidad(carrito.idProducto, "incrementar")
+                modificarCantidad(
+                  carrito.idUsuario,
+                  carrito.idProducto,
+                  "incrementar"
+                )
               }
             >
               <Tooltip color="danger" content="Agregar">
@@ -227,9 +255,9 @@ const TablaCarrito = ({ onOpen }) => {
           </div>
         );
       case "precio":
-        return <h1>{cellValue}</h1>;
+        return <h1>{carrito.producto.precio}</h1>;
       case "monto":
-        return <h1>{cellValue}</h1>;
+        return <h1>{carrito.montoXCantidad}</h1>;
       case "acciones":
         return (
           <div className="flex items-center justify-center gap-1">
@@ -258,7 +286,9 @@ const TablaCarrito = ({ onOpen }) => {
             </Button>
 
             <Button
-              onClick={ventanaEliminar}
+              onClick={() =>
+                ventanaEliminar(carrito.idUsuario, carrito.idProducto)
+              }
               className="bg-transparent min-w-4"
               size="sm"
             >
@@ -271,12 +301,12 @@ const TablaCarrito = ({ onOpen }) => {
           </div>
         );
       default:
-        return cellValue;
+        return carrito[columnKey];
     }
   };
 
   const calcularTotal = () => {
-    return carrito.reduce((total, item) => total + item.monto, 0);
+    return carrito.reduce((total, item) => total + item.montoXCantidad, 0);
   };
 
   return (
@@ -291,8 +321,10 @@ const TablaCarrito = ({ onOpen }) => {
               showControls
               showShadow
               color="danger"
-              page={1}
-              total={3}
+              page={currentPage}
+              total={Math.max(1, Math.ceil(carrito.length / numElementos))}
+              onChange={(page) => setCurrentPage(page)}
+              initialPage={1}
             />
           </div>
         }
@@ -304,14 +336,19 @@ const TablaCarrito = ({ onOpen }) => {
             </TableColumn>
           )}
         </TableHeader>
-        <TableBody items={carrito}>
-          {(item) => (
+        <TableBody
+          items={carrito.slice(
+            (currentPage - 1) * numElementos,
+            currentPage * numElementos
+          )}
+        >
+          {(item, index) => (
             <TableRow
-              key={item.idProducto}
+              key={item.id}
               className="text-black hover:bg-gray-200 transition duration-300"
             >
               {(columnKey) => (
-                <TableCell>{renderCell(item, columnKey)}</TableCell>
+                <TableCell>{renderCell(item, index, columnKey)}</TableCell>
               )}
             </TableRow>
           )}

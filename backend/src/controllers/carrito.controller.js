@@ -8,6 +8,13 @@ export const agregarProductoCarrito = async (req, res) => {
     const { idUsuario, idProducto, idTamaño, cantidad, personalizacion } = req.body;
 
     try {
+        // Verificar si el usuario existe
+        const usuario = await Usuario.findByPk(idUsuario);
+        if (!usuario) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+
         // Buscar si ya existe el producto en el carrito del usuario
         let productoEnCarrito = await Carrito.findOne({ where: { idUsuario, idProducto } });
 
@@ -48,7 +55,7 @@ export const visualizarCarrito = async (req, res) => {
     try {
         const carrito = await Carrito.findAll({
             where: { idUsuario },
-            attributes: ["id", "idProducto", "idTamaño", "cantidad", "montoXCantidad", "personalizacion"]
+            attributes: ["id","idUsuario", "idProducto", "idTamaño", "cantidad", "montoXCantidad", "personalizacion"]
         });
 
         if (!carrito) {
