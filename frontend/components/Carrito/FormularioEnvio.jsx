@@ -1,110 +1,104 @@
-import {
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
-  Button,
-  ModalContent,
-  Tooltip,
-  Select,
-  SelectItem,
-} from "@nextui-org/react";
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button, ModalContent, Select, SelectItem, Spinner, } from "@nextui-org/react";
 import Swal from "sweetalert2";
+import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useEffect, useState } from "react";
 
-const FormularioEnvio = ({ isOpen, onOpenChange }) => {
+const metodoEntrega = [
+  { key: "1", label: "Presencial" },
+  { key: "2", label: "Express" },
+];
+
+const metodoPago = [
+  { key: "1", label: "En efectivo" },
+  { key: "2", label: "Por SINPE" },
+];
+
+const FormularioEnvio = ({ isOpen, onOpenChange, formEnvioSelect, recargar }) => {
+  //aqui tengo el valor de la ruta del .env
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const [isLoading, setIsLoading] = useState(false);
+  const [provincias, setProvincias] = useState([]);
 
-    const [provincias, setProvincias] = useState([]);
-    const [cantones, setCantones] = useState([]);
-    const [distritos, setDistritos] = useState([]);
-
+  // Cargar provincia desde la API
   useEffect(() => {
-    const fetchProvincias = async () => {
+    const fetchProvincia = async () => {
       try {
-        const response = await fetch(`${apiUrl}/provincia/visualizar`);
+        const response = await fetch(`${apiUrl}/provincia/visualizar/limon`);
         if (response.ok) {
           const data = await response.json();
-          setProvincias(data);
+          setProvincias([data]);
+          console.log(provincias)
         } else {
-          console.error("Error al cargar las provincias");
+          Swal.fire({
+            title: "Error al cargar las provincias",
+            icon: "error",
+            confirmButtonColor: "#fdc6c6",
+            showConfirmButton: false,
+            timer: 1000
+          });
         }
       } catch (error) {
-        console.error("Error al cargar las provincias", error);
+        console.error("Error al obtener las provincias", error);
+        Swal.fire({
+          title: "Error al obtener las provincias",
+          icon: "error",
+          confirmButtonColor: "#fdc6c6",
+          showConfirmButton: false,
+          timer: 1000
+        });
       }
     };
+    fetchProvincia();
+  }, []);
 
-    const fetchCantones = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/canton/visualizar`);
-        if (response.ok) {
-          const data = await response.json();
-          setCantones(data);
-        } else {
-          console.error("Error al cargar los cantones");
-        }
-      } catch (error) {
-        console.error("Error al cargar los cantones", error);
-      }
-    };
-
-    const fetchDistritos = async () => {
-      try {
-        const response = await fetch(`${apiUrl}/distrito/visualizar`);
-        if (response.ok) {
-          const data = await response.json();
-          setDistritos(data);
-        } else {
-          console.error("Error al cargar los distritos");
-        }
-      } catch (error) {
-        console.error("Error al cargar los distritos", error);
-      }
-    };
-
-    fetchProvincias();
-    fetchCantones();
-    fetchDistritos();
-  }, [apiUrl]);
-
-  //validaciones para formulario, definir campos
-  const schemaCompra = Yup.object({
+  const schemaFormEnvio = Yup.object({
     nombre: Yup.string()
       .required("El nombre es requerido")
       .min(3, "Debe tener al menos 3 carácteres"),
-
-    apellidoUno: Yup.string().required("El primer apellido es requerido"),
-
-    apellidoDos: Yup.string().required("El segundo apellido es requerido"),
-
+    apellidoUno: Yup.string()
+      .required("El primer apellido es requerido")
+      .min(3, "Debe tener al menos 3 carácteres"),
+    apellidoDos: Yup.string()
+      .required("El segundo apellido es requerido")
+      .min(3, "Debe tener al menos 3 carácteres"),
     correo: Yup.string()
-      .email("Correo inválido")
-      .required("El correo es requerido"),
-
+      .required("El correo es requerido")
+      .email("Debe ser un correo electrónico válido")
+      .min(3, "Debe tener al menos 3 carácteres"),
     telefono: Yup.string()
-      .matches(/^[0-9]{8}$/, "El número de teléfono debe tener 8 dígitos")
-      .required("El teléfono es requerido"),
-
-    fechaEntrega: Yup.date().required("La fecha de entrega es requerida"),
-
-    metodoEntrega: Yup.string().required("El método de entrega es requerido"),
-
-    metodoPago: Yup.string().required("El método de pago es requerido"),
-
-    provincia: Yup.string().required("La provincia es requerida"),
-
-    canton: Yup.string().required("El cantón es requerido"),
-
-    distrito: Yup.string().required("El distrito es requerido"),
-
-    direccionExacta: Yup.string().required("La dirección exacta es requerida"),
+      .required("El teléfono es requerido")
+      .min(8, "Debe tener al menos 8 carácteres"),
+    fechaEntrega: Yup.date()
+      .required("La fecha es requerida")
+      .min(
+        new Date(new Date().setDate(new Date().getDate() + 7)), // 7 días después de hoy
+        "La fecha debe ser al menos una semana después de hoy"),// Asegura que la fecha sea al menos hoy
+    metodoEntrega: Yup.number()
+      .required("El método de entrega es requerido"),
+    metodoPago: Yup.number()
+      .required("El método de pago es requerido"),
+    idProvincia: Yup.number()
+      .required("La provincia es requerida"),
+    idCanton: Yup.number()
+      .required("El cantón es requerido"),
+    idDistrito: Yup.number()
+      .required("El distrito es requerido"),
+    direccionExacta: Yup.string()
+      .required("La dirección exacta es requerida"),
+    idUsuario: Yup.number()
+      .required("El usuario es requerido"),
+    idEstado: Yup.number()
+      .required("El usuario es requerido"),
+    prioridad: Yup.number()
+      .required("La prioridad es requerido"),
+    montoTotal: Yup.number()
+      .required("El monto es requerido"),
   });
 
+
+  // Inicializar Formik con los valores de la subcategoría seleccionada
   const formik = useFormik({
-    //como se inicia el valor ejemplo si el input debe tener el nombre por defecto o no
     initialValues: {
       nombre: "",
       apellidoUno: "",
@@ -114,24 +108,28 @@ const FormularioEnvio = ({ isOpen, onOpenChange }) => {
       fechaEntrega: "",
       metodoEntrega: "",
       metodoPago: "",
-      provincia: "",
-      canton: "",
-      distrito: "",
+      idProvincia: "",
+      idCanton: "",
+      idDistrito: "",
       direccionExacta: "",
+      idEstado: "1",
+      idUsuario: "2",
+      prioridad: "1",
+      montoTotal: "10000"
     },
-    validationSchema: schemaCompra,
+    validationSchema: schemaFormEnvio,
     enableReinitialize: true,
     onSubmit: async (values, { resetForm }) => {
+      console.log("Values", values);
       if (!formik.isValid) return;
-
       try {
-        // Aquí puedes hacer el request al backend si lo necesitas
+        setIsLoading(true);
         const response = await fetch(`${apiUrl}/pedido/crear`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify(values),
+          body: JSON.stringify(values)
         });
 
         if (response.ok) {
@@ -139,47 +137,43 @@ const FormularioEnvio = ({ isOpen, onOpenChange }) => {
             icon: "success",
             title: "Pedido creado exitosamente",
             showConfirmButton: false,
-            timer: 1000,
+            timer: 1000
+          }).then(() => {
+            //recargar();
+            onOpenChange(false);
           });
           resetForm();
-          onOpenChange(false);
         } else {
           Swal.fire({
-            title: "Error al guardar los datos",
+            title: "No hay elementos en el carrito",
             icon: "error",
             confirmButtonColor: "#fdc6c6",
             showConfirmButton: false,
-            timer: 1000,
+            timer: 1000
           });
         }
       } catch (error) {
-        console.error("Error al guardar los datos", error);
+        console.error("Error al crear el pedido", error);
         Swal.fire({
           title: "Error al crear el pedido",
           icon: "error",
           confirmButtonColor: "#fdc6c6",
           showConfirmButton: false,
-          timer: 1000,
+          timer: 1000
         });
       }
-    },
+      finally {
+        setIsLoading(false);
+      }
+    }
   });
 
-  const metodoEntrega = [
-    { key: "presencial", label: "Presencial" },
-    { key: "express", label: "Express" },
-  ];
-
-  const metodoPago = [
-    { key: "efectivo", label: "En efectivo" },
-    { key: "sinpe", label: "Por SINPE" },
-  ];
-
   return (
+    <>
       <Modal
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        scrollBehavior="inside"
+        scrollBehavior={"outside"}
         className="w-full max-w-3xl mx-auto"
         placement="center"
       >
@@ -187,248 +181,286 @@ const FormularioEnvio = ({ isOpen, onOpenChange }) => {
           {(onClose) => (
             <>
               <form onSubmit={formik.handleSubmit}>
-              <ModalHeader className="flex flex-col gap-1">
-                <h2 className="text-principal font-bold text-xl flex justify-center">
-                  Complete el formulario
-                </h2>
-              </ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">
+                  <h2 className="text-principal font-bold text-xl flex justify-center">
+                    Complete el formulario
+                  </h2>
+                </ModalHeader>
 
-              <ModalBody>
-                <div className="grid grid-cols-1 gap-4 w-full p-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="relative">
-                    <Input
-                      name="nombre"
-                      type="text"
-                      fullWidth
-                      label="Nombre"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      value={formik.values.nombre}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.nombre && formik.errors.nombre}
-                      // errorMessage={formik.errors.nombre}
-                      aria-describedby={`error-tooltip-${formik.touched.nombre ? 'nombre' : ''}`}
-                    />
-                    {formik.touched.nombre && formik.errors.nombre && (
-                      <Tooltip
-                        content={formik.errors.nombre}
-                        placement="right"
+                <ModalBody>
+                  <div className="grid grid-cols-1 gap-2 w-full p-4 overflow-y">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                      <input
+                        name="idUsuario"
+                        type="number"
+                        label="idUsuario"
+                        variant="bordered"
                         color="danger"
-                        visible={formik.touched.nombre && !!formik.errors.nombre}
+                        value={formik.values.idUsuario}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        hidden
+                      />
+                      <input
+                        name="idEstado"
+                        type="number"
+                        label="idEstado"
+                        variant="bordered"
+                        color="danger"
+                        value={formik.values.idEstado}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        hidden
+                      />
+                      <input
+                        name="prioridad"
+                        type="number"
+                        label="prioridad"
+                        variant="bordered"
+                        color="danger"
+                        value={formik.values.prioridad}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        hidden
+                      />
+                      <input
+                        name="montoTotal"
+                        type="number"
+                        label="montoTotal"
+                        variant="bordered"
+                        color="danger"
+                        value={formik.values.montoTotal}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        hidden
+                      />
+                      <Input
+                        name="nombre"
+                        type="text"
+                        fullWidth
+                        label="Nombre"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        value={formik.values.nombre}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.nombre && formik.errors.nombre}
+                        errorMessage={formik.errors.nombre}
+                      />
+                      <Input
+                        name="apellidoUno"
+                        type="text"
+                        fullWidth
+                        label="Primer apellido"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        value={formik.values.apellidoUno}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.apellidoUno && formik.errors.apellidoUno}
+                        errorMessage={formik.errors.apellidoUno}
+                      />
+                      <Input
+                        name="apellidoDos"
+                        type="text"
+                        fullWidth
+                        label="Segundo apellido"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        value={formik.values.apellidoDos}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.apellidoDos && formik.errors.apellidoDos}
+                        errorMessage={formik.errors.apellidoDos}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <Input
+                        name="correo"
+                        type="email"
+                        fullWidth
+                        label="Correo"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        value={formik.values.correo}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.correo && formik.errors.correo}
+                        errorMessage={formik.errors.correo}
+                      />
+                      <Input
+                        name="telefono"
+                        type="tel"
+                        fullWidth
+                        label="Teléfono"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        value={formik.values.telefono}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.telefono && formik.errors.telefono}
+                        errorMessage={formik.errors.telefono}
+                      />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Input
+                        name="fechaEntrega"
+                        type="date"
+                        fullWidth
+                        label="Fecha de entrega"
+                        variant="bordered"
+                        color="danger"
+                        className="text-gray-500"
+                        value={formik.values.fechaEntrega}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.fechaEntrega && formik.errors.fechaEntrega}
+                        errorMessage={formik.errors.fechaEntrega}
+                      />
+                      <Select
+                        name="metodoEntrega"
+                        value={formik.values.metodoEntrega}  // Vincular el valor de idCategoria
+                        /*agregar el onchange */
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        label="Método de entrega"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        placeholder="Seleccione método de entrega"
+                        isInvalid={formik.touched.metodoEntrega && formik.errors.metodoEntrega}
+                        errorMessage={formik.errors.metodoEntrega}
+                        onChange={(value) => { formik.setFieldValue("metodoEntrega", value.target.value); }}
                       >
-                        <span className="absolute top-4 right-8">⚠️</span>
-                      </Tooltip>
-                    )}
-                  </div>
-                    
-                    <Input
-                      name="apellidoUno"
-                      type="text"
-                      fullWidth
-                      label="Apellido Uno"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      value={formik.values.apellidoUno}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.apellidoUno && formik.errors.apellidoUno}
-                      errorMessage={formik.errors.apellidoUno}
-                    />
-                    <Input
-                      name="apellidoDos"
-                      type="text"
-                      fullWidth
-                      label="Apellido Dos"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      value={formik.values.apellidoDos}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.apellidoDos && formik.errors.apellidoDos}
-                      errorMessage={formik.errors.apellidoDos}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                      name="correo"
-                      type="email"
-                      fullWidth
-                      label="Correo"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      value={formik.values.correo}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.correo && formik.errors.correo}
-                      errorMessage={formik.errors.correo}
-                    />
-                    <Input
-                      name="telefono"
-                      type="tel"
-                      fullWidth
-                      label="Teléfono"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      value={formik.values.telefono}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.telefono && formik.errors.telefono}
-                      errorMessage={formik.errors.telefono}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input
-                      name="fechaEntrega"
-                      type="date"
-                      fullWidth
-                      label="Fecha de entrega"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      value={formik.values.fechaEntrega}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.fechaEntrega && formik.errors.fechaEntrega}
-                      errorMessage={formik.errors.fechaEntrega}
-                    />
-                    <Select
-                      name="metodoEntrega"
-                      fullWidth
-                      label="Método de entrega"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      placeholder="Seleccione método de entrega"
-                      selectedKeys={[formik.values.metodoEntrega]}
-                      onSelectionChange={(value) => formik.setFieldValue("metodoEntrega", value)}
-                      isInvalid={formik.touched.metodoEntrega && formik.errors.metodoEntrega}
-                    >
-                      {metodoEntrega.map((metodo) => (
-                        <SelectItem key={metodo.key}>{metodo.label}</SelectItem>
-                      ))}
-                    </Select>
-                    {formik.touched.metodoEntrega && formik.errors.metodoEntrega ? (
-                    <div className="text-red-500 text-xs mt-1">{formik.errors.metodoEntrega}</div>
-                    ) : null}
-                    <Select
-                      name="metodoPago"
-                      fullWidth
-                      label="Método de pago"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      placeholder="Seleccione método de pago"
-                      selectedKeys={[formik.values.metodoPago]}
-                      onSelectionChange={(value) => formik.setFieldValue("metodoPago", value)}
-                    >
-                      {metodoPago.map((metodo) => (
-                        <SelectItem key={metodo.key}>{metodo.label}</SelectItem>
-                      ))}
-                    </Select>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Select
-                      name="provincia"
-                      fullWidth
-                      label="Provincia"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      placeholder="Seleccione la provincia"
-                      selectedKeys={[formik.values.provincia]}
-                      onSelectionChange={(value) => formik.setFieldValue("provincia", value)}
-                      isInvalid={formik.touched.provincia && formik.errors.provincia}
-                    >
-                        <SelectItem key="limon" value="limon">
-                          Limón
-                        </SelectItem>
-                    </Select>
-                    {formik.touched.provincia && formik.errors.provincia ? (
-                    <div className="text-red-500 text-xs mt-1">{formik.errors.provincia}</div>
-                    ) : null}
-
-                    <Select
-                      name="canton"
-                      fullWidth
-                      label="Cantón"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      placeholder="Seleccione el cantón"
-                      selectedKeys={[formik.values.canton]}
-                      onSelectionChange={(value) => formik.setFieldValue("canton", value)}
-                      isInvalid={formik.touched.canton && formik.errors.canton}
+                        {metodoEntrega.map((metodo) => (
+                          <SelectItem key={metodo.key}>{metodo.label}</SelectItem>
+                        ))}
+                      </Select>
+                      <Select
+                        name="metodoPago"
+                        value={formik.values.metodoPago}  // Vincular el valor de idCategoria
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        label="Método de pago"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        placeholder="Seleccione método de pago"
+                        isInvalid={formik.touched.metodoPago && formik.errors.metodoPago}
+                        errorMessage={formik.errors.metodoPago}
+                        onChange={(value) => { formik.setFieldValue("metodoPago", value.target.value); }}
                       >
-                      {cantones.map((canton) => (
-                        <SelectItem key={canton.id} value={canton.id}>
-                        {canton.nombre}
-                      </SelectItem>
-                      ))}
-                    </Select>
-                    {formik.touched.canton && formik.errors.canton ? (
-                    <div className="text-red-500 text-xs mt-1">{formik.errors.canton}</div>
-                    ) : null}
+                        {metodoPago.map((metodo) => (
+                          <SelectItem key={metodo.key}>{metodo.label}</SelectItem>
+                        ))}
+                      </Select>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <Select
+                        name="idProvincia"
+                        value={formik.values.idProvincia}
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        label="Provincia"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        placeholder="Seleccione la provincia"
+                        isInvalid={formik.touched.idProvincia && formik.errors.idProvincia}
+                        errorMessage={formik.errors.idProvincia}
+                        onChange={(value) => { formik.setFieldValue("idProvincia", value.target.value); }}
+                      >
+                        {provincias.map((provincia) => (
+                          <SelectItem key={provincia.idProvincia}>{provincia.nombre}</SelectItem>
+                        ))}
+                      </Select>
 
-                    <Select
-                      name="distrito"
-                      fullWidth
-                      label="Distrito"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      placeholder="Seleccione el distrito"
-                      selectedKeys={[formik.values.distrito]}
-                      onSelectionChange={(value) => formik.setFieldValue("distrito", value)}
-                      isInvalid={formik.touched.canton && formik.errors.canton}
-                    >
-                      {distritos.map((distrito) => (
-                        <SelectItem key={distrito.id} value={distrito.id}>
-                        {distrito.nombre}
-                      </SelectItem>
-                      ))}
-                    </Select>
-                    {formik.touched.distrito && formik.errors.distrito ? (
-                    <div className="text-red-500 text-xs mt-1">{formik.errors.distrito}</div>
-                    ) : null}
+
+                      <Select
+                        name="idCanton"
+                        value={formik.values.idCanton}  // Vincular el valor de idCategoria
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        label="Cantón"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        placeholder="Seleccione el cantón"
+                        isInvalid={formik.touched.idCanton && formik.errors.idCanton}
+                        errorMessage={formik.errors.idCanton}
+                        onChange={(value) => { formik.setFieldValue("idCanton", value.target.value); }}
+                      >
+
+                          <SelectItem key={provincias[0].canton[0].idCanton}>{provincias[0].canton[0].nombre}</SelectItem>
+
+                      </Select>
+
+
+                      <Select
+                        name="idDistrito"
+                        value={formik.values.idDistrito}
+                        onBlur={formik.handleBlur}
+                        fullWidth
+                        label="Distrito"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        placeholder="Seleccione el distrito"
+                        isInvalid={formik.touched.idDistrito && formik.errors.idDistrito}
+                        errorMessage={formik.errors.idDistrito}
+                        onChange={(value) => { formik.setFieldValue("idDistrito", value.target.value); }}
+                      >
+                        <SelectItem key={provincias[0].canton[0].distrito[0].idDistrito}>{provincias[0].canton[0].distrito[0].nombre}</SelectItem>
+                      </Select>
+
+
+                    </div>
+                    <div>
+                      <Input
+                        name="direccionExacta"
+                        type="text"
+                        fullWidth
+                        label="Dirección exacta"
+                        variant="bordered"
+                        color="danger"
+                        className="text-black"
+                        value={formik.values.direccionExacta}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        isInvalid={formik.touched.direccionExacta && formik.errors.direccionExacta}
+                        errorMessage={formik.errors.direccionExacta}
+                      />
+                      <div className="mt-2 py-1 flex justify-end space-x-2">
+                        <Button color="danger" variant="light" onPress={onClose}>
+                          Cerrar
+                        </Button>
+                        <Button type="submit" color="danger">
+                          Enviar
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <Input
-                      name="direccionExacta"
-                      type="text"
-                      fullWidth
-                      label="Dirección exacta"
-                      variant="bordered"
-                      color="danger"
-                      className="text-black"
-                      value={formik.values.direccionExacta}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      isInvalid={formik.touched.direccionExacta && formik.errors.direccionExacta}
-                      errorMessage={formik.errors.direccionExacta}
-                    />
-                  </div>
-                </div>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Cerrar
-                </Button>
-                <Button type="submit" color="danger" auto>
-                  Enviar
-                </Button>
-                </ModalFooter>
-            </form>
-          </>
-        )}
-      </ModalContent>
-    </Modal>
+                  {isLoading && (
+                    <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-50 bg-gray-700 z-10">
+                      <div className="flex flex-col justify-center items-center space-y-4">
+                        <div className="border-4 border-t-4 border-gray-300 border-t-danger rounded-full w-10 h-10 animate-spin"></div>
+                        <span className="text-white">Espere un momento...</span>
+                      </div>
+                    </div>
+                  )}
+
+                </ModalBody>
+              </form>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 };
 

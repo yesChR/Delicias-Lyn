@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const {nextui} = require("@nextui-org/react");
+const { nextui } = require("@nextui-org/react");
 
 module.exports = {
   content: [
@@ -18,6 +18,7 @@ module.exports = {
         btnSideBar3: "#ffe8e9",
         btnSideBar3: "#ffe8e9",
         black: "#000",
+        white: "#ffffff"
       },
     },
   },

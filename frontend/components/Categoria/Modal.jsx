@@ -1,4 +1,4 @@
-import { Modal, Input, ModalContent, ModalHeader, ModalBody, ModalFooter, Button } from "@nextui-org/react";
+import { Modal, Input, ModalContent, ModalBody, ModalFooter, Button } from "@nextui-org/react";
 import { useFormik } from "formik";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
