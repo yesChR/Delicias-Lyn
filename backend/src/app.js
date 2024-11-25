@@ -17,7 +17,8 @@ const carrito = require("./routes/carrito.routes");
 const producto = require("./routes/producto.routes"); 
 const estado = require("./routes/estado.routes");
 const pedido = require("./routes/pedido.routes"); 
-
+const tamaño = require("./routes/tamaño.routes");
+const tamañoXproducto = require("./routes/tamañoXproducto.routes");
 
 const app = express();
 const cors = require("cors");
@@ -44,5 +45,7 @@ app.use("/carrito", carrito);
 app.use("/producto", producto); 
 app.use("/estado",estado);
 app.use("/pedido", pedido); 
+app.use('/tamano', tamaño);
+app.use('/tamanoXproducto', tamañoXproducto);
 
 export default app;
