@@ -8,47 +8,102 @@ import Image from "next/image";
 import { useCallback } from "react";
 import Swal from "sweetalert2";
 
-const ProductCard = () => {
+const ProductCard = ({ producto }) => {
+    
+    // Validar que producto no sea undefined
+    if (!producto) {
+        return null; // No renderizar nada si producto no está definido
+    }
+    
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
     const [quantity, setQuantity] = useState(1); // Estado para manejar la cantidad
+    const [total, setTotal] = useState(producto.precio); // Estado para el precio total
 
     const handleDecrement = () => {
         if (quantity > 1) {
             setQuantity(quantity - 1); // Disminuir la cantidad
+            setTotal((quantity - 1) * producto.precio);
         }
     };
 
     const handleIncrement = () => {
         setQuantity(quantity + 1); // Aumentar la cantidad
+        setTotal((quantity + 1) * producto.precio);
     };
 
     const ventanaDetalle = useCallback(() => {
         Swal.fire({
-            title: "Detalles del producto",
+            title: producto.nombre,
+            title: producto.descripcion,
             confirmButtonColor: "#ff6984",
             confirmButtonText: "Aceptar",
-            html: "<p>El queque es de chocolate con lustre blanco y amarillo, incluye flores amarillas</p>"
         })
-    }, []);
+    }, [producto]);
+
+
+    const handleAddToCart = async () => {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+        try {
+          const response = await fetch(`${apiUrl}/carrito/agregar`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              idUsuario: 2,//<- Estatico para pruebas
+              idProducto: producto.idProducto,
+              idTamaño: 13,
+              cantidad: quantity,
+              montoXCantidad: total,
+              personalizacion: "Extra crema batida con caramelo",
+            }),
+          });
+    
+          if (response.ok) {
+            Swal.fire({
+              title: "Producto añadido al carrito",
+              icon: "success",
+              confirmButtonColor: "#ff6984",
+              timer: 1000,
+            });
+          } else {
+            Swal.fire({
+              title: "Error al añadir al carrito",
+              icon: "error",
+              confirmButtonColor: "#ff6984",
+              timer: 1000,
+            });
+          }
+        } catch (error) {
+          console.error("Error al añadir el producto al carrito", error);
+          Swal.fire({
+            title: "Error al añadir al carrito",
+            icon: "error",
+            confirmButtonColor: "#ff6984",
+            timer: 1000,
+          });
+        }
+      };
 
     return (
         <div className="bg-white text-black shadow-lg rounded-lg border border-pink-200 p-4 flex flex-col max-w-xs mx-auto">
             {/* Imagen del producto */}
             <Image
                 src="/flores amarillas.jpeg"
-                alt="Producto"
+                alt={producto.nombre}
                 className="w-full mb-4 rounded"
                 width={140}
                 height={100}
             />
 
             {/* Nombre del producto */}
-            <h2 className="text-lg mb-2">Nombre del Producto</h2>
+            <h2 className="text-lg mb-2">{producto.nombre}</h2>
 
             <div className="flex w-full justify-center">
                 {/* Fila con Precio y Selector de Cantidad */}
                 <div className="flex justify-between mb-4 gap-8">
-                    <span className="text-xl font-bold text-danger">₡ 20.000</span>
+                    <span className="text-xl font-bold text-danger">₡ {total.toLocaleString()}</span>
                     <div className="flex items-center">
                         <div className="relative flex items-center">
                             <button
@@ -88,7 +143,7 @@ const ProductCard = () => {
                     </span>
                     Detalles
                 </Button>
-                <Button onClick={onOpen} className="bg-btnSideBar2 text-black rounded-md px-4 py-2 hover:bg-principal flex items-center">
+                <Button onClick={handleAddToCart} className="bg-btnSideBar2 text-black rounded-md px-4 py-2 hover:bg-principal flex items-center">
                     <span className="text-lg text-black cursor-pointer active:opacity-50 mr-2">
                         <BsFillCartPlusFill className="text-lg" />
                     </span>

@@ -114,7 +114,7 @@ export const crearPedido = async (req, res) => {
                                 <li><strong>Correo:</strong> ${correo}</li>
                                 <li><strong>Teléfono:</strong> ${telefono}</li>
                                 <li><strong>Fecha de Entrega:</strong> ${fechaEntrega}</li>
-                                <li><strong>Monto Total:</strong> $${montoTotal}</li>
+                                <li><strong>Monto Total:</strong> ₡${montoTotal}</li>
                             </ul>
                             <p style="font-size: 16px; color: #333;">Te contactaremos pronto con más detalles sobre el estado de tu pedido.</p>
                         </div>

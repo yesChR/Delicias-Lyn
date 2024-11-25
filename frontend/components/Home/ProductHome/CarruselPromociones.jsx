@@ -4,7 +4,7 @@ import React from "react";
 import Slider from "react-slick"; // Dependencia del carrusel
 import ProductCard from "./ProductCard"; // Asegúrate de que este componente exista
 
-const CarrusellPromociones = () => {
+const CarrusellPromociones = ({ productos }) => {
     // Configuración del carrusel
     const settings = {
         dots: true,
@@ -37,9 +37,10 @@ const CarrusellPromociones = () => {
         <div className="max-w-[985px] mx-auto bg-secundario text-black shadow-2xl rounded-lg p-10">
             <p className="text-principal flex justify-center text-[18px] font-bold mb-5">Promociones Disponibles</p>
             <Slider {...settings} className="relative z-20">
-                {[...Array(6)].map((_, index) => ( // Generar 6 ProductCards
+                {productos &&
+                productos.slice(6, 12).map((producto, index) => (
                     <div key={index} className="pr-2 pl-2">
-                        <ProductCard/>
+                    <ProductCard producto={producto} />
                     </div>
                 ))}
             </Slider>

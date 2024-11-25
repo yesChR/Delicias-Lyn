@@ -13,6 +13,8 @@ import LoginModal from "../Usuario/Auth"; // Asegúrate de especificar la ruta c
 import ResetModal from "../Usuario/Reset"; // Asegúrate de especificar la ruta correcta
 import ChangePasswordModal from "../Usuario/ChangePassword"; // Asegúrate de especificar la ruta correcta
 import { useState } from "react";
+import { useRouter } from "next/router";
+import Swal from "sweetalert2";
 
 /** */
 
@@ -25,6 +27,44 @@ const NavBar = ({ accionarSideBar }) => {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isResetOpen, setIsResetOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+
+    const router = useRouter();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+    const handleCarritoClick = async () => {
+        try {
+            // Hacer una petición al backend para obtener el estado actual del carrito
+            const response = await fetch(`${apiUrl}/carrito/visualizar/2`); //<- De momento utiliza un id estatico xD
+            if (response.ok) {
+                const data = await response.json();
+                if (data.length === 0) {
+                    // Mostrar Swal si el carrito está vacío
+                    Swal.fire({
+                        title: "Carrito vacío",
+                        text: "Tu carrito está vacío. Añade productos antes de ir al carrito.",
+                        icon: "info",
+                        confirmButtonColor: "#ff6984",
+                        confirmButtonText: "Aceptar",
+                    });
+                } else {
+                    // Redirigir al carrito si hay productos
+                    router.push("/carrito");
+                }
+            } else {
+                console.error("Error al verificar el carrito");
+            }
+        } catch (error) {
+            console.error("Error al acceder al carrito", error);
+            Swal.fire({
+                title: "Error",
+                text: "No se pudo verificar el carrito. Inténtalo nuevamente.",
+                icon: "error",
+                confirmButtonColor: "#ff6984",
+                confirmButtonText: "Aceptar",
+            });
+        }
+    };
+
 
     return (
         <header>
@@ -87,8 +127,8 @@ const NavBar = ({ accionarSideBar }) => {
                             </Button>
                         </div>
                         <div className="flex space-x-1 mr-5"> {/* Cambiar espacio a 1 */}
-                            <Button href={"/carrito"}
-                                as={Link} className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
+                            <Button onClick={handleCarritoClick}
+                                className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                 <TiShoppingCart className="text-2xl" />
                             </Button>
                             <Dropdown>
