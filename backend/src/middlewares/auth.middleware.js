@@ -12,10 +12,8 @@ import rateLimit from 'express-rate-limit';
  */
 
 
-
 export const validarToken = (req, res, next) => {
     const token = req.headers['authorization']?.split(' ')[1]; // Suponiendo que el token se envía en el encabezado Authorization como "Bearer <token>"
-
 
     if (!token) {
         return res.status(401).json({ message: 'No se proporcionó token de autenticación.' });
@@ -25,7 +23,6 @@ export const validarToken = (req, res, next) => {
         if (err) {
             return res.status(403).json({ message: 'Token no válido.' });
         }
-
         req.idUsuario = decoded.id; // Guardamos el id del usuario en el objeto de la solicitud
         req.userRole = decoded.rol; // Guardamos el rol del usuario en el objeto de la solicitud
         next();

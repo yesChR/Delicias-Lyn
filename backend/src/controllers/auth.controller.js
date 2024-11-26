@@ -292,3 +292,59 @@ export const resetearContraseña = async (req, res) => {
         res.status(500).json({ message: 'Error en el servidor' });
     }
 };
+
+
+
+
+export const validarCredencial = async (req, res) => {
+    const { correo, token, codigoIngresado } = req.body;
+    const { tipo } = req.params;  
+
+    try {
+        // Validar que se haya enviado el correo y el tipo de validación correcto
+        if (!correo || !(token || codigoIngresado)) {
+            return res.status(400).json({ message: 'Correo, token o código son requeridos' });
+        }
+
+        // Buscar el usuario por correo
+        const usuario = await Usuario.findOne({ where: { correo } });
+
+        if (!usuario) {
+            return res.status(400).json({ message: 'Correo no encontrado' });
+        }
+
+        // Validación por tipo de validación: 'token' o 'codigo'
+        if (tipo === 'token') {
+            // Validar token
+            if (usuario.token !== token) {
+                return res.status(400).json({ message: 'Token no válido' });
+            }
+            return res.status(200).json({ message: 'Token válido. Puedes proceder con la acción correspondiente.' });
+
+        } else if (tipo === 'codigo') {
+            // Validar código
+            if (!usuario.token || usuario.token === 'token_default') {
+                return res.status(400).json({ message: 'No se ha solicitado un código de recuperación o el token es inválido' });
+            }
+
+            // Extraer el código y la expiración del token almacenado
+            const [codigo, expiracion] = usuario.token.split('-');
+
+            if (codigo !== codigoIngresado) {
+                return res.status(400).json({ message: 'Código de verificación no válido' });
+            }
+
+            if (Date.now() > Number(expiracion)) {
+                return res.status(400).json({ message: 'El código ha expirado' });
+            }
+
+            return res.status(200).json({ message: 'Código válido. Puedes proceder a restablecer tu contraseña.' });
+
+        } else {
+            return res.status(400).json({ message: 'Tipo de validación no reconocido' });
+        }
+    } catch (error) {
+        console.error('Error al validar token o código:', error);
+        res.status(500).json({ message: 'Error en el servidor' });
+    }
+};

@@ -10,32 +10,42 @@ import {
 } from "@nextui-org/react";
 import { MailIcon } from "../Iconos/MailIcon";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import Swal from 'sweetalert2'; // Import SweetAlert2
-import ResetPasswordModal from './Reset'; // Asegúrate de que el componente ResetPasswordModal esté importado correctamente
+import Swal from 'sweetalert2';
+import ResetPasswordModal from './Reset';
+import { useAuth } from '../../context/authContext'; 
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
-const InputField = ({ placeholder, type = "text", name, value, onChange, endContent }) => (
-  <Input
-    classNames={{
-      inputWrapper: [
-        "border-[rgb(255_105_132)]",
-        "hover:border-[rgb(255_80_100)]",
-        "focus:border-[rgb(255_95_130)]",
-        "group-data-[focus=true]:border-[rgb(255_155_130)]",
-        "rounded-[25px]",
-        "min-h-[45px]",
-      ],
-    }}
-    placeholder={placeholder}
-    type={type}
-    variant="bordered"
-    name={name}
-    value={value}
-    onChange={onChange}
-    endContent={endContent}
-  />
+import { iniciarSesion, registrarUsuario } from './AuthService';
+
+
+const InputField = ({ placeholder, type = "text", name, value, onChange, endContent, error }) => (
+  <div style={{ width: '100%' }}>
+    <Input
+      classNames={{
+        inputWrapper: [
+          "border-[rgb(255_105_132)]",
+          "hover:border-[rgb(255_80_100)]",
+          "focus:border-[rgb(255_95_130)]",
+          "group-data-[focus=true]:border-[rgb(255_155_130)]",
+          "rounded-[25px]",
+          "min-h-[45px]",
+        ],
+      }}
+      placeholder={placeholder}
+      type={type}
+      variant="bordered"
+      name={name}
+      value={value}
+      onChange={onChange}
+      endContent={endContent}
+    />
+    {error && <div style={{ color: 'red', fontSize: '12px' }}>{error}</div>}
+  </div>
 );
 
-const LoginForm = ({ formData, handleChange, togglePasswordVisibility, showPassword }) => (
+
+const LoginForm = ({ formData, handleChange, togglePasswordVisibility, showPassword, errors }) => (
   <>
     <InputField
       placeholder="Correo electrónico"
@@ -43,6 +53,7 @@ const LoginForm = ({ formData, handleChange, togglePasswordVisibility, showPassw
       value={formData.correoElectronico}
       onChange={handleChange}
       endContent={<MailIcon className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />}
+      error={errors.correoElectronico}
     />
     <InputField
       placeholder="Contraseña"
@@ -55,17 +66,19 @@ const LoginForm = ({ formData, handleChange, togglePasswordVisibility, showPassw
           {showPassword ? <FaEyeSlash className="text-2xl text-default-400" /> : <FaEye className="text-2xl text-default-400" />}
         </div>
       }
+      error={errors.contrasena}
     />
   </>
 );
 
-const RegisterForm = ({ formData, handleChange,togglePasswordVisibility, showPassword }) => (
+
+const RegisterForm = ({ formData, handleChange, togglePasswordVisibility, showPassword, errors }) => (
   <>
-    <InputField placeholder="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} />
-    <InputField placeholder="Primer apellido" name="primerApellido" value={formData.primerApellido} onChange={handleChange} />
-    <InputField placeholder="Segundo apellido" name="segundoApellido" value={formData.segundoApellido} onChange={handleChange} />
-    <InputField placeholder="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} />
-    <InputField placeholder="Correo electrónico" name="correoElectronico" type="email" value={formData.correoElectronico} onChange={handleChange} />
+    <InputField placeholder="Nombre" name="nombre" value={formData.nombre} onChange={handleChange} error={errors.nombre} />
+    <InputField placeholder="Primer apellido" name="primerApellido" value={formData.primerApellido} onChange={handleChange} error={errors.primerApellido} />
+    <InputField placeholder="Segundo apellido" name="segundoApellido" value={formData.segundoApellido} onChange={handleChange} error={errors.segundoApellido} />
+    <InputField placeholder="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} error={errors.telefono} />
+    <InputField placeholder="Correo electrónico" name="correoElectronico" type="email" value={formData.correoElectronico} onChange={handleChange} error={errors.correoElectronico} />
     <InputField
       placeholder="Contraseña"
       name="contrasena"
@@ -77,12 +90,13 @@ const RegisterForm = ({ formData, handleChange,togglePasswordVisibility, showPas
           {showPassword ? <FaEyeSlash className="text-2xl text-default-400" /> : <FaEye className="text-2xl text-default-400" />}
         </div>
       }
+      error={errors.contrasena}
     />
   </>
 );
-
 export default function AuthModal({ isOpen, onOpenChange }) {
   const [isLogin, setIsLogin] = useState(true);
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     correoElectronico: '',
@@ -104,29 +118,121 @@ export default function AuthModal({ isOpen, onOpenChange }) {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = () => {
+
+  const handleSubmit = async (e) => {
+
     if (isLogin) {
-      // Aquí puedes agregar lógica para hacer login
-      console.log("Iniciar sesión con", formData);
+      try {
+
+        const correo = formik.values.correoElectronico;
+        const contrasena = formik.values.contrasena;
+        // Llamada al servicio para hacer el login
+        const result = await iniciarSesion(correo, contrasena);
+
+        if (result.success) {
+          login(result.user, result.token);  // Almacena usuario y token en el contexto y localStorage
+          Swal.fire({
+            title: 'Autenticación',
+            text: 'Ha sido autenticado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+            timer: 2000,
+          });
+          // window.location.href = window.location.href;
+
+        } else {
+          // Error en el login
+          Swal.fire({
+            title: 'Error',
+            text: result.message,
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+          });
+        }
+      } catch (err) {
+        // En caso de error inesperado
+        Swal.fire({
+          title: 'Error',
+          text: 'Hubo un problema al intentar iniciar sesión.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+        });
+
+      }
     } else {
-      Swal.fire({
-        title: '¡Registro exitoso!',
-        text: 'Te has registrado correctamente.',
-        icon: 'success',
-        confirmButtonText: 'Aceptar',
-        timer: 1000,
-      });
+
+      const userData = {
+        nombre: formik.values.nombre,
+        apellodoUno: formik.values.primerApellido,
+        apellidoDos: formik.values.segundoApellido,
+        correo: formik.values.correoElectronico,
+        telefono: formik.values.telefono,
+        contraseña: formik.values.contrasena, 
+      };
+
+      console.log(userData)
+
+      try {
+        const result = await registrarUsuario(userData); 
+
+
+        Swal.fire({
+          title: '¡Registro exitoso!',
+          text: 'Te has registrado correctamente.',
+          icon: 'success',
+          confirmButtonText: 'Aceptar',
+          timer: 1000,
+        });
+
+
+
+      } catch (error) {
+        Swal.fire({
+          title: 'Error',
+          text: 'Error a la hora de registrarse.',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+        });
+      }
     }
 
-    setFormData({
+  };
+
+
+
+
+  const formik = useFormik({
+    initialValues: {
+      correoElectronico: '',
+      contrasena: '',
       nombre: '',
       primerApellido: '',
       segundoApellido: '',
       telefono: '',
-      correoElectronico: '',
-      contrasena: '',
-    });
-  };
+    },
+    validationSchema: Yup.object({
+      correoElectronico: Yup.string().email("Correo inválido").required("El correo es obligatorio"),
+      contrasena: Yup.string().min(3, "La contraseña debe tener al menos 6 caracteres").required("La contraseña es obligatoria"),
+      nombre: Yup.string().required('El nombre es obligatorio').max(50, 'El nombre no debe tener más de 50 caracteres')
+      ,
+
+      primerApellido: Yup.string().required('El primer apellido es obligatorio').max(50, 'El nombre no debe tener más de 50 caracteres')
+      ,
+
+      segundoApellido: Yup.string().required('El segundo apellido es obligatorio')
+        .max(50, 'El nombre no debe tener más de 50 caracteres')
+      ,
+
+      telefono: Yup.string()
+        .matches(/^[0-9]+$/, 'El código debe contener solo números') // Valida números
+        .max(8, 'No puede ser mayor a 8 dígitos') // Limita a 11 dígitos
+        .required('El código es obligatorio')
+    }),
+
+    handleSubmit
+  });
+
+
 
   const handleToggleLogin = () => {
     setIsLogin((prev) => !prev); // Cambiar entre login y registro
@@ -163,16 +269,19 @@ export default function AuthModal({ isOpen, onOpenChange }) {
           <ModalBody style={{ marginLeft: "5%", marginRight: "5%", gap: "20px" }}>
             {isLogin ? (
               <LoginForm
-                formData={formData}
-                handleChange={handleChange}
+                formData={formik.values}
+                handleChange={formik.handleChange}
                 togglePasswordVisibility={togglePasswordVisibility}
                 showPassword={showPassword}
+                errors={formik.errors}
               />
             ) : (
-              <RegisterForm   formData={formData}
-              handleChange={handleChange}
-              togglePasswordVisibility={togglePasswordVisibility}
-              showPassword={showPassword}
+              <RegisterForm
+                formData={formik.values}
+                handleChange={formik.handleChange}
+                togglePasswordVisibility={togglePasswordVisibility}
+                showPassword={showPassword}
+                errors={formik.errors}
               />
             )}
           </ModalBody>
@@ -185,23 +294,56 @@ export default function AuthModal({ isOpen, onOpenChange }) {
               gap: "8px",
             }}
           >
-            <Button
-              style={{
-                marginTop: "10px",
-                backgroundColor: "rgb(255,105,132)",
-                color: "#ffffff",
-                width: "50%",
-                fontSize: "17px",
-                borderRadius: "20px",
-              }}
-              onPress={() => {
-                handleSubmit();
-                onOpenChange(false); // Cierra el modal de login
-              }}
-            >
-              {isLogin ? "Iniciar" : "Registrarse"}
-            </Button>
 
+
+            {isLogin && (
+              <Button
+                style={{
+                  marginTop: "10px",
+                  backgroundColor: "rgb(255,105,132)",
+                  color: "#ffffff",
+                  width: "50%",
+                  fontSize: "17px",
+                  borderRadius: "20px",
+                }}
+                onPress={() => {
+                  const areSpecificFieldsEmpty = !formik.values.correoElectronico || !formik.values.contrasena;
+                  const areSpecificFieldsValid = !formik.errors.correoElectronico && !formik.errors.contrasena;
+
+                  if (areSpecificFieldsValid && !areSpecificFieldsEmpty) {
+                    handleSubmit();
+                    onOpenChange(false); // Cierra el modal de login
+                  }
+                }}
+              >
+                Iniciar
+              </Button>
+            )}
+
+
+
+            {!isLogin && (
+
+              <Button
+                style={{
+                  marginTop: "10px",
+                  backgroundColor: "rgb(255,105,132)",
+                  color: "#ffffff",
+                  width: "50%",
+                  fontSize: "17px",
+                  borderRadius: "20px",
+                }}
+                onPress={() => {
+
+                  handleSubmit();
+                  onOpenChange(false); // Cierra el modal de login
+
+                }}
+              >
+                Registrar
+              </Button>
+
+            )}
             <div
               style={{
                 display: 'flex',
@@ -247,7 +389,6 @@ export default function AuthModal({ isOpen, onOpenChange }) {
         </ModalContent>
       </Modal>
 
-      {/* Modal de Reset Password */}
       <ResetPasswordModal
         isOpen={isResetPasswordModalOpen}
         onOpenChange={setIsResetPasswordModalOpen}
