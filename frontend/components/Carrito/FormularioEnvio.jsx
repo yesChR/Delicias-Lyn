@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button, ModalContent, Select, SelectItem, Spinner, } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
@@ -14,7 +15,9 @@ const metodoPago = [
   { key: "2", label: "Por SINPE" },
 ];
 
-const FormularioEnvio = ({ isOpen, onOpenChange, formEnvioSelect, recargar }) => {
+const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, formEnvioSelect, recargar }) => {
+  const router = useRouter();
+  
   //aqui tengo el valor de la ruta del .env
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [isLoading, setIsLoading] = useState(false);
@@ -115,7 +118,7 @@ const FormularioEnvio = ({ isOpen, onOpenChange, formEnvioSelect, recargar }) =>
       idEstado: "1",
       idUsuario: "2",
       prioridad: "1",
-      montoTotal: "10000"
+      montoTotal: montoTotal,
     },
     validationSchema: schemaFormEnvio,
     enableReinitialize: true,
@@ -139,10 +142,12 @@ const FormularioEnvio = ({ isOpen, onOpenChange, formEnvioSelect, recargar }) =>
             showConfirmButton: false,
             timer: 1000
           }).then(() => {
-            //recargar();
+            recargar();
             onOpenChange(false);
           });
           resetForm();
+          // Redirigir al Home después de que el pedido sea exitoso
+          router.push('/');
         } else {
           Swal.fire({
             title: "No hay elementos en el carrito",

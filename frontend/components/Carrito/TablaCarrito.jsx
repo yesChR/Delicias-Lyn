@@ -16,10 +16,12 @@ import { FaPlus } from "react-icons/fa";
 import { FaMinus } from "react-icons/fa";
 import { MdOutlineDescription } from "react-icons/md";
 import Swal from "sweetalert2";
+import { useRouter } from "next/router";
 
-const TablaCarrito = ({ onOpen }) => {
+const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
   //ApiURL
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  const router = useRouter();
 
   const [carrito, setCarrito] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -45,10 +47,12 @@ const TablaCarrito = ({ onOpen }) => {
   useEffect(() => {
     const fetchCarrito = async () => {
       try {
-        const response = await fetch(`${apiUrl}/carrito/visualizar/2`);
+        const response = await fetch(`${apiUrl}/carrito/visualizar/2`); //<- Estatico para pruebas
         if (response.ok) {
           const data = await response.json();
           setCarrito(data);
+          // Actualizar el monto total al cargar los datos del carrito
+          actualizarMontoTotal(calcularTotal(data));
         }
       } catch (error) {
         console.error("Error al cargar los productos del carrito", error);
@@ -57,9 +61,16 @@ const TablaCarrito = ({ onOpen }) => {
     fetchCarrito();
   }, []);
 
-  // console.log(carrito[0].idUsuario);
-  // console.log(carrito[0].idProducto);
+  const calcularTotal = (carritoData = carrito) => {
+    return carritoData.reduce((total, item) => total + item.montoXCantidad, 0);
+  };
 
+  useEffect(() => {
+    // Cada vez que el carrito cambie, actualizar el monto total
+    actualizarMontoTotal(calcularTotal());
+  }, [carrito]);
+
+  
   //No borrar sino da error de hidratacion del HTML xD
   if (!isClient) {
     return <div>Cargando...</div>;
@@ -92,18 +103,31 @@ const TablaCarrito = ({ onOpen }) => {
                 setCurrentPage(maxPage);
               }
 
+              // Mostrar Swal si el carrito está vacío, despues de eliminarlo todo
+              if (updatedCarrito.length === 0) {
+                Swal.fire({
+                  title: "Carrito vacío",
+                  text: "Tu carrito está vacío. Añade productos antes de agendar un pedido.",
+                  icon: "info",
+                  confirmButtonColor: "#ff6984",
+                  confirmButtonText: "Aceptar",
+                }).then(() => {
+                  router.push("/");
+                });
+              } else {
+                // Mostrar Swal de "Producto eliminado correctamente" si aún quedan productos
+                Swal.fire({
+                  title: "Producto eliminado correctamente!",
+                  icon: "success",
+                  confirmButtonColor: "#fdc6c6",
+                  showConfirmButton: false,
+                  timer: 1000,
+                });
+              }
+
               return updatedCarrito;
             });
 
-
-
-              Swal.fire({
-                title: "Producto eliminado correctamente!",
-                icon: "success",
-                confirmButtonColor: "#fdc6c6",
-                showConfirmButton: false,
-                timer: 1000,
-              });
             } else {
               Swal.fire({
                 title: "Error al eliminar el producto",
@@ -303,10 +327,6 @@ const TablaCarrito = ({ onOpen }) => {
       default:
         return carrito[columnKey];
     }
-  };
-
-  const calcularTotal = () => {
-    return carrito.reduce((total, item) => total + item.montoXCantidad, 0);
   };
 
   return (
