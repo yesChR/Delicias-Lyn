@@ -174,10 +174,7 @@ const SideBar = ({ estaAbierto }) => {
                         className="bg-btnSideBar1 text-md shadow-md">
                         Mis pedidos
                     </Button>
-                    <Button
-                        fullWidth radius="full"
-                        size="sm"
-                        className="bg-btnSideBar1 text-md shadow-md">
+                    <Button href={"/informe"} as={Link} fullWidth radius="full" size="sm" className="bg-btnSideBar1 text-md shadow-md">
                         Informe
                     </Button>
                 </div>
