@@ -1,4 +1,4 @@
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Button, Pagination, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from "@nextui-org/react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Button, Pagination, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter } from "@nextui-org/react";
 import { EditIcon } from "../Iconos/EditIcon";
 import { DeleteIcon } from "../Iconos/DeleteIcon";
 import React, { useCallback } from "react";
@@ -14,22 +14,23 @@ import { IoIosAddCircle } from "react-icons/io";
 import { useState } from "react";
 
 const message = () => {
-alert("Keyron estuvo aqui💫");
+    alert("Keyron estuvo aqui💫");
 }
 
 
 const TablaProducto = ({ onOpen }) => {
 
-    const [isModalEditProductoOpen, setIsModalEditProductoOpen] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const [isModalOpen, setModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false); // Estado para determinar si es edición o creación
-    const openEditModal = () => {
-        setIsEditing(true); // Modo edición
+    const openEditModal = (producto) => {
+        setIsEditing(true);
+        setSelectedProduct(producto);
         setModalOpen(true);
     };
 
-    
+
     const productos = [
         {
             idProducto: 1,
@@ -51,29 +52,29 @@ const TablaProducto = ({ onOpen }) => {
             precio: 12000, // en colones
             descripcion: "Tarta fresca con una variedad de frutas de temporada.",
             tipo: "Comestible",
-            estado: "Disponible",
+            estado: "Pendiente de revisión",
         },
         {
             idProducto: 3,
             nombre: "Galletas de Avena",
-            categoria: "Repostería",
-            subcategoria: "Galletas",
+            categoria: "Panes",
+            subcategoria: "Panes",
             tamaño: "Pequeño",
             precio: 5000, // en colones
             descripcion: "Galletas crujientes de avena con pasas.",
-            tipo: "Comestible",
-            estado: "Agotado",
+            tipo: "Panes",
+            estado: "Aceptado",
         },
         {
             idProducto: 4,
             nombre: "Cupcake de Vainilla",
-            categoria: "Repostería",
-            subcategoria: "Cupcakes",
-            tamaño: "Pequeño",
+            categoria: "Queques",
+            subcategoria: "Seco",
+            tamaño: "",
             precio: 3000, // en colones
             descripcion: "Deliciosos cupcakes de vainilla con glaseado de mantequilla.",
-            tipo: "Comestible",
-            estado: "Disponible",
+            tipo: "Galletas",
+            estado: "Anticipo",
         },
     ];
 
@@ -93,16 +94,16 @@ const TablaProducto = ({ onOpen }) => {
     const ventanaInformacionTamaño = useCallback((producto) => {
         Swal.fire({
             title: "Tamaño",
-            html: `<p>${producto.tamaño}</p>`, 
+            html: `<p>${producto.tamaño}</p>`,
             confirmButtonColor: "#fdc6c6",
         });
     }, []);
 
 
-     const ventanaInformacionDescripcion = useCallback((producto) => {
+    const ventanaInformacionDescripcion = useCallback((producto) => {
         Swal.fire({
             title: "Descripción",
-            html: `<p>${producto.descripcion}</p>`, 
+            html: `<p>${producto.descripcion}</p>`,
             confirmButtonColor: "#fdc6c6",
         });
     }, []);
@@ -133,17 +134,17 @@ const TablaProducto = ({ onOpen }) => {
         const cellValue = producto[columnKey];
 
         switch (columnKey) {
-                    case "idProducto": 
-                    case "nombre":
-                    case "categoria":
-                    case "subcategoria":
-                    case "precio":
-                    case "tipo":
-                    case "estado":
-                        return <h1 style={{color: "black"}}>{cellValue}</h1>; //LES DA COLOR NEGRO
-                    case "tamaño":
-                        return (
-                        <div className="flex items-center justify-center gap-1">
+            case "idProducto":
+            case "nombre":
+            case "categoria":
+            case "subcategoria":
+            case "precio":
+            case "tipo":
+            case "estado":
+                return <h1 style={{ color: "black" }}>{cellValue}</h1>; //LES DA COLOR NEGRO
+            case "tamaño":
+                return (
+                    <div className="flex items-center justify-center gap-1">
                         <Button onClick={() => ventanaInformacionTamaño(producto)} className="bg-transparent min-w-4" size="sm">
                             <Tooltip color="danger" content="Información de Tamaño">
                                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
@@ -151,11 +152,11 @@ const TablaProducto = ({ onOpen }) => {
                                 </span>
                             </Tooltip>
                         </Button>
-                        </div>
-                    );
-                    case "descripcion":
-                    return (
-                        <div className="flex items-center justify-center gap-1">
+                    </div>
+                );
+            case "descripcion":
+                return (
+                    <div className="flex items-center justify-center gap-1">
                         <Button onClick={() => ventanaInformacionDescripcion(producto)} className="bg-transparent min-w-4" size="sm">
                             <Tooltip color="danger" content="Información de Producto">
                                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
@@ -163,12 +164,12 @@ const TablaProducto = ({ onOpen }) => {
                                 </span>
                             </Tooltip>
                         </Button>
-                        </div>
-                    );
+                    </div>
+                );
             case "acciones":
                 return (
                     <div className="flex items-center justify-center gap-1">
-                        <Button  onClick={openEditModal} className="bg-transparent min-w-4" size="sm">
+                        <Button onClick={() => openEditModal(producto)} className="bg-transparent min-w-4" size="sm">
                             <Tooltip color="danger" content="Editar">
                                 <span className="text-lg text-danger cursor-pointer active:opacity-50">
                                     <BiEditAlt />
@@ -192,48 +193,50 @@ const TablaProducto = ({ onOpen }) => {
 
     return (
         <>
-        <Table
-          className="custom-table"
-          isStriped
-          bottomContent={
-            <div className="flex w-full justify-center mt-6">
-              <Pagination
-                isCompact
-                showControls
-                showShadow
-                color="danger"
-                page={1}
-                total={3}
-              />
-            </div>
-          }
-        >
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn key={column.uid} align={"center"}>
-                {column.name}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={productos}>
-            {(item) => (
-              <TableRow
-                key={item.idProducto}
-                className="text-black hover:bg-gray-200 transition duration-300"
-              >
-                {(columnKey) => (
-                  <TableCell>{renderCell(item, columnKey)}</TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-          <ModalEditarProducto
-          isOpen={isModalOpen}
-          onOpenChange={setModalOpen}
-          modo={isEditing} // Pasa el estado aquí
-      />
+            <Table
+                className="custom-table"
+                isStriped
+                bottomContent={
+                    <div className="flex w-full justify-center mt-6">
+                        <Pagination
+                            isCompact
+                            showControls
+                            showShadow
+                            color="danger"
+                            page={1}
+                            total={3}
+                        />
+                    </div>
+                }
+            >
+                <TableHeader columns={columns}>
+                    {(column) => (
+                        <TableColumn key={column.uid} align={"center"}>
+                            {column.name}
+                        </TableColumn>
+                    )}
+                </TableHeader>
+                <TableBody items={productos}>
+                    {(item) => (
+                        <TableRow
+                            key={item.idProducto}
+                            className="text-black hover:bg-gray-200 transition duration-300"
+                        >
+                            {(columnKey) => (
+                                <TableCell>{renderCell(item, columnKey)}</TableCell>
+                            )}
+                        </TableRow>
+                    )}
+                </TableBody>
+            </Table>
+            <ModalEditarProducto
+                isOpen={isModalOpen}
+                onOpenChange={setModalOpen}
+                modo={isEditing} // Pasa el estado aquí
+                producto={selectedProduct}
+
+            />
         </>
-      );
-    };
+    );
+};
 export default TablaProducto;

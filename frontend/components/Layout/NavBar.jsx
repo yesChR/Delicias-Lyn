@@ -8,13 +8,13 @@ import { FaUserAlt } from "react-icons/fa";
 import { Source_Serif_4 } from "next/font/google";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import { Link } from "@nextui-org/react";
-/**31/10/2021 Albin */
+import Swal from 'sweetalert2'; // Import SweetAlert2
 import LoginModal from "../Usuario/Auth"; // Asegúrate de especificar la ruta correcta
 import ResetModal from "../Usuario/Reset"; // Asegúrate de especificar la ruta correcta
 import ChangePasswordModal from "../Usuario/ChangePassword"; // Asegúrate de especificar la ruta correcta
-import { useState } from "react";
-import { useRouter } from "next/router";
-import Swal from "sweetalert2";
+import { useState, useEffect } from "react";
+import { getApellido1, getApellido2, getNombre, cerrarSesion } from '../Usuario/AuthService';
+
 
 /** */
 
@@ -28,41 +28,34 @@ const NavBar = ({ accionarSideBar }) => {
     const [isResetOpen, setIsResetOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
-    const router = useRouter();
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    const handleCarritoClick = async () => {
-        try {
-            // Hacer una petición al backend para obtener el estado actual del carrito
-            const response = await fetch(`${apiUrl}/carrito/visualizar/2`); //<- De momento utiliza un id estatico xD
-            if (response.ok) {
-                const data = await response.json();
-                if (data.length === 0) {
-                    // Mostrar Swal si el carrito está vacío
-                    Swal.fire({
-                        title: "Carrito vacío",
-                        text: "Tu carrito está vacío. Añade productos antes de ir al carrito.",
-                        icon: "info",
-                        confirmButtonColor: "#ff6984",
-                        confirmButtonText: "Aceptar",
-                    });
-                } else {
-                    // Redirigir al carrito si hay productos
-                    router.push("/carrito");
-                }
-            } else {
-                console.error("Error al verificar el carrito");
-            }
-        } catch (error) {
-            console.error("Error al acceder al carrito", error);
-            Swal.fire({
-                title: "Error",
-                text: "No se pudo verificar el carrito. Inténtalo nuevamente.",
-                icon: "error",
-                confirmButtonColor: "#ff6984",
-                confirmButtonText: "Aceptar",
-            });
-        }
+    const [estaAutenticado, setEstaAutenticado] = useState(false);
+
+    // Función para verificar si el token existe en localStorage
+    const checkToken = () => {
+        return localStorage.getItem('TOKEN') !== null;
+    };
+
+    // Actualizar el estado de autenticación cada vez que el componente se renderiza o cuando se borra el token
+    useEffect(() => {
+        setEstaAutenticado(checkToken());
+    }, []); // Se ejecuta solo una vez cuando el componente se monta
+
+    // Función para manejar el logout
+    const handleLogout = () => {
+        cerrarSesion();
+        setEstaAutenticado(false); // Actualiza el estado a no autenticado
+        //   window.location.href = '/'; // Redirige a la página principal (inicio)
+        localStorage.removeItem('TOKEN');
+        localStorage.removeItem('USER');
+
+        Swal.fire({
+            title: 'Cierre de sesión',
+            text: 'Ha sido cerrado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'Aceptar',
+            timer: 2000,
+        });
     };
 
 
@@ -127,24 +120,42 @@ const NavBar = ({ accionarSideBar }) => {
                             </Button>
                         </div>
                         <div className="flex space-x-1 mr-5"> {/* Cambiar espacio a 1 */}
-                            <Button onClick={handleCarritoClick}
-                                className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
+                            <Button href={"/carrito"}
+                                as={Link} className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                 <TiShoppingCart className="text-2xl" />
                             </Button>
                             <Dropdown>
                                 <DropdownTrigger>
-                                    <Button className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
+                                    <Button onClick={() => setEstaAutenticado(checkToken)} className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                         <FaUserAlt className="text-lg" />
                                     </Button>
+
                                 </DropdownTrigger>
                                 <DropdownMenu aria-label="Static Actions">
-                                    <DropdownItem key="usuario">Nombre Usuario</DropdownItem>
-                                    <DropdownItem key="login" onPress={() => setIsLoginOpen(true)}>Iniciar sesión</DropdownItem>
-                                    <DropdownItem key="cambiarContraseña" onPress={() => setIsChangePasswordOpen(true)}>Cambiar contraseña</DropdownItem>
-                                    <DropdownItem key="resetearContraseña" onPress={() => setIsResetOpen(true)}>Resetear contraseña</DropdownItem>
-                                    <DropdownItem key="cerrarSesion" className="text-danger" color="danger">
-                                        Cerrar sesión
-                                    </DropdownItem>
+
+                                    {estaAutenticado && (
+                                        <DropdownItem key="usuario" >
+                                            <b>  {getNombre() + " " + getApellido1() + " " + getApellido2()} </b>
+                                        </DropdownItem>
+                                    )}
+                                    {!estaAutenticado && (
+                                        <DropdownItem key="login" onPress={() => setIsLoginOpen(true)}>
+                                            Iniciar sesión
+                                        </DropdownItem>
+                                    )}
+
+                                    {estaAutenticado && (
+                                        <DropdownItem key="cambiarContraseña" onPress={() => setIsChangePasswordOpen(true)}>
+                                            Cambiar contraseña
+                                        </DropdownItem>
+                                    )}
+
+                                    {estaAutenticado && (
+
+                                        <DropdownItem key="cerrarSesion" onPress={() => handleLogout()} className="text-danger" color="danger">
+                                            Cerrar sesión
+                                        </DropdownItem>
+                                    )}
                                 </DropdownMenu>
                             </Dropdown>
                         </div>

@@ -3,7 +3,7 @@ import { validarToken , limitarIntentos} from '../middlewares/auth.middleware';
 
 import {
     registrar, iniciarSesion, cerrarSesion, cambiarContraseña,
-    solicitarRecuperacion, resetearContraseña
+    solicitarRecuperacion, resetearContraseña, validarCredencial
 } from '../controllers/auth.controller'
 const router = express.Router();
 
@@ -13,7 +13,7 @@ router.post('/cerrar-sesion/', cerrarSesion);
 router.put('/cambiar-clave', validarToken, cambiarContraseña);
 router.post('/solicitar-recuperacion', solicitarRecuperacion); // Solicita el restablecimiento de la contraseña
 router.post('/resetear', limitarIntentos, resetearContraseña);
-
+router.post('/validar/:tipo', validarCredencial);
 
 //exportar todo
 module.exports = router;
