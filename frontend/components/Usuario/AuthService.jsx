@@ -1,4 +1,4 @@
-import jwt_decode from "jwt-decode"; // Esta es la forma correcta de importar
+// import jwt_decode from "jwt-decode"; // Esta es la forma correcta de importar
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const TOKEN = 'TOKEN';
@@ -196,8 +196,16 @@ export const getCorreo = () => {
 };
 
 export const getId = () => {
-    return decodeJWT(localStorage.getItem(TOKEN)).id;
-};
+    if (typeof window === 'undefined') {
+      return null; // Si no estamos en el lado del cliente, devolvemos null
+    }
+  
+    const token = localStorage.getItem(TOKEN);
+    if (token) {
+      return decodeJWT(token).id;
+    }
+    return null; // Si no hay token, devolvemos null
+  };
 
 
 function decodeJWT(token) {

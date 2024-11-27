@@ -9,11 +9,12 @@ import { Source_Serif_4 } from "next/font/google";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import { Link } from "@nextui-org/react";
 import Swal from 'sweetalert2'; // Import SweetAlert2
+import { useRouter } from "next/router";
 import LoginModal from "../Usuario/Auth"; // Asegúrate de especificar la ruta correcta
 import ResetModal from "../Usuario/Reset"; // Asegúrate de especificar la ruta correcta
 import ChangePasswordModal from "../Usuario/ChangePassword"; // Asegúrate de especificar la ruta correcta
 import { useState, useEffect } from "react";
-import { getApellido1, getApellido2, getNombre, cerrarSesion } from '../Usuario/AuthService';
+import { getApellido1, getApellido2, getNombre, cerrarSesion, getId } from '../Usuario/AuthService';
 
 
 /** */
@@ -24,10 +25,12 @@ const sourceSerif = Source_Serif_4({
 });
 
 const NavBar = ({ accionarSideBar }) => {
+    const router = useRouter();
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isResetOpen, setIsResetOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
-
 
     const [estaAutenticado, setEstaAutenticado] = useState(false);
 
@@ -57,6 +60,45 @@ const NavBar = ({ accionarSideBar }) => {
             timer: 2000,
         });
     };
+
+
+    const handleCarritoClick = async () => {
+        try {
+
+            const idUsuario = getId();
+
+            // Hacer una petición al backend para obtener el estado actual del carrito
+            const response = await fetch(`${apiUrl}/carrito/visualizar/${idUsuario}`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.length === 0) {
+                    // Mostrar Swal si el carrito está vacío
+                    Swal.fire({
+                        title: "Carrito vacío",
+                        text: "Tu carrito está vacío. Añade productos antes de ir al carrito.",
+                        icon: "info",
+                        confirmButtonColor: "#ff6984",
+                        confirmButtonText: "Aceptar",
+                    });
+                } else {
+                    // Redirigir al carrito si hay productos
+                    router.push("/carrito");
+                }
+            } else {
+                console.error("Error al verificar el carrito");
+            }
+        } catch (error) {
+            console.error("Error al acceder al carrito", error);
+            Swal.fire({
+                title: "Error",
+                text: "No se pudo verificar el carrito. Inténtalo nuevamente.",
+                icon: "error",
+                confirmButtonColor: "#ff6984",
+                confirmButtonText: "Aceptar",
+            });
+        }
+    };
+
 
 
     return (
@@ -120,8 +162,8 @@ const NavBar = ({ accionarSideBar }) => {
                             </Button>
                         </div>
                         <div className="flex space-x-1 mr-5"> {/* Cambiar espacio a 1 */}
-                            <Button href={"/carrito"}
-                                as={Link} className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
+                            <Button onClick={handleCarritoClick}
+                                className="h-full min-w-[2px] mb-2 bg-transparent hover:bg-gray-200">
                                 <TiShoppingCart className="text-2xl" />
                             </Button>
                             <Dropdown>

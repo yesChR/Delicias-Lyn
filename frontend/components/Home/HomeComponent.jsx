@@ -9,13 +9,31 @@ const HomeComponent = () => {
   const [productos, setProductos] = useState([]);
 
   useEffect(() => {
-    const fetchProductos = async () => {
+    const fetchProductosConTamaños = async () => {
       try {
-        const response = await fetch(`${apiUrl}/producto/visualizar`);
+        const response = await fetch(`${apiUrl}/tamanoXproducto/visualizar`);
         if (response.ok) {
           const data = await response.json();
-          setProductos(data);
-          // console.log(data);
+
+
+          // Agrupar productos por idProducto
+          const productosAgrupados = {};
+          data.forEach(item => {
+              const { idProducto } = item.producto;
+              
+              if (!productosAgrupados[idProducto]) {
+                  productosAgrupados[idProducto] = {
+                      ...item.producto,
+                      tamaños: []
+                  };
+              }
+              productosAgrupados[idProducto].tamaños.push(item.tamaño);
+          });
+
+          const productos = Object.values(productosAgrupados);
+                setProductos(productos);
+
+            // console.log(productos);
           
         } else {
           console.error("Error al cargar productos");
@@ -24,7 +42,7 @@ const HomeComponent = () => {
         console.error("Error al realizar la solicitud", error);
       }
     };
-    fetchProductos();
+    fetchProductosConTamaños();
   }, []);
 
   return (

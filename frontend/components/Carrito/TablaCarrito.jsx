@@ -17,6 +17,7 @@ import { FaMinus } from "react-icons/fa";
 import { MdOutlineDescription } from "react-icons/md";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
+import { getId } from '../Usuario/AuthService';
 
 const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
   //ApiURL
@@ -26,6 +27,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
   const [carrito, setCarrito] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const numElementos = 5;
+  const [idUsuario, setUserId] = useState(null);
 
   const columns = [
     { name: "# Producto", uid: "idProducto" },
@@ -44,22 +46,35 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
     setIsClient(true);
   }, []);
 
+  // Obtiene el id del cliente una vez que se monte el componente
+  useEffect(() => {
+    const id = getId();
+    setUserId(id);
+  }, []);
+
   useEffect(() => {
     const fetchCarrito = async () => {
+      if (!idUsuario) {
+        console.log("Usuario no autenticado");
+        return; // No continuar si el usuario no está autenticado
+      }
       try {
-        const response = await fetch(`${apiUrl}/carrito/visualizar/2`); //<- Estatico para pruebas
+        const response = await fetch(`${apiUrl}/carrito/visualizar/${idUsuario}`);
         if (response.ok) {
           const data = await response.json();
           setCarrito(data);
           // Actualizar el monto total al cargar los datos del carrito
           actualizarMontoTotal(calcularTotal(data));
+          // console.log(idUsuario);
+        } else {
+          console.error("Error al obtener los datos del carrito");
         }
       } catch (error) {
         console.error("Error al cargar los productos del carrito", error);
       }
     };
     fetchCarrito();
-  }, []);
+  }, [idUsuario]);
 
   const calcularTotal = (carritoData = carrito) => {
     return carritoData.reduce((total, item) => total + item.montoXCantidad, 0);

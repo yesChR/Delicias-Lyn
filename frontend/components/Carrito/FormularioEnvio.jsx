@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { getId } from '../Usuario/AuthService';
 
 const metodoEntrega = [
   { key: "1", label: "Presencial" },
@@ -116,7 +117,7 @@ const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, formEnvioSelect, re
       idDistrito: "",
       direccionExacta: "",
       idEstado: "1",
-      idUsuario: "2",
+      idUsuario: getId(),
       prioridad: "1",
       montoTotal: montoTotal,
     },
@@ -124,7 +125,17 @@ const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, formEnvioSelect, re
     enableReinitialize: true,
     onSubmit: async (values, { resetForm }) => {
       console.log("Values", values);
-      if (!formik.isValid) return;
+      if (!values.idUsuario) {
+        Swal.fire({
+          title: "Error",
+          text: "Debe iniciar sesión para realizar un pedido.",
+          icon: "error",
+          confirmButtonColor: "#ff6984",
+          confirmButtonText: "Aceptar",
+        });
+        return;
+      }
+      // if (!formik.isValid) return; //->Formik ya garantiza la validación del formulario antes de permitir el envío
       try {
         setIsLoading(true);
         const response = await fetch(`${apiUrl}/pedido/crear`, {

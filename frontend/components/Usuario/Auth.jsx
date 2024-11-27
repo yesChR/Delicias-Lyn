@@ -163,14 +163,14 @@ export default function AuthModal({ isOpen, onOpenChange }) {
 
       const userData = {
         nombre: formik.values.nombre,
-        apellodoUno: formik.values.primerApellido,
+        apellidoUno: formik.values.primerApellido,
         apellidoDos: formik.values.segundoApellido,
         correo: formik.values.correoElectronico,
         telefono: formik.values.telefono,
         contraseña: formik.values.contrasena, 
       };
 
-      console.log(userData)
+      // console.log(userData)
 
       try {
         const result = await registrarUsuario(userData); 
