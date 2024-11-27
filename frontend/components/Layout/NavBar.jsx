@@ -8,16 +8,14 @@ import { FaUserAlt } from "react-icons/fa";
 import { Source_Serif_4 } from "next/font/google";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
 import { Link } from "@nextui-org/react";
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import Swal from 'sweetalert2';
 import { useRouter } from "next/router";
-import LoginModal from "../Usuario/Auth"; // Asegúrate de especificar la ruta correcta
-import ResetModal from "../Usuario/Reset"; // Asegúrate de especificar la ruta correcta
-import ChangePasswordModal from "../Usuario/ChangePassword"; // Asegúrate de especificar la ruta correcta
+import LoginModal from "../Usuario/Auth"; 
+import ResetModal from "../Usuario/Reset";
+import ChangePasswordModal from "../Usuario/ChangePassword";
 import { useState, useEffect } from "react";
 import { getApellido1, getApellido2, getNombre, cerrarSesion, getId } from '../Usuario/AuthService';
 
-
-/** */
 
 const sourceSerif = Source_Serif_4({
     weight: ['600'],  // Pesos disponibles: 200, 300, 400, 500, 600, 700, 900
@@ -42,7 +40,7 @@ const NavBar = ({ accionarSideBar }) => {
     // Actualizar el estado de autenticación cada vez que el componente se renderiza o cuando se borra el token
     useEffect(() => {
         setEstaAutenticado(checkToken());
-    }, []); // Se ejecuta solo una vez cuando el componente se monta
+    }, []);
 
     // Función para manejar el logout
     const handleLogout = () => {
@@ -61,13 +59,28 @@ const NavBar = ({ accionarSideBar }) => {
         });
     };
 
-
     const handleCarritoClick = async () => {
-        try {
+        // Primero verificar si el usuario está autenticado
+        if (!estaAutenticado) {
+            // Mostrar un Swal pidiendo que se inicie sesión
+            Swal.fire({
+                title: "Debe iniciar sesión",
+                text: "Por favor, inicie sesión para acceder a su carrito de compras.",
+                icon: "warning",
+                confirmButtonColor: "#ff6984",
+                confirmButtonText: "Iniciar sesión",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Abrir el modal de inicio de sesión
+                    setIsLoginOpen(true);
+                }
+            });
+            return; // No continuar si no está autenticado
+        }
 
+        try {
             const idUsuario = getId();
 
-            // Hacer una petición al backend para obtener el estado actual del carrito
             const response = await fetch(`${apiUrl}/carrito/visualizar/${idUsuario}`);
             if (response.ok) {
                 const data = await response.json();
@@ -98,8 +111,6 @@ const NavBar = ({ accionarSideBar }) => {
             });
         }
     };
-
-
 
     return (
         <header>
@@ -205,13 +216,12 @@ const NavBar = ({ accionarSideBar }) => {
                 </div>
             </div>
 
-            {/* Modales */}
             <ResetModal
                 isOpen={isResetOpen}
                 onOpenChange={setIsResetOpen}
                 onLoginOpen={() => {
-                    setIsResetOpen(false); // Cerrar el modal de restablecimiento
-                    setIsLoginOpen(true); // Abrir el modal de inicio de sesión
+                    setIsResetOpen(false);
+                    setIsLoginOpen(true);
                 }}
             />
 
@@ -219,8 +229,8 @@ const NavBar = ({ accionarSideBar }) => {
                 isOpen={isLoginOpen}
                 onOpenChange={setIsLoginOpen}
                 onResetOpen={() => {
-                    setIsLoginOpen(false); // Cerrar el modal de inicio de sesión
-                    setIsResetOpen(true); // Abrir el modal de restablecimiento
+                    setIsLoginOpen(false);
+                    setIsResetOpen(true);
                 }}
             />
 
@@ -228,7 +238,7 @@ const NavBar = ({ accionarSideBar }) => {
                 isOpen={isChangePasswordOpen}
                 onOpenChange={setIsChangePasswordOpen}
                 onChangePassword={() => {
-                    setIsChangePasswordOpen(true); // Esta función puede ser modificada para abrir otros modales si es necesario
+                    setIsChangePasswordOpen(true);
                 }}
             />
 

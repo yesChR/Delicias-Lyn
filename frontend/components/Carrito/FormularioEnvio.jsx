@@ -1,13 +1,10 @@
-"use client";
-
-//import { useRouter } from 'next/router';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button, ModalContent, Select, SelectItem, Spinner, } from "@nextui-org/react";
+import { Modal, ModalHeader, ModalBody,Input, Button, ModalContent, Select, SelectItem} from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getId } from '../Usuario/AuthService';
-import { getId } from '../Usuario/AuthService';
+
 
 const metodoEntrega = [
   { key: "1", label: "Presencial" },
@@ -20,7 +17,7 @@ const metodoPago = [
 ];
 
 
-const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, formEnvioSelect, recargar }) => {
+const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, recargar }) => {
   //const router = useRouter();
 
   //aqui tengo el valor de la ruta del .env
