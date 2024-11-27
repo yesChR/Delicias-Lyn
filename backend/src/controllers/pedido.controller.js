@@ -373,8 +373,9 @@ export const editarEstado = async (req, res) => {
         const existePedido = await Pedido.findByPk(idPedido, {
             include: [
                 { model: Estado, as: 'estado' },
-                { model: DetallePedido, as: 'detalle',
-                    include:[
+                {
+                    model: DetallePedido, as: 'detalle',
+                    include: [
                         { model: Producto, as: 'producto' },
                     ]
                 }
@@ -426,3 +427,125 @@ export const editarPrioridad = async (req, res) => {
         res.status(500).json({ error: "Error interno en el servidor" });
     }
 }
+
+export const filtrarPorEstado = async (req, res) => {
+    try {
+        const { idEstado } = req.params;
+
+        const queryOptions = {
+            include: [
+                {
+                    model: Estado,
+                    as: "estado",
+                    attributes: ["idEstado", "nombre"],
+                    where: idEstado ? { idEstado } : {},
+                },
+                {
+                    model: Direccion,
+                    as: "direccion",
+                    attributes: ["idDireccion", "direccionExacta"],
+                    include: [
+                        { model: Provincia, as: "provincia", attributes: ['nombre'] },
+                        { model: Canton, as: "canton", attributes: ['nombre'] },
+                        { model: Distrito, as: "distrito", attributes: ['nombre'] },
+                    ],
+                },
+                {
+                    model: DetallePedido,
+                    as: "detalle",
+                    attributes: ["idPedido", "idProducto", "cantidad", "montoXCantidad", "personalizacion"],
+                    include: [
+                        {
+                            model: Producto, as: "producto",
+                            attributes: ['nombre', 'precio', 'descripcion', 'tipo', 'estado'],
+                            include: [
+                                {
+                                    model: Categoria, as: "categoria",
+                                    attributes: ['idCategoria', 'nombre']
+                                },
+                                {
+                                    model: Subcategoria, as: "subcategoria",
+                                    attributes: ['idSubcategoria', 'nombre']
+                                },
+                            ]
+                        },
+                        {
+                            model: Tamaño,
+                            as: "tamaño",
+                            attributes: ['idTamaño', 'nombre'],
+                        }
+                    ],
+                },
+            ]
+        };
+
+        const pedidos = await Pedido.findAll(queryOptions);
+        res.status(200).json(pedidos);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+export const filtrarPorUsuario = async (req, res) => {
+    try {
+        const { idUsuario } = req.params;
+
+        if (!idUsuario) {
+            return res.status(400).json({ error: "El parámetro idUsuario es obligatorio" });
+        }
+
+        const queryOptions = {
+            include: [
+                {
+                    model: Estado,
+                    as: "estado",
+                    attributes: ["idEstado", "nombre"],
+                },
+                {
+                    model: Direccion,
+                    as: "direccion",
+                    attributes: ["idDireccion", "direccionExacta"],
+                    include: [
+                        { model: Provincia, as: "provincia", attributes: ['nombre'] },
+                        { model: Canton, as: "canton", attributes: ['nombre'] },
+                        { model: Distrito, as: "distrito", attributes: ['nombre'] },
+                    ],
+                },
+                {
+                    model: DetallePedido,
+                    as: "detalle",
+                    attributes: ["idPedido", "idProducto", "cantidad", "montoXCantidad", "personalizacion"],
+                    include: [
+                        {
+                            model: Producto, as: "producto",
+                            attributes: ['nombre', 'precio', 'descripcion', 'tipo', 'estado'],
+                            include: [
+                                {
+                                    model: Categoria, as: "categoria",
+                                    attributes: ['idCategoria', 'nombre']
+                                },
+                                {
+                                    model: Subcategoria, as: "subcategoria",
+                                    attributes: ['idSubcategoria', 'nombre']
+                                },
+                            ]
+                        },
+                        {
+                            model: Tamaño,
+                            as: "tamaño",
+                            attributes: ['idTamaño', 'nombre'],
+                        }
+                    ],
+                },
+            ],
+            where: { idUsuario },
+        };
+
+        const pedidos = await Pedido.findAll(queryOptions);
+        res.status(200).json(pedidos);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};

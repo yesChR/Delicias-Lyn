@@ -1,9 +1,12 @@
-import { useRouter } from 'next/router';
+"use client";
+
+//import { useRouter } from 'next/router';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button, ModalContent, Select, SelectItem, Spinner, } from "@nextui-org/react";
 import Swal from "sweetalert2";
 import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { getId } from '../Usuario/AuthService';
 
 const metodoEntrega = [
   { key: "1", label: "Presencial" },
@@ -15,13 +18,20 @@ const metodoPago = [
   { key: "2", label: "Por SINPE" },
 ];
 
+
 const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, formEnvioSelect, recargar }) => {
-  const router = useRouter();
-  
+  //const router = useRouter();
+
   //aqui tengo el valor de la ruta del .env
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [isLoading, setIsLoading] = useState(false);
   const [provincias, setProvincias] = useState([]);
+  const [userId, setUserId] = useState(null);
+
+  useEffect(() => {
+    const idUsuario = getId();
+    setUserId(idUsuario);
+  })
 
   // Cargar provincia desde la API
   useEffect(() => {
@@ -116,7 +126,7 @@ const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, formEnvioSelect, re
       idDistrito: "",
       direccionExacta: "",
       idEstado: "1",
-      idUsuario: "2",
+      idUsuario: userId,
       prioridad: "1",
       montoTotal: montoTotal,
     },
@@ -147,7 +157,7 @@ const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, formEnvioSelect, re
           });
           resetForm();
           // Redirigir al Home después de que el pedido sea exitoso
-          router.push('/');
+          window.location.href = "/";
         } else {
           Swal.fire({
             title: "No hay elementos en el carrito",
@@ -401,7 +411,7 @@ const FormularioEnvio = ({ isOpen, onOpenChange, montoTotal, formEnvioSelect, re
                         onChange={(value) => { formik.setFieldValue("idCanton", value.target.value); }}
                       >
 
-                          <SelectItem key={provincias[0].canton[0].idCanton}>{provincias[0].canton[0].nombre}</SelectItem>
+                        <SelectItem key={provincias[0].canton[0].idCanton}>{provincias[0].canton[0].nombre}</SelectItem>
 
                       </Select>
 

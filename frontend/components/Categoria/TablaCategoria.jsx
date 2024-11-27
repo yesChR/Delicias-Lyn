@@ -12,7 +12,7 @@ const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const numElementos = 5;
     const columns = [
-        { name: "#", uid: "idCategoria" },
+        { name: "#", uid: "idCategoria" }, 
         { name: "Nombre", uid: "nombre" },
         { name: "Acciones", uid: "acciones" },
     ];

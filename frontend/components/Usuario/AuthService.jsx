@@ -1,5 +1,3 @@
-import jwt_decode from "jwt-decode"; // Esta es la forma correcta de importar
-
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 const TOKEN = 'TOKEN';
 const USER = 'USER';

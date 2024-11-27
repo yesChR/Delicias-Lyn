@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableHeader,
@@ -17,6 +19,7 @@ import { FaMinus } from "react-icons/fa";
 import { MdOutlineDescription } from "react-icons/md";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
+import { getId } from "../Usuario/AuthService";
 
 const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
   //ApiURL
@@ -39,6 +42,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
 
   //No borrar sino da error de hidratacion del HTML xD
   const [isClient, setIsClient] = useState(false);
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     setIsClient(true);
@@ -47,7 +51,8 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
   useEffect(() => {
     const fetchCarrito = async () => {
       try {
-        const response = await fetch(`${apiUrl}/carrito/visualizar/2`); //<- Estatico para pruebas
+        const response = await fetch(`${apiUrl}/carrito/visualizar/${getId()}`); 
+        console.log("id",userId);
         if (response.ok) {
           const data = await response.json();
           setCarrito(data);
