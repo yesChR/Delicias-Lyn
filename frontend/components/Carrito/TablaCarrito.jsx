@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Table,
   TableHeader,
@@ -41,6 +43,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
 
   //No borrar sino da error de hidratacion del HTML xD
   const [isClient, setIsClient] = useState(false);
+  // const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     setIsClient(true);

@@ -1,86 +1,15 @@
-import {
-  Table,
-  TableHeader,
-  TableColumn,
-  TableBody,
-  TableRow,
-  TableCell,
-  Tooltip,
-  Button,
-  Pagination,
-} from "@nextui-org/react";
-import React, { useState, useEffect } from "react";
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Tooltip, Button, Pagination } from "@nextui-org/react";
+import React, { useCallback, useState, useEffect } from "react";
 import { CgDetailsMore } from "react-icons/cg";
+import { getId } from "../Usuario/AuthService";
 
-const TablaPedidos = ({ onDetallePedido }) => {
-  const [pedidos, setMisPedidos] = useState([
-    {
-      idPedido: 1,
-      fechaEntrega: "2024-11-10",
-      montoTotal: 30000,
-      estado: "Aceptado",
-      metodoEntrega: "Presencial",
-      detalle:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam officiis fuga nostrum quibusdam sit maxime dolore nobis aperiam corrupti sequi molestiae voluptatibus, atque iure debitis hic reprehenderit harum doloribus. Ducimus?",
-    },
-    {
-      idPedido: 2,
-      fechaEntrega: "2024-11-15",
-      montoTotal: 8400,
-      estado: "Terminado",
-      metodoEntrega: "A domicilio",
-      detalle:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam officiis fuga nostrum quibusdam sit maxime dolore nobis aperiam corrupti sequi molestiae voluptatibus, atque iure debitis hic reprehenderit harum doloribus. Ducimus?",
-    },
-    {
-      idPedido: 3,
-      fechaEntrega: "2024-11-20",
-      montoTotal: 6000,
-      estado: "Pendiente de pago",
-      metodoEntrega: "Presencial",
-      detalle:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam officiis fuga nostrum quibusdam sit maxime dolore nobis aperiam corrupti sequi molestiae voluptatibus, atque iure debitis hic reprehenderit harum doloribus. Ducimus?",
-    },
-    {
-      idPedido: 4,
-      fechaEntrega: "2024-11-25",
-      montoTotal: 6000,
-      estado: "Aceptado",
-      metodoEntrega: "Presencial",
-      detalle:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam officiis fuga nostrum quibusdam sit maxime dolore nobis aperiam corrupti sequi molestiae voluptatibus, atque iure debitis hic reprehenderit harum doloribus. Ducimus?",
-    },
-    {
-      idPedido: 5,
-      fechaEntrega: "2024-12-01",
-      montoTotal: 20000,
-      estado: "Aceptado",
-      metodoEntrega: "Presencial",
-      detalle:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam officiis fuga nostrum quibusdam sit maxime dolore nobis aperiam corrupti sequi molestiae voluptatibus, atque iure debitis hic reprehenderit harum doloribus. Ducimus?",
-    },
-    {
-      idPedido: 6,
-      fechaEntrega: "2024-12-05",
-      montoTotal: 6000,
-      estado: "Aceptado",
-      metodoEntrega: "Presencial",
-      detalle:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam officiis fuga nostrum quibusdam sit maxime dolore nobis aperiam corrupti sequi molestiae voluptatibus, atque iure debitis hic reprehenderit harum doloribus. Ducimus?",
-    },
-  ]);
+const TablaPedidos = ({ onOpen, setCategoriaSelect, refrescar }) => {
+  //aqui tengo el valor de la ruta del .env
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  //No borrar sino da error de hidratacion del HTML xD
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  //No borrar sino da error de hidratacion del HTML xD
-  if (!isClient) {
-    return <div>Cargando...</div>;
-  }
+  const [misPedidos, setMisPedidos] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const numElementos = 5;
 
   const columns = [
     { name: "Número pedido", uid: "idPedido" },
@@ -91,32 +20,55 @@ const TablaPedidos = ({ onDetallePedido }) => {
     { name: "Detalle", uid: "detalle" },
   ];
 
-  const renderCell = (pedidos, columnKey) => {
-    const cellValue = pedidos[columnKey];
+  const onEditar = (pedido) => {
+    setPedidosSelect(pedido);
+    onOpen();
+  };
+
+  //para jalar datos de la bd se usa useEffect y fetch
+  useEffect(() => {
+    const visualizarPedidos = async () => {
+      try {
+        const resp = await fetch(`${apiUrl}/pedido/filtrarPorUsuario/${getId()}`);
+        const datos = await resp.json();
+        setMisPedidos(datos);
+        console.log("user",getId());
+      } catch (error) {
+        console.error("Error al obtener los pedidos", error);
+      }
+    };
+    visualizarPedidos();
+  }, [refrescar]);
+
+  // Renderiza las celdas
+  const renderCell = useCallback((pedido, index, columnKey) => {
+    const cellValue = pedido[columnKey];
+
+    // Calculamos el índice global considerando la página actual
+    const globalIndex = (currentPage - 1) * numElementos + index + 1;
 
     switch (columnKey) {
       case "idPedido":
-        return <h1>{cellValue}</h1>;
+        return <span>{cellValue}</span>;
       case "fechaEntrega":
-        return <h1>{cellValue}</h1>;
+        return <span>{cellValue}</span>;
       case "montoTotal":
-        return <h1>{cellValue}</h1>;
+        return <span>{cellValue}</span>;
       case "estado":
-        return <h1>{cellValue}</h1>;
+        // Asegúrate de acceder a la propiedad 'nombre' de estado si 'estado' es un objeto
+        return <span>{cellValue ? cellValue.nombre : "Sin estado"}</span>;
       case "metodoEntrega":
-        return <h1>{cellValue}</h1>;
+        return <span>{cellValue}</span>;
       case "detalle":
         return (
           <div className="flex items-center justify-center gap-1">
             <Button
-              onClick={() => onDetallePedido(pedidos)}
+              onClick={() => onDetallePedido(pedido)} // Cambié "pedidos" por "pedido"
               className="bg-transparent min-w-4"
               size="sm"
             >
               <Tooltip color="danger" content="Detalle">
-                <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                  <CgDetailsMore />
-                </span>
+                <CgDetailsMore className="text-lg text-danger cursor-pointer active:opacity-50" />
               </Tooltip>
             </Button>
           </div>
@@ -124,7 +76,10 @@ const TablaPedidos = ({ onDetallePedido }) => {
       default:
         return cellValue;
     }
-  };
+  }, [currentPage, numElementos]); // Asegúrate de que `currentPage` y `numElementos` estén en el array de dependencias
+
+  // Datos paginados agregado nuevo, segmenta los datos por pagina realizando una copia
+  const datosPaginados = misPedidos.slice((currentPage - 1) * numElementos, currentPage * numElementos);
 
   return (
     <Table
@@ -137,8 +92,12 @@ const TablaPedidos = ({ onDetallePedido }) => {
             showControls
             showShadow
             color="danger"
-            page={1}
-            total={3}
+            page={currentPage} // El valor actual de la página
+            total={Math.max(1, Math.ceil(misPedidos.length / numElementos))} // Definimos el total
+            onChange={(page) => {
+              setCurrentPage(page); // Actualiza el estado al seleccionar una página
+            }}
+            initialPage={1} // Le decimos que inicia en 1
           />
         </div>
       }
@@ -150,17 +109,12 @@ const TablaPedidos = ({ onDetallePedido }) => {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={pedidos}>
-        {(item) => (
-          <TableRow
-            key={item.idPedido}
-            className="text-black hover:bg-gray-200 transition duration-300"
-          >
-            {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
-            )}
+      <TableBody>
+        {datosPaginados.map((item, index) => (
+          <TableRow key={item.idPedido} className="text-black hover:bg-gray-200 transition duration-300">
+            {(columnKey) => <TableCell>{renderCell(item, index, columnKey)}</TableCell>}
           </TableRow>
-        )}
+        ))}
       </TableBody>
     </Table>
   );
