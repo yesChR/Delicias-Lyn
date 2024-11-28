@@ -25,7 +25,7 @@ const sourceSerif = Source_Serif_4({
 const NavBar = ({ accionarSideBar }) => {
     const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-    const { isLoggedIn } = useAuth(); // Accede a la propiedad de autenticación
+    const { isLoggedIn, resetContext } = useAuth(); // Accede a la propiedad de autenticación
     
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isResetOpen, setIsResetOpen] = useState(false);
@@ -50,6 +50,7 @@ const NavBar = ({ accionarSideBar }) => {
         //   window.location.href = '/'; // Redirige a la página principal (inicio)
         localStorage.removeItem('TOKEN');
         localStorage.removeItem('USER');
+        resetContext();
 
         Swal.fire({
             title: 'Cierre de sesión',

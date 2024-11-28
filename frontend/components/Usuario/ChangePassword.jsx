@@ -1,14 +1,12 @@
-/**
- * Albin Liang 29/10/2024
- * 
- */
 
 import { useCallback } from "react";
 import Swal from "sweetalert2";
-
 import { useState } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Input } from "@nextui-org/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa"; // Asegúrate de importar FaEye y FaEyeSlash
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { cambiarClave } from "./AuthService";
 
 export default function ChangePasswordModal({ isOpen, onOpenChange }) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
@@ -19,6 +17,36 @@ export default function ChangePasswordModal({ isOpen, onOpenChange }) {
   const toggleCurrentPasswordVisibility = () => setShowCurrentPassword((prev) => !prev);
   const toggleNewPasswordVisibility = () => setShowNewPassword((prev) => !prev);
   const toggleConfirmPasswordVisibility = () => setShowConfirmPassword((prev) => !prev);
+
+
+
+
+
+  const formik = useFormik({
+    initialValues: {
+      contrasena: '',
+      contrasenaNueva: '',
+      contrasenaRepetida: ''
+
+    },
+    validationSchema: Yup.object({
+      contrasena: Yup.string()
+        .required("Ingrese la contraseña actual"),
+
+
+      contrasenaNueva: Yup.string()
+        .min(8, "La contraseña nueva debe tener al menos 8 caracteres")
+        .matches(/[A-Z]/, "La contraseña debe contener al menos una letra mayúscula")
+        .matches(/[0-9]/, "La contraseña debe contener al menos un número")
+        .matches(/[\W_]/, "La contraseña debe contener al menos un carácter especial")
+        .required("Ingrese la nueva contraseña"),
+      contrasenaRepetida: Yup.string()
+        .oneOf([Yup.ref('contrasenaNueva'), null], "Las contraseñas deben coincidir") // Validación añadida
+        .required("Debe repetir la nueva contraseña")
+    }),
+
+  });
+
 
   const ventana = useCallback((title, message) => {
     Swal.fire({
@@ -31,10 +59,30 @@ export default function ChangePasswordModal({ isOpen, onOpenChange }) {
   }, []);
 
 
-  const ventanaCambioContraseña = () => {
-    ventana("Contraseña actualizada correctamente", "Los cambios se han guardado correctamente.");
-  };
 
+  const ventanaCambioContraseña = async (e) => {
+    const errors = await formik.validateForm(); // Valida todos los campos
+
+    try {
+      if (Object.keys(errors).length === 0) {
+
+        const result = await cambiarClave(formik.values.contrasena, formik.values.contrasenaRepetida);
+        ventana("Contraseña actualizada correctamente", "Los cambios se han guardado correctamente.");
+        onOpenChange(false)
+      } else {
+        formik.setTouched({ ...formik.values }); // Marca todos los campos como tocados para mostrar errores
+      }
+    } catch (error) {
+      Swal.fire({
+        title: 'Error',
+        text: error,
+        icon: 'error',
+        confirmButtonText: 'Aceptar',
+      }).then(() => {
+        onOpenChange(true);
+      });
+    }
+  };
 
   return (
     <Modal
@@ -82,6 +130,11 @@ export default function ChangePasswordModal({ isOpen, onOpenChange }) {
                 placeholder="Contraseña actual"
                 type={showCurrentPassword ? "text" : "password"}
                 variant="bordered"
+                name="contrasena"
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                isInvalid={formik.touched.contrasena && formik.errors.contrasena}
+                errorMessage={formik.errors.contrasena}
               />
               <Input
                 classNames={{
@@ -102,7 +155,12 @@ export default function ChangePasswordModal({ isOpen, onOpenChange }) {
                 placeholder="Nueva contraseña"
                 type={showNewPassword ? "text" : "password"}
                 variant="bordered"
-              />
+                onChange={formik.handleChange}
+                name="contrasenaNueva"
+                onBlur={formik.handleBlur}
+                isInvalid={formik.touched.contrasenaNueva && formik.errors.contrasenaNueva}
+                errorMessage={formik.errors.contrasenaNueva} />
+
               <Input
                 classNames={{
                   inputWrapper: [
@@ -122,6 +180,11 @@ export default function ChangePasswordModal({ isOpen, onOpenChange }) {
                 placeholder="Confirme la contraseña"
                 type={showConfirmPassword ? "text" : "password"}
                 variant="bordered"
+                onChange={formik.handleChange}
+                name="contrasenaRepetida"
+                onBlur={formik.handleBlur}
+                isInvalid={formik.touched.contrasenaRepetida && formik.errors.contrasenaRepetida}
+                errorMessage={formik.errors.contrasenaRepetida}
               />
             </ModalBody>
             <ModalFooter
@@ -144,8 +207,7 @@ export default function ChangePasswordModal({ isOpen, onOpenChange }) {
                   borderRadius: "20px",
                 }}
                 onClick={() => {
-                  ventanaCambioContraseña(); // Call your function to change the password
-                  onClose(); // Call onClose as a function
+                  ventanaCambioContraseña();
                 }}
               >
                 Actualizar
