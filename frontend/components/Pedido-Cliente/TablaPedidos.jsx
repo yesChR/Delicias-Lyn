@@ -2,6 +2,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Toolti
 import React, { useCallback, useState, useEffect } from "react";
 import { CgDetailsMore } from "react-icons/cg";
 import { getId } from "../Usuario/AuthService";
+import Link from "next/link";
 
 const TablaPedidos = ({ onOpen, setCategoriaSelect, refrescar }) => {
   //aqui tengo el valor de la ruta del .env
@@ -11,12 +12,23 @@ const TablaPedidos = ({ onOpen, setCategoriaSelect, refrescar }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const numElementos = 5;
 
+  const metodoEntrega = {
+    1: "Presencial",
+    2: "Express"
+  }
+
+  const metodoPago = {
+    1: "Efectivo",
+    2: "Sinpe"
+  }
+
   const columns = [
-    { name: "Número pedido", uid: "idPedido" },
+    { name: "#", uid: "idPedido" },
     { name: "Fecha de entrega", uid: "fechaEntrega" },
     { name: "Monto Total", uid: "montoTotal" },
     { name: "Estado", uid: "estado" },
     { name: "Método de entrega", uid: "metodoEntrega" },
+    { name: "Método de pago", uid: "metodoPago" },
     { name: "Detalle", uid: "detalle" },
   ];
 
@@ -32,7 +44,7 @@ const TablaPedidos = ({ onOpen, setCategoriaSelect, refrescar }) => {
         const resp = await fetch(`${apiUrl}/pedido/filtrarPorUsuario/${getId()}`);
         const datos = await resp.json();
         setMisPedidos(datos);
-        console.log("user",getId());
+        console.log("user", getId());
       } catch (error) {
         console.error("Error al obtener los pedidos", error);
       }
@@ -58,17 +70,17 @@ const TablaPedidos = ({ onOpen, setCategoriaSelect, refrescar }) => {
         // Asegúrate de acceder a la propiedad 'nombre' de estado si 'estado' es un objeto
         return <span>{cellValue ? cellValue.nombre : "Sin estado"}</span>;
       case "metodoEntrega":
-        return <span>{cellValue}</span>;
+        return <span>{metodoEntrega[cellValue]}</span>;
+      case "metodoPago":
+        return <span>{metodoPago[cellValue]}</span>;
       case "detalle":
         return (
           <div className="flex items-center justify-center gap-1">
-            <Button
-              onClick={() => onDetallePedido(pedido)} // Cambié "pedidos" por "pedido"
-              className="bg-transparent min-w-4"
-              size="sm"
-            >
+            <Button href={`/cliente-detallePedido/?idPedido=${pedido.idPedido}`} as={Link} fullWidth radius="full" size="sm" className="bg-transparent min-w-4">
               <Tooltip color="danger" content="Detalle">
-                <CgDetailsMore className="text-lg text-danger cursor-pointer active:opacity-50" />
+                <span className="text-lg text-danger cursor-pointer active:opacity-50">
+                  <CgDetailsMore />
+                </span>
               </Tooltip>
             </Button>
           </div>

@@ -3,6 +3,7 @@ import { EditIcon } from "../../Iconos/EditIcon";
 import { DeleteIcon } from "../../Iconos/DeleteIcon";
 import React, { useCallback, useState, useEffect } from "react";
 import { CgInfo } from "react-icons/cg";
+import { BiEditAlt } from "react-icons/bi";
 import Swal from "sweetalert2";
 
 const TablaProducto = ({ onOpen, pedido, refrescar }) => {

@@ -94,7 +94,7 @@ const TablaCategoria = ({ onOpen, setCategoriaSelect, refrescar }) => {
                 return <h1>{globalIndex}</h1>;  // Usamos globalIndex en lugar de index
             case "nombre":
                 return <h1>{cellValue}</h1>;
-            case "acciones":
+            case "acciones": 
                 return (
                     <div className="flex items-center justify-center gap-1">
                         <Button onClick={() => onEditar(categoria)} className="bg-transparent min-w-4" size="sm">

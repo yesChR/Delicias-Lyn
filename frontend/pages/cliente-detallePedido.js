@@ -1,9 +1,9 @@
-import Detalle from "@/components/Pedidos/DetallePedido/detallePedido";
+import Detalle from "@/components/Pedido-Cliente/DetallePedido/detallePedido";
 import Contenedor from "@/components/Contenedor/Contenedor";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 
-const GestionDetallePage = () => {
+const ClienteDetallePedidoPage = () => {
     const searchParams = useSearchParams();
     const [idPedido, setIdPedido] = useState(searchParams?.get("idPedido"));
     useEffect(() => {
@@ -20,4 +20,4 @@ const GestionDetallePage = () => {
     );
 }
 
-export default GestionDetallePage;
+export default ClienteDetallePedidoPage;

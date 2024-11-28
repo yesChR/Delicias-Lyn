@@ -185,9 +185,16 @@ export const visualizarPedidos = async (req, res) => {
                     }
                 ],
             },
+            ],
+            // Ordenar primero por prioridad (de forma descendente) y luego por fechaEntrega (también descendente)
+            order: [
+                ['prioridad', 'DESC']  // Ordena por prioridad en orden descendente
+                // Ordena por fechaEntrega en orden descendente
             ]
         });
+
         res.status(200).json(pedidos);
+
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Error interno del servidor" });
@@ -195,7 +202,9 @@ export const visualizarPedidos = async (req, res) => {
 };
 
 
+
 const generarMensajeEstado = (idEstado, pedido) => {
+    console.log("mensajeestado", idEstado, pedido)
     let mensajeCorreo = '';
     const montoTotal = pedido.montoTotal;
     const anticipo = montoTotal * 0.5;
@@ -253,7 +262,7 @@ const generarMensajeEstado = (idEstado, pedido) => {
     `;
 
     switch (idEstado) {
-        case 1: // Pendiente de revisión
+        case '1': // Pendiente de revisión
             mensajeCorreo = `
                 ${estiloGeneral}
                 <div class="container">
@@ -265,7 +274,7 @@ const generarMensajeEstado = (idEstado, pedido) => {
             `;
             break;
 
-        case 2: // Aprobado
+        case '2': // Aprobado
             mensajeCorreo = `
                 ${estiloGeneral}
                 <div class="container">
@@ -277,7 +286,7 @@ const generarMensajeEstado = (idEstado, pedido) => {
             `;
             break;
 
-        case 3: // Rechazado
+        case '3': // Rechazado
             mensajeCorreo = `
                 ${estiloGeneral}
                 <div class="container">
@@ -289,7 +298,7 @@ const generarMensajeEstado = (idEstado, pedido) => {
             `;
             break;
 
-        case 4: // Pendiente de pago
+        case '4': // Pendiente de pago
             mensajeCorreo = `
                 ${estiloGeneral}
                 <div class="container">
@@ -303,7 +312,7 @@ const generarMensajeEstado = (idEstado, pedido) => {
             `;
             break;
 
-        case 5: // Anticipo pagado
+        case '5': // Anticipo pagado
             mensajeCorreo = `
                 ${estiloGeneral}
                 <div class="container">
@@ -316,7 +325,7 @@ const generarMensajeEstado = (idEstado, pedido) => {
             `;
             break;
 
-        case 6: // Pagado
+        case '6': // Pagado
             mensajeCorreo = `
                 ${estiloGeneral}
                 <div class="container">
@@ -328,7 +337,7 @@ const generarMensajeEstado = (idEstado, pedido) => {
             `;
             break;
 
-        case 7: // Pedido terminado (Factura)
+        case '7': // Pedido terminado (Factura)
             const detallesPedido = pedido.detalle.map(detalle =>
                 `<tr><td>${detalle.producto.nombre}</td><td>${detalle.cantidad}</td><td>${detalle.montoXCantidad}</td></tr>`
             ).join('');
@@ -362,8 +371,6 @@ const generarMensajeEstado = (idEstado, pedido) => {
 };
 
 
-
-
 // Función principal para editar el estado
 export const editarEstado = async (req, res) => {
     const { idPedido } = req.params;
@@ -392,7 +399,7 @@ export const editarEstado = async (req, res) => {
         }
         await Pedido.update({ idEstado }, { where: { idPedido } });
         const mensajeCorreo = generarMensajeEstado(idEstado, existePedido);
-
+        console.log("Correo", mensajeCorreo);
         // Enviar el correo con el mensaje correspondiente
         const formato = {
             from: config.email,
@@ -431,14 +438,15 @@ export const editarPrioridad = async (req, res) => {
 export const filtrarPorEstado = async (req, res) => {
     try {
         const { idEstado } = req.params;
+        console.log("idEstado", idEstado);
 
         const queryOptions = {
+            where: { idEstado: idEstado }, // Asegúrate de incluir el filtro dentro de queryOptions
             include: [
                 {
                     model: Estado,
                     as: "estado",
                     attributes: ["idEstado", "nombre"],
-                    where: idEstado ? { idEstado } : {},
                 },
                 {
                     model: Direccion,
@@ -476,9 +484,15 @@ export const filtrarPorEstado = async (req, res) => {
                         }
                     ],
                 },
+            ],
+            // Ordenar primero por prioridad (de forma descendente) y luego por fechaEntrega (también descendente)
+            order: [
+                ['prioridad', 'DESC'], // Ordenar por prioridad de forma descendente
+                ['fechaEntrega', 'DESC'] // Ordenar por fechaEntrega de forma descendente
             ]
         };
 
+        // Ahora la consulta incluye el filtro donde idEstado está dentro de queryOptions
         const pedidos = await Pedido.findAll(queryOptions);
         res.status(200).json(pedidos);
     } catch (error) {
@@ -486,6 +500,7 @@ export const filtrarPorEstado = async (req, res) => {
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
+
 
 export const filtrarPorUsuario = async (req, res) => {
     try {
@@ -543,6 +558,64 @@ export const filtrarPorUsuario = async (req, res) => {
         };
 
         const pedidos = await Pedido.findAll(queryOptions);
+        res.status(200).json(pedidos);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+export const filtrarPorId = async (req, res) => {
+    try {
+        const { idPedido } = req.params;
+
+        const queryOptions = {
+            where: { idPedido: idPedido },
+            include: [
+                {
+                    model: Estado,
+                    as: "estado",
+                    attributes: ["idEstado", "nombre"],
+                },
+                {
+                    model: Direccion,
+                    as: "direccion",
+                    attributes: ["idDireccion", "direccionExacta"],
+                    include: [
+                        { model: Provincia, as: "provincia", attributes: ['nombre'] },
+                        { model: Canton, as: "canton", attributes: ['nombre'] },
+                        { model: Distrito, as: "distrito", attributes: ['nombre'] },
+                    ],
+                },
+                {
+                    model: DetallePedido,
+                    as: "detalle",
+                    attributes: ["idPedido", "idProducto", "cantidad", "montoXCantidad", "personalizacion"],
+                    include: [
+                        {
+                            model: Producto, as: "producto",
+                            attributes: ['nombre', 'precio', 'descripcion', 'tipo', 'estado'],
+                            include: [
+                                {
+                                    model: Categoria, as: "categoria",
+                                    attributes: ['idCategoria', 'nombre']
+                                },
+                                {
+                                    model: Subcategoria, as: "subcategoria",
+                                    attributes: ['idSubcategoria', 'nombre']
+                                },
+                            ]
+                        },
+                        {
+                            model: Tamaño,
+                            as: "tamaño",
+                            attributes: ['idTamaño', 'nombre'],
+                        }
+                    ],
+                },
+            ],
+        };
+        const pedidos = await Pedido.findOne(queryOptions);
         res.status(200).json(pedidos);
     } catch (error) {
         console.log(error);

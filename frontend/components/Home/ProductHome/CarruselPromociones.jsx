@@ -8,42 +8,45 @@ const CarrusellPromociones = ({ productos }) => {
     // Configuración del carrusel
     const settings = {
         dots: true,
-        infinite: true,
+        infinite: productos.length > 1, // Solo habilita infinito si hay más de un producto
         speed: 800,
-        slidesToShow: 3, // Muestra 3 elementos a la vez
+        slidesToShow: productos.length > 3 ? 3 : productos.length, // Ajusta el número de elementos a mostrar
         slidesToScroll: 1,
-        arrows: true,
-        autoplay: true,
+        arrows: productos.length > 1, // Muestra flechas solo si hay más de un producto
+        autoplay: productos.length > 1, // Solo activa autoplay si hay más de un producto
         autoplaySpeed: 3000,
         responsive: [
             {
                 breakpoint: 640,
                 settings: {
-                    slidesToShow: 1, // En pantallas pequeñas, muestra 1
+                    slidesToShow: productos.length >= 1 ? 1 : 0, // Ajusta para pantallas pequeñas
                     slidesToScroll: 1,
-                }
+                },
             },
             {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 2, // En pantallas medianas, muestra 2
+                    slidesToShow: productos.length > 2 ? 2 : productos.length, // Ajusta para pantallas medianas
                     slidesToScroll: 1,
-                }
-            }
-        ]
+                },
+            },
+        ],
     };
 
     return (
         <div className="max-w-[985px] mx-auto bg-secundario text-black shadow-2xl rounded-lg p-10">
             <p className="text-principal flex justify-center text-[18px] font-bold mb-5">Promociones Disponibles</p>
-            <Slider {...settings} className="relative z-20">
-                {productos &&
-                productos.slice(6, 12).map((producto, index) => (
-                    <div key={index} className="pr-2 pl-2">
-                    <ProductCard producto={producto} />
-                    </div>
-                ))}
-            </Slider>
+            {productos && productos.length > 0 ? (
+                <Slider {...settings} className="relative z-20">
+                    {productos.slice(0, 6).map((producto, index) => (
+                        <div className="pr-2 pl-2" key={index}>
+                            <ProductCard producto={producto} />
+                        </div>
+                    ))}
+                </Slider>
+            ) : (
+                <p className="text-center">No hay productos disponibles</p>
+            )}
         </div>
     );
 };

@@ -14,7 +14,6 @@ export const agregarProductoCarrito = async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-
         // Buscar si ya existe el producto en el carrito del usuario
         let productoEnCarrito = await Carrito.findOne({ where: { idUsuario, idProducto } });
 

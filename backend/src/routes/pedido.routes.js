@@ -1,5 +1,5 @@
 import express from 'express';
-import { crearPedido, visualizarPedidos, editarEstado, editarPrioridad, filtrarPorEstado, filtrarPorUsuario } from '../controllers/pedido.controller'
+import { crearPedido, visualizarPedidos, editarEstado, editarPrioridad, filtrarPorEstado, filtrarPorUsuario, filtrarPorId } from '../controllers/pedido.controller'
 const router = express.Router();
 
 //rutas
@@ -9,6 +9,7 @@ router.put('/editarEstado/:idPedido', editarEstado);
 router.put('/editarPrioridad/:idPedido', editarPrioridad);
 router.get('/filtrarPorEstado', filtrarPorEstado);
 router.get('/filtrarPorEstado/:idEstado', filtrarPorEstado);
+router.get('/filtrarPorId/:idPedido', filtrarPorId);
 router.get('/filtrarPorUsuario/:idUsuario', filtrarPorUsuario);
 
 //exportar todo

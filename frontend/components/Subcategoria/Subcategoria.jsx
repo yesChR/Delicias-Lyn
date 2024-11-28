@@ -17,10 +17,10 @@ const Subcategoria = () => {
                 <h1>Subcategorías</h1>
             </div>
             <div className="flex-col lg:flex-row w-full flex justify-center lg:gap-24 gap-4">
-                <div className="w-full lg:w-1/2"> {/* Ajustar el ancho para pantallas grandes */}
+                <div className="w-full lg:w-1/2"> 
                     <TablaSubcategoria onOpen={onOpen} setSubcategoriaSelect={setSubcategoriaSelect} refrescar={refrescar}></TablaSubcategoria>
                 </div>
-                <div className="w-full lg:w-1/5"> {/* Ajustar el ancho para pantallas grandes */}
+                <div className="w-full lg:w-1/5"> 
                     <FormularioSubcategoria recargar={recargar}></FormularioSubcategoria>
                 </div>
             </div>
