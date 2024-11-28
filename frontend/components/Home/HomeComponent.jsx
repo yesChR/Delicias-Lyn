@@ -7,6 +7,9 @@ import CarrusellPromociones from "./ProductHome/CarruselPromociones";
 const HomeComponent = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [productos, setProductos] = useState([]);
+  const [productosNormales, setProductosNormales] = useState([]);
+  const [combos, setCombos] = useState([]);
+  const [promociones, setPromociones] = useState([]);
 
   useEffect(() => {
     const fetchProductosConTamaños = async () => {
@@ -33,7 +36,21 @@ const HomeComponent = () => {
           const productos = Object.values(productosAgrupados);
                 setProductos(productos);
 
-            // console.log(productos);
+          // Filtrar productos por tipo
+          const productosNormales = productos.filter(
+            (producto) => producto.tipo === 1
+          );
+
+          const combosFiltrados = productos.filter(
+            producto => producto.tipo === 2
+          );
+          const promocionesFiltradas = productos.filter(
+            producto => producto.tipo === 3
+          );
+
+          setProductosNormales(productosNormales);
+          setCombos(combosFiltrados);
+          setPromociones(promocionesFiltradas);
           
         } else {
           console.error("Error al cargar productos");
@@ -48,9 +65,9 @@ const HomeComponent = () => {
   return (
     <div className="p-2 flex flex-col items-center">
       <ScrollShadow hideScrollBar className="w-full max-h-[700px]" size={8}>
-        <Carrusell productos={productos} className="mb-8" />
-        <GridComponent productos={productos} />
-        <CarrusellPromociones productos={productos} />
+        <Carrusell productos={combos} className="mb-8" />
+        <GridComponent productos={productosNormales} />
+        <CarrusellPromociones productos={promociones} />
       </ScrollShadow>
     </div>
   );

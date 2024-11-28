@@ -32,7 +32,7 @@ export const obtenerTamañosXProductos = async (req, res) => {
                 {
                     model: Producto,
                     as: "producto",
-                    attributes: ["idProducto", "nombre", "descripcion", "precio", "imagen"]
+                    attributes: ["idProducto", "nombre", "descripcion", "precio", "tipo", "imagen"]
                 },
                 {
                     model: Tamaño,

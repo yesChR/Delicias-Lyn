@@ -15,7 +15,7 @@ import ResetModal from "../Usuario/Reset";
 import ChangePasswordModal from "../Usuario/ChangePassword";
 import { useState, useEffect } from "react";
 import { getApellido1, getApellido2, getNombre, cerrarSesion, getId } from '../Usuario/AuthService';
-
+import { useAuth } from '../../context/authContext';
 
 const sourceSerif = Source_Serif_4({
     weight: ['600'],  // Pesos disponibles: 200, 300, 400, 500, 600, 700, 900
@@ -25,6 +25,7 @@ const sourceSerif = Source_Serif_4({
 const NavBar = ({ accionarSideBar }) => {
     const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const { isLoggedIn } = useAuth(); // Accede a la propiedad de autenticación
     
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isResetOpen, setIsResetOpen] = useState(false);
@@ -61,7 +62,7 @@ const NavBar = ({ accionarSideBar }) => {
 
     const handleCarritoClick = async () => {
         // Primero verificar si el usuario está autenticado
-        if (!estaAutenticado) {
+        if (!isLoggedIn) {
             // Mostrar un Swal pidiendo que se inicie sesión
             Swal.fire({
                 title: "Debe iniciar sesión",
