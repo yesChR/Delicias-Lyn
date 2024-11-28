@@ -1,6 +1,9 @@
 import { TamañoXProducto } from "../models/tamañoXproducto.model";
 import { Tamaño } from "../models/tamaño.model";
 import { Producto } from "../models/producto.model";
+import { Categoria } from "../models/categoria.model"; // Modelo de la categoría
+import { Subcategoria } from "../models/subcategoria.model";
+
 
 // Crear TamañoXProducto
 export const crearTamañoXProducto = async (req, res) => {
@@ -44,6 +47,49 @@ export const obtenerTamañosXProductos = async (req, res) => {
         res.status(200).json(tamañosXProductos);
     } catch (error) {
         console.error("Error al obtener TamañosXProductos:", error);
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+// Filtrar TamañosXProductos por subcategoría
+export const filtrarTamañoXProductoPorSubcategoria = async (req, res) => {
+    const { idSubcategoria } = req.params; // Obtenemos el ID de la subcategoría desde los parámetros
+    try {
+        const tamañosXProductos = await TamañoXProducto.findAll({
+            include: [
+                {
+                    model: Producto,
+                    as: "producto",
+                    where: { idSubcategoria }, // Filtramos por subcategoría
+                    attributes: ["idProducto", "nombre", "descripcion", "precio", "tipo", "imagen"],
+                    include: [
+                        {
+                            model: Categoria,
+                            as: "categoria",
+                            attributes: ["idCategoria", "nombre"]
+                        },
+                        {
+                            model: Subcategoria,
+                            as: "subcategoria",
+                            attributes: ["idSubcategoria", "nombre"]
+                        }
+                    ]
+                },
+                {
+                    model: Tamaño,
+                    as: "tamaño",
+                    attributes: ["idTamaño", "nombre"]
+                }
+            ]
+        });
+
+        if (tamañosXProductos.length > 0) {
+            res.status(200).json(tamañosXProductos);
+        } else {
+            res.status(404).json({ error: "No se encontraron productos con los tamaños en esta subcategoría" });
+        }
+    } catch (error) {
+        console.error("Error al filtrar TamañoXProducto por subcategoría:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };

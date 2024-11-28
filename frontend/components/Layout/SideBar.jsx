@@ -12,6 +12,7 @@ const SideBar = ({ estaAbierto }) => {
     const [desplegarSubcategorias, setDesplegarSubcategorias] = useState(0);
     const [desplegarGestiones, setDesplegarGestiones] = useState(false);
     const [desplegarPedidos, setDesplegarPedidos] = useState(false);
+    
     const accionarDespCategorias = () => {
         setDesplegarCategorias(!desplegarCategorias);
     }
@@ -120,7 +121,7 @@ const SideBar = ({ estaAbierto }) => {
                                     {desplegarSubcategorias === categoria.idCategoria && (
                                         <div className="gap-2 flex justify-start flex-col"> {/* Agrega un margen para anidar mejor */}
                                             {categoria.subcategoria.map((sub) => (
-                                                <Button href={"/categoria-productos"} as={Link} key={sub.idSubcategoria} fullWidth radius="full" size="sm" className="bg-btnSideBar3 text-sm shadow-md">
+                                                <Button href={`/categoria-productos?idSubcategoria=${sub.idSubcategoria}`} as={Link} key={sub.idSubcategoria} fullWidth radius="full" size="sm" className="bg-btnSideBar3 text-sm shadow-md">
                                                     {sub.nombre}
                                                 </Button>
                                             ))}

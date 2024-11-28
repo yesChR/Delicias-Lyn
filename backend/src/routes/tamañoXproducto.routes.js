@@ -4,7 +4,8 @@ import {
     obtenerTamañosXProductos,
     obtenerTamañoXProductoPorId,
     actualizarTamañoXProducto,
-    eliminarTamañoXProducto
+    eliminarTamañoXProducto,
+    filtrarTamañoXProductoPorSubcategoria, 
 } from "../controllers/tamañoXproducto.controller";
 
 const router = express.Router();
@@ -14,6 +15,9 @@ router.post("/crear", crearTamañoXProducto);
 
 // Ruta para obtener todas las relaciones TamañoXProducto
 router.get("/visualizar", obtenerTamañosXProductos);
+
+// Ruta para filtrar TamañoXProducto por idSubcategoria
+router.get("/filtrar/subcategoria/:idSubcategoria", filtrarTamañoXProductoPorSubcategoria);  // Nueva ruta para filtrar por subcategoría
 
 // Ruta para obtener una relación TamañoXProducto específica por idProducto y idTamaño
 //router.get("/visualizar/:idProducto/:idTamano", obtenerTamañoXProductoPorId);
