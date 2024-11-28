@@ -12,7 +12,7 @@ import { MailIcon } from "../Iconos/MailIcon";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import Swal from 'sweetalert2';
 import ResetPasswordModal from './Reset';
-import { useAuth } from '../../context/authContext'; 
+import { useAuth } from '../../context/authContext';
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -60,6 +60,7 @@ const LoginForm = ({ formData, handleChange, togglePasswordVisibility, showPassw
       name="contrasena"
       type={showPassword ? "text" : "password"}
       value={formData.contrasena}
+
       onChange={handleChange}
       endContent={
         <div onClick={togglePasswordVisibility} style={{ cursor: "pointer" }}>
@@ -78,12 +79,11 @@ const RegisterForm = ({ formData, handleChange, togglePasswordVisibility, showPa
     <InputField placeholder="Primer apellido" name="primerApellido" value={formData.primerApellido} onChange={handleChange} error={errors.primerApellido} />
     <InputField placeholder="Segundo apellido" name="segundoApellido" value={formData.segundoApellido} onChange={handleChange} error={errors.segundoApellido} />
     <InputField placeholder="Teléfono" name="telefono" value={formData.telefono} onChange={handleChange} error={errors.telefono} />
-    <InputField placeholder="Correo electrónico" name="correoElectronico" type="email" value={formData.correoElectronico} onChange={handleChange} error={errors.correoElectronico} />
+    <InputField placeholder="Correo electrónico" name="correoElectronico" type="email" onChange={handleChange} error={errors.correoElectronico} />
     <InputField
       placeholder="Contraseña"
       name="contrasena"
       type={showPassword ? "text" : "password"}
-      value={formData.contrasena}
       onChange={handleChange}
       endContent={
         <div onClick={togglePasswordVisibility} style={{ cursor: "pointer" }}>
@@ -119,13 +119,43 @@ export default function AuthModal({ isOpen, onOpenChange }) {
   };
 
 
+  const handleSubmitRegister = async () => {
+    const errors = await formik.validateForm(); // Valida todos los campos
+
+    if (Object.keys(errors).length === 0) { // Sin errores
+      handleSubmit();
+      onOpenChange(false); // Cierra el modal
+      formik.setFieldValue('contrasena','');
+
+    } else {
+      formik.setTouched({ ...formik.values }); // Marca todos los campos como tocados para mostrar errores
+    }
+  };
+
+
+  const handleSubmitLogin = async () => {
+    const areSpecificFieldsEmpty = !formik.values.correoElectronico || !formik.values.contrasena;
+    const areSpecificFieldsValid = !formik.errors.correoElectronico && !formik.errors.contrasena;
+
+    if (areSpecificFieldsValid && !areSpecificFieldsEmpty) {
+      handleSubmit();
+      onOpenChange(false); // Cierra el modal de login
+    } else {
+      formik.setTouched({ ...formik.values }); // Marca todos los campos como tocados para mostrar errores
+
+    }
+
+  };
+
+
+
   const handleSubmit = async (e) => {
 
     if (isLogin) {
       try {
-
         const correo = formik.values.correoElectronico;
         const contrasena = formik.values.contrasena;
+
         // Llamada al servicio para hacer el login
         const result = await iniciarSesion(correo, contrasena);
 
@@ -135,18 +165,19 @@ export default function AuthModal({ isOpen, onOpenChange }) {
             title: 'Autenticación',
             text: 'Ha sido autenticado correctamente.',
             icon: 'success',
-            confirmButtonText: 'Aceptar',
-            timer: 2000,
+            timer: 800,
+            showConfirmButton: false
           });
-          // window.location.href = window.location.href;
 
         } else {
-          // Error en el login
           Swal.fire({
             title: 'Error',
             text: result.message,
             icon: 'error',
             confirmButtonText: 'Aceptar',
+          }).then(() => {
+            // Cierra el modal de login solo después de que SweetAlert se cierre
+            onOpenChange(true);
           });
         }
       } catch (err) {
@@ -155,48 +186,55 @@ export default function AuthModal({ isOpen, onOpenChange }) {
           title: 'Error',
           text: 'Hubo un problema al intentar iniciar sesión.',
           icon: 'error',
-          confirmButtonText: 'Aceptar',
         });
-
       }
     } else {
-
       const userData = {
         nombre: formik.values.nombre,
         apellidoUno: formik.values.primerApellido,
         apellidoDos: formik.values.segundoApellido,
         correo: formik.values.correoElectronico,
         telefono: formik.values.telefono,
-        contraseña: formik.values.contrasena, 
+        contraseña: formik.values.contrasena,
       };
 
-      // console.log(userData)
-
       try {
-        const result = await registrarUsuario(userData); 
+        const result = await registrarUsuario(userData);
+        // Al registrar al usuario, automáticamente lo logueamos
+        const loginResult = await iniciarSesion(userData.correo, userData.contraseña);
 
+        if (loginResult.success) {
+          login(loginResult.user, loginResult.token);  // Almacena usuario y token en el contexto y localStorage
 
-        Swal.fire({
-          title: '¡Registro exitoso!',
-          text: 'Te has registrado correctamente.',
-          icon: 'success',
-          confirmButtonText: 'Aceptar',
-          timer: 1000,
-        });
-
-
-
+          Swal.fire({
+            title: '¡Registro exitoso!',
+            text: 'Te has registrado correctamente y has iniciado sesión.',
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1000,
+          });
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: loginResult.message,
+            icon: 'error',
+            confirmButtonText: 'Aceptar',
+          });
+        }
       } catch (error) {
         Swal.fire({
           title: 'Error',
-          text: 'Error a la hora de registrarse.',
+          text: error,
           icon: 'error',
           confirmButtonText: 'Aceptar',
+        }).then(() => {
+          // Cierra el modal de login solo después de que SweetAlert se cierre
+          onOpenChange(true);
         });
       }
     }
-
   };
+
 
 
 
@@ -212,7 +250,12 @@ export default function AuthModal({ isOpen, onOpenChange }) {
     },
     validationSchema: Yup.object({
       correoElectronico: Yup.string().email("Correo inválido").required("El correo es obligatorio"),
-      contrasena: Yup.string().min(3, "La contraseña debe tener al menos 6 caracteres").required("La contraseña es obligatoria"),
+      contrasena: Yup.string()
+        .min(8, "La contraseña debe tener al menos 8 caracteres")
+        .matches(/[A-Z]/, "La contraseña debe contener al menos una letra mayúscula")
+        .matches(/[0-9]/, "La contraseña debe contener al menos un número")
+        .matches(/[\W_]/, "La contraseña debe contener al menos un carácter especial")
+        .required("La contraseña es obligatoria"),
       nombre: Yup.string().required('El nombre es obligatorio').max(50, 'El nombre no debe tener más de 50 caracteres')
       ,
 
@@ -224,7 +267,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
       ,
 
       telefono: Yup.string()
-        .matches(/^[0-9]+$/, 'El código debe contener solo números') // Valida números
+        .matches(/^[0-9]+$/, 'El teléfono debe contener solo números') // Valida números
         .max(8, 'No puede ser mayor a 8 dígitos') // Limita a 11 dígitos
         .required('El código es obligatorio')
     }),
@@ -307,13 +350,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
                   borderRadius: "20px",
                 }}
                 onPress={() => {
-                  const areSpecificFieldsEmpty = !formik.values.correoElectronico || !formik.values.contrasena;
-                  const areSpecificFieldsValid = !formik.errors.correoElectronico && !formik.errors.contrasena;
-
-                  if (areSpecificFieldsValid && !areSpecificFieldsEmpty) {
-                    handleSubmit();
-                    onOpenChange(false); // Cierra el modal de login
-                  }
+                  handleSubmitLogin();
                 }}
               >
                 Iniciar
@@ -335,9 +372,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
                 }}
                 onPress={() => {
 
-                  handleSubmit();
-                  onOpenChange(false); // Cierra el modal de login
-
+                  handleSubmitRegister();
                 }}
               >
                 Registrar
