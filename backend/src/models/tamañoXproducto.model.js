@@ -3,7 +3,7 @@ import { sequelize } from "../bd_config/conexion";
 import { Producto } from "./producto.model";
 import { Tamaño } from "./tamaño.model";
 
-export const TamañoXProducto = sequelize.define("tamañoXProducto", {
+export const TamañoXProducto = sequelize.define("tamañoxproducto", {
     idProducto: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -24,7 +24,7 @@ export const TamañoXProducto = sequelize.define("tamañoXProducto", {
     },
 }, {
     freezeTableName: true,
-    tableName: "tamañoXProducto",
+    tableName: "tamañoxproducto",
     timestamps: false
 });
 
