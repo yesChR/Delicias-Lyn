@@ -17,6 +17,7 @@ import { useState, useEffect } from "react";
 import { getApellido1, getApellido2, getNombre, cerrarSesion, getId } from '../Usuario/AuthService';
 import { useAuth } from '../../context/authContext';
 
+
 const sourceSerif = Source_Serif_4({
     weight: ['600'],  // Pesos disponibles: 200, 300, 400, 500, 600, 700, 900
     subsets: ['latin'],  // Subconjuntos disponibles: latin, latin-ext
@@ -59,6 +60,7 @@ const NavBar = ({ accionarSideBar }) => {
             confirmButtonText: 'Aceptar',
             timer: 2000,
         });
+        router.push('/')
     };
 
     const handleCarritoClick = async () => {

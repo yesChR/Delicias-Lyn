@@ -15,9 +15,8 @@ import ResetPasswordModal from './Reset';
 import { useAuth } from '../../context/authContext';
 import { useFormik } from "formik";
 import * as Yup from "yup";
-
+import { useRouter } from 'next/router';
 import { iniciarSesion, registrarUsuario } from './AuthService';
-
 
 const InputField = ({ placeholder, type = "text", name, value, onChange, endContent, error }) => (
   <div style={{ width: '100%' }}>
@@ -96,6 +95,7 @@ const RegisterForm = ({ formData, handleChange, togglePasswordVisibility, showPa
 );
 export default function AuthModal({ isOpen, onOpenChange }) {
   const [isLogin, setIsLogin] = useState(true);
+  const router = useRouter();
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -106,6 +106,10 @@ export default function AuthModal({ isOpen, onOpenChange }) {
     segundoApellido: '',
     telefono: '',
   });
+
+  const recargarPagina = () => {
+    router.replace(router.asPath, undefined, { scroll: false });
+  };
 
   const [isResetPasswordModalOpen, setIsResetPasswordModalOpen] = useState(false);
 
@@ -125,7 +129,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
     if (Object.keys(errors).length === 0) { // Sin errores
       handleSubmit();
       onOpenChange(false); // Cierra el modal
-      formik.setFieldValue('contrasena','');
+      formik.setFieldValue('contrasena', '');
 
     } else {
       formik.setTouched({ ...formik.values }); // Marca todos los campos como tocados para mostrar errores
@@ -168,7 +172,7 @@ export default function AuthModal({ isOpen, onOpenChange }) {
             timer: 800,
             showConfirmButton: false
           });
-
+         router.push('/');
         } else {
           Swal.fire({
             title: 'Error',
