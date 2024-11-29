@@ -2,17 +2,21 @@ import { Button } from "@nextui-org/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
+import { useRouter } from "next/router";
+import { useAuth } from '../../context/authContext';
+
 
 const SideBar = ({ estaAbierto }) => {
     //aqui tengo el valor de la ruta del .env
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    const router = useRouter();
     const [categorias, setCategorias] = useState([]);
     const [estados, setEstados] = useState([]);
     const [desplegarCategorias, setDesplegarCategorias] = useState(false);
     const [desplegarSubcategorias, setDesplegarSubcategorias] = useState(0);
     const [desplegarGestiones, setDesplegarGestiones] = useState(false);
     const [desplegarPedidos, setDesplegarPedidos] = useState(false);
-    
+    const { isLoggedIn, resetContext } = useAuth(); // Accede a la propiedad de autenticación
     const accionarDespCategorias = () => {
         setDesplegarCategorias(!desplegarCategorias);
     }
@@ -30,69 +34,91 @@ const SideBar = ({ estaAbierto }) => {
         setDesplegarPedidos(!desplegarPedidos);
     }
 
-        // Cargar las categorías desde la API
-        useEffect(() => {
-            const fetchCategorias = async () => {
-                try {
-                    const response = await fetch(`${apiUrl}/categoria/visualizar`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setCategorias(data);
-                    } else {
-                        Swal.fire({
-                            title: "Error al cargar las categorías",
-                            icon: "error",
-                            confirmButtonColor: "#fdc6c6",
-                            showConfirmButton: false,
-                            timer: 1000
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error al obtener categorías", error);
+    // Función para verificar si el token existe en localStorage
+    const checkToken = () => {
+        return localStorage.getItem('TOKEN') !== null;
+    };
+
+    const handleMisPedidosClick = async () => {
+        // Primero verificar si el usuario está autenticado
+        if (!isLoggedIn) {
+            // Mostrar un Swal pidiendo que se inicie sesión
+            Swal.fire({
+                icon: "warning",
+                title: "Debe iniciar sesión",
+                text: "Por favor, inicie sesión para acceder a sus pedidos.",
+                showConfirmButton: false,
+                timer: 1300
+            });
+            return; // No continuar si no está autenticado
+        }else{
+            router.push('/mis-pedidos');
+        }
+    }
+
+    // Cargar las categorías desde la API
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/categoria/visualizar`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setCategorias(data);
+                } else {
                     Swal.fire({
-                        title: "Error al obtener categorías",
+                        title: "Error al cargar las categorías",
                         icon: "error",
                         confirmButtonColor: "#fdc6c6",
                         showConfirmButton: false,
                         timer: 1000
                     });
                 }
-            };
-    
-            fetchCategorias();
-        }, []);
-    
-        // Cargar estados desde la API
-        useEffect(() => {
-            const fetchEstados = async () => {
-                try {
-                    const response = await fetch(`${apiUrl}/estado/visualizar`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setEstados(data);
-                    } else {
-                        Swal.fire({
-                            title: "Error al cargar los estados",
-                            icon: "error",
-                            confirmButtonColor: "#fdc6c6",
-                            showConfirmButton: false,
-                            timer: 1000
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error al obtener los estados", error);
+            } catch (error) {
+                console.error("Error al obtener categorías", error);
+                Swal.fire({
+                    title: "Error al obtener categorías",
+                    icon: "error",
+                    confirmButtonColor: "#fdc6c6",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
+        };
+
+        fetchCategorias();
+    }, []);
+
+    // Cargar estados desde la API
+    useEffect(() => {
+        const fetchEstados = async () => {
+            try {
+                const response = await fetch(`${apiUrl}/estado/visualizar`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setEstados(data);
+                } else {
                     Swal.fire({
-                        title: "Error al obtener los estados",
+                        title: "Error al cargar los estados",
                         icon: "error",
                         confirmButtonColor: "#fdc6c6",
                         showConfirmButton: false,
                         timer: 1000
                     });
                 }
-            };
-    
-            fetchEstados();
-        }, []);
+            } catch (error) {
+                console.error("Error al obtener los estados", error);
+                Swal.fire({
+                    title: "Error al obtener los estados",
+                    icon: "error",
+                    confirmButtonColor: "#fdc6c6",
+                    showConfirmButton: false,
+                    timer: 1000
+                });
+            }
+        };
+
+        fetchEstados();
+    }, []);
 
     return (
         <div
@@ -168,8 +194,8 @@ const SideBar = ({ estaAbierto }) => {
                             ))}
                         </div>
                     )}
-                    <Button href={"/mis-pedidos"}
-                        as={Link}
+                    <Button 
+                        onClick={handleMisPedidosClick}
                         fullWidth radius="full"
                         size="sm"
                         className="bg-btnSideBar1 text-md shadow-md">
