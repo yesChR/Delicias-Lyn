@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Table,
   TableHeader,
@@ -94,7 +92,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
     return <div>Cargando...</div>;
   }
 
-  const ventanaEliminar = (idUsuario, idProducto) => {
+  const ventanaEliminar = (idUsuario, idProducto, idTamaño, personalizacion) => {
     Swal.fire({
       title: "¿Desea eliminar este producto?",
       icon: "warning",
@@ -107,12 +105,16 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
       if (result.isConfirmed) {
         fetch(`${apiUrl}/carrito/eliminar/${idUsuario}/${idProducto}`, {
           method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ idTamaño, personalizacion }),
         })
         .then((response) => {
           if (response.ok) {
             setCarrito((prevCarrito) => {
               const updatedCarrito = prevCarrito.filter(
-                (item) => item.idProducto !== idProducto
+                (item) => item.idProducto !== idProducto || item.idTamaño !== idTamaño || item.personalizacion !== personalizacion
               );
 
               //Para que actualice mejor si la paginación se queda sin elementos al eliminar
@@ -331,7 +333,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
 
             <Button
               onClick={() =>
-                ventanaEliminar(carrito.idUsuario, carrito.idProducto)
+                ventanaEliminar(carrito.idUsuario, carrito.idProducto, carrito.idTamaño, carrito.personalizacion)
               }
               className="bg-transparent min-w-4"
               size="sm"

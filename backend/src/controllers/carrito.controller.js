@@ -135,24 +135,33 @@ export const actualizarCantidadCarrito = async (req, res) => {
     }
 };
 
-
-
-
-
-
-
 //  Eliminar un Producto del Carrito
 export const eliminarProductoCarrito = async (req, res) => {
     const { idUsuario, idProducto } = req.params;
+    const { idTamaño, personalizacion } = req.body;
 
     try {
-        const productoEnCarrito = await Carrito.findOne({ where: { idUsuario, idProducto } });
+        // Paso 1: Obtener todos los registros en el carrito que coincidan con idUsuario e idProducto
+        const productosEnCarrito = await Carrito.findAll({
+            where: { idUsuario, idProducto },
+            attributes: ["id", "idUsuario", "idProducto", "idTamaño", "personalizacion"]
+        });
 
-        if (!productoEnCarrito) {
+        // Verificar si no hay productos en el carrito con ese idUsuario e idProducto
+        if (productosEnCarrito.length === 0) {
             return res.status(404).json({ error: 'Producto no encontrado en el carrito del usuario' });
         }
 
-        await productoEnCarrito.destroy();
+        // Paso 2: Buscar el registro específico que coincida con el idTamaño y la personalización proporcionados
+        const productoEspecifico = productosEnCarrito.find(item => item.idTamaño === idTamaño && item.personalizacion === personalizacion);
+
+        // Verificar si no existe el producto con el tamaño y personalización específicos
+        if (!productoEspecifico) {
+            return res.status(404).json({ error: 'Producto con el tamaño y personalización especificados no encontrado en el carrito del usuario' });
+        }
+
+        // Paso 3: Eliminar el producto específico del carrito
+        await productoEspecifico.destroy();
 
         return res.status(200).json({ message: 'Producto eliminado del carrito exitosamente' });
     } catch (error) {
