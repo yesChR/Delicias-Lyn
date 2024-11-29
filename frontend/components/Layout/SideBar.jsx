@@ -1,9 +1,10 @@
-import { Button } from "@nextui-org/react";
+import { Button, useDisclosure } from "@nextui-org/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import { useRouter } from "next/router";
 import { useAuth } from '../../context/authContext';
+import ModalInforme from "../Informe/ModalInforme";
 
 
 const SideBar = ({ estaAbierto }) => {
@@ -20,6 +21,7 @@ const SideBar = ({ estaAbierto }) => {
     const accionarDespCategorias = () => {
         setDesplegarCategorias(!desplegarCategorias);
     }
+    const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const accionarDespSubcategorias = (numSubcategoria) => {
         const nuevoEstadoSubcategoria = desplegarSubcategorias === numSubcategoria ? 0 : numSubcategoria;
@@ -51,7 +53,7 @@ const SideBar = ({ estaAbierto }) => {
                 timer: 1300
             });
             return; // No continuar si no está autenticado
-        }else{
+        } else {
             router.push('/mis-pedidos');
         }
     }
@@ -194,18 +196,19 @@ const SideBar = ({ estaAbierto }) => {
                             ))}
                         </div>
                     )}
-                    <Button 
+                    <Button
                         onClick={handleMisPedidosClick}
                         fullWidth radius="full"
                         size="sm"
                         className="bg-btnSideBar1 text-md shadow-md">
                         Mis pedidos
                     </Button>
-                    <Button href={"/informe"} as={Link} fullWidth radius="full" size="sm" className="bg-btnSideBar1 text-md shadow-md">
+                    <Button onClick={onOpen} fullWidth radius="full" size="sm" className="bg-btnSideBar1 text-md shadow-md">
                         Informe
                     </Button>
                 </div>
             </div>
+            <ModalInforme isOpen={isOpen} onOpenChange={onOpenChange} />
         </div>
     );
 };
