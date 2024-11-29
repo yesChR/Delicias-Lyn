@@ -1,4 +1,4 @@
-import { Button } from "@nextui-org/react";
+import { Button, useDisclosure } from "@nextui-org/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useAuth } from "../../context/authContext";
 import LoginModal from "../Usuario/Auth";
 import ResetModal from "../Usuario/Reset";
+import ModalInforme from "../Informe/ModalInforme";
 
 const SideBar = ({ estaAbierto }) => {
   //aqui tengo el valor de la ruta del .env
@@ -18,7 +19,7 @@ const SideBar = ({ estaAbierto }) => {
   const [desplegarGestiones, setDesplegarGestiones] = useState(false);
   const [desplegarPedidos, setDesplegarPedidos] = useState(false);
   const { isLoggedIn, resetContext } = useAuth(); // Accede a la propiedad de autenticación
-
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   const accionarDespCategorias = () => {
@@ -264,14 +265,7 @@ const SideBar = ({ estaAbierto }) => {
           >
             Mis pedidos
           </Button>
-          <Button
-            href={"/informe"}
-            as={Link}
-            fullWidth
-            radius="full"
-            size="sm"
-            className="bg-btnSideBar1 text-md shadow-md"
-          >
+          <Button onClick={onOpen} fullWidth radius="full" size="sm" className="bg-btnSideBar1 text-md shadow-md">
             Informe
           </Button>
 
@@ -285,6 +279,7 @@ const SideBar = ({ estaAbierto }) => {
           />
         </div>
       </div>
+      <ModalInforme isOpen={isOpen} onOpenChange={onOpenChange} />
     </div>
   );
 };
