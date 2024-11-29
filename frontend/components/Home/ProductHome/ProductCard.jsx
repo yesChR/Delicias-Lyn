@@ -68,7 +68,7 @@ const ProductCard = ({producto}) => {
         <div className="bg-white text-black shadow-lg rounded-lg border border-pink-200 p-4 flex flex-col max-w-xs mx-auto">
             {/* Imagen del producto */}
             <Image
-                src="/flores amarillas.jpeg"
+                src={producto.imagen}
                 alt={producto.nombre}
                 className="w-full mb-4 rounded"
                 width={140}
