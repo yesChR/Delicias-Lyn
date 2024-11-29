@@ -231,7 +231,7 @@ const SideBar = ({ estaAbierto }) => {
               </Link>
             </div>
           )}
-          <RoleGuard role={1}>
+          <RoleGuard role={0}>
 
           <Button
             fullWidth
