@@ -190,10 +190,10 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
     });
   };
 
-  const modificarCantidad = async (idUsuario, idProducto, operacion) => {
+  const modificarCantidad = async (idUsuario, idProducto, idTamaño, operacion) => {
     try {
       // Encontrar el producto en el carrito para obtener la cantidad actual
-      const producto = carrito.find((item) => item.idProducto === idProducto);
+      const producto = carrito.find((item) => item.idProducto === idProducto && item.idTamaño === idTamaño);
       if (!producto) return;
 
       let nuevaCantidad = producto.cantidad;
@@ -211,7 +211,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ idUsuario, nuevaCantidad }),
+        body: JSON.stringify({ idUsuario, idTamaño, nuevaCantidad }),
       });
 
       if (response.ok) {
@@ -219,7 +219,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
 
         setCarrito((prevCarrito) =>
           prevCarrito.map((item) =>
-            item.idProducto === idProducto
+            item.idProducto === idProducto  && item.idTamaño === idTamaño
               ? {
                   ...item,
                   cantidad: data.cantidad,
@@ -262,6 +262,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
                 modificarCantidad(
                   carrito.idUsuario,
                   carrito.idProducto,
+                  carrito.idTamaño,
                   "decrementar"
                 )
               }
@@ -284,6 +285,7 @@ const TablaCarrito = ({ onOpen, actualizarMontoTotal }) => {
                 modificarCantidad(
                   carrito.idUsuario,
                   carrito.idProducto,
+                  carrito.idTamaño,
                   "incrementar"
                 )
               }

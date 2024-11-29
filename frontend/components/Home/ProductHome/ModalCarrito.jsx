@@ -2,7 +2,7 @@ import { Modal, ModalContent, ModalBody, ModalFooter, Button, Spinner, Textarea,
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 
-const ModalCarrito = ({ isOpen, onOpenChange, producto, quantity, total, idUsuario  }) => {
+const ModalCarrito = ({ isOpen, onOpenChange, producto, quantity, total, idUsuario, actualizarCarrito  }) => {
 
     const [selectedTamaño, setSelectedTamaño] = useState(null);
     const [personalizacion, setPersonalizacion] = useState("");
@@ -15,7 +15,6 @@ const ModalCarrito = ({ isOpen, onOpenChange, producto, quantity, total, idUsuar
             setPersonalizacion("");
         }
     }, [isOpen]);
-
 
     const handleAddToCart = async () => {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -55,6 +54,12 @@ const ModalCarrito = ({ isOpen, onOpenChange, producto, quantity, total, idUsuar
                     showConfirmButton: false,
                     timer: 1000,
                 });
+
+                // Solicitar el carrito actualizado
+                if (actualizarCarrito) {
+                    actualizarCarrito();
+                }
+
                 onOpenChange(false);
             } else {
                 const responseData = await response.json();
@@ -79,7 +84,6 @@ const ModalCarrito = ({ isOpen, onOpenChange, producto, quantity, total, idUsuar
 
 
     return (
-        <>
             <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
                 <ModalContent>
                     {(onClose) => (
@@ -125,7 +129,6 @@ const ModalCarrito = ({ isOpen, onOpenChange, producto, quantity, total, idUsuar
                     )}
                 </ModalContent>
             </Modal>
-        </>
     );
 }
 export default ModalCarrito;

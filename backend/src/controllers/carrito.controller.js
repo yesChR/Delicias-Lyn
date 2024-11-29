@@ -14,8 +14,15 @@ export const agregarProductoCarrito = async (req, res) => {
             return res.status(404).json({ error: 'Usuario no encontrado' });
         }
 
-        // Buscar si ya existe el producto en el carrito del usuario
-        let productoEnCarrito = await Carrito.findOne({ where: { idUsuario, idProducto } });
+        // Buscar si ya existe el producto en el carrito del usuario considerando el tamaño y la personalización
+        let productoEnCarrito = await Carrito.findOne({ 
+            where: { 
+                idUsuario, 
+                idProducto, 
+                idTamaño,
+                personalizacion // Esto asegura que la personalización también es considerada
+            } 
+        });
 
         if (productoEnCarrito) {
             // Si el producto ya está en el carrito, actualiza la cantidad
@@ -87,28 +94,52 @@ export const visualizarCarrito = async (req, res) => {
 };
 
 
-//  Actualizar la Cantidad de un Producto en el Carrito
+
+
+// Actualizar la Cantidad de un Producto en el Carrito
 export const actualizarCantidadCarrito = async (req, res) => {
-    const {idProducto } = req.params;
-    const { idUsuario, nuevaCantidad} = req.body;
+    const { idProducto } = req.params;
+    const { idUsuario, idTamaño, nuevaCantidad } = req.body;
 
     try {
-        const productoEnCarrito = await Carrito.findOne({ where: { idUsuario, idProducto } });
+        // Paso 1: Obtener todos los registros en el carrito que coincidan con idUsuario e idProducto
+        const productosEnCarrito = await Carrito.findAll({
+            where: { idUsuario, idProducto },
+            attributes: ["id", "idUsuario", "idProducto", "idTamaño", "cantidad", "montoXCantidad"]
+        });
 
-        if (!productoEnCarrito) {
+        // Verificar si no hay productos en el carrito con ese idUsuario e idProducto
+        if (productosEnCarrito.length === 0) {
             return res.status(404).json({ error: 'Producto no encontrado en el carrito del usuario' });
         }
 
-        productoEnCarrito.cantidad = nuevaCantidad;
-        productoEnCarrito.montoXCantidad = nuevaCantidad * (await Producto.findByPk(idProducto)).precio;
+        // Paso 2: Buscar el registro específico que coincida con el idTamaño proporcionado
+        const productoEspecifico = productosEnCarrito.find(item => item.idTamaño === idTamaño);
 
-        await productoEnCarrito.save();//Mejor save ya que permite hacer multiples modificaciones o hacer los calculos y luego persistir los datos
+        // Verificar si no existe el producto con el tamaño específico
+        if (!productoEspecifico) {
+            return res.status(404).json({ error: 'Producto con el tamaño especificado no encontrado en el carrito del usuario' });
+        }
 
-        return res.status(200).json(productoEnCarrito);
+        // Paso 3: Actualizar la cantidad y el montoXCantidad
+        productoEspecifico.cantidad = nuevaCantidad;
+        const producto = await Producto.findByPk(idProducto);
+        productoEspecifico.montoXCantidad = nuevaCantidad * producto.precio;
+
+        // Persistir los cambios con save
+        await productoEspecifico.save(); // `save` es útil para guardar múltiples modificaciones y hacer cálculos antes de la persistencia
+
+        return res.status(200).json(productoEspecifico);
     } catch (error) {
         return res.status(500).json({ error: 'Error al actualizar la cantidad del producto en el carrito' });
     }
 };
+
+
+
+
+
+
 
 //  Eliminar un Producto del Carrito
 export const eliminarProductoCarrito = async (req, res) => {

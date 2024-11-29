@@ -19,6 +19,7 @@ const ProductCard = ({producto}) => {
     const [quantity, setQuantity] = useState(1); 
     const [total, setTotal] = useState(producto.precio); 
     const [idUsuario, setUserId] = useState(null);
+    const [carrito, setCarrito] = useState([]);
 
     // Obtiene el id del cliente una vez que se monte el componente
     useEffect(() => {
@@ -47,6 +48,21 @@ const ProductCard = ({producto}) => {
             confirmButtonText: "Aceptar",
         });
     }, [producto]);
+
+        // Función para actualizar el carrito desde el backend
+        const actualizarCarrito = async () => {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+            try {
+                const response = await fetch(`${apiUrl}/carrito/visualizar/${idUsuario}`);
+                if (response.ok) {
+                    const carritoActualizado = await response.json();
+                    setCarrito(carritoActualizado);
+                }
+            } catch (error) {
+                console.error("Error al actualizar el carrito:", error);
+            }
+        };
 
     return (
         <div className="bg-white text-black shadow-lg rounded-lg border border-pink-200 p-4 flex flex-col max-w-xs mx-auto">
@@ -119,6 +135,7 @@ const ProductCard = ({producto}) => {
                 quantity={quantity}
                 total={total}
                 idUsuario={idUsuario}
+                actualizarCarrito={actualizarCarrito}
             />
         </div>
     );
