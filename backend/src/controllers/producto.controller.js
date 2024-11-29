@@ -6,23 +6,38 @@ import { Op } from "sequelize"; // Para realizar búsquedas avanzadas
 // Crear producto
 export const crearProducto = async (req, res) => {
     const { idCategoria, idSubcategoria, nombre, descripcion, precio, personalizacion, imagen, tipo, estado } = req.body;
-    console.log(req.body);
+
+    // Validar datos requeridos
+    if (!idCategoria || !idSubcategoria || !nombre || !precio || !tipo || !estado) {
+        return res.status(400).json({
+            error: "Faltan datos obligatorios: idCategoria, idSubcategoria, nombre, precio, tipo, estado.",
+        });
+    }
+
     try {
         const productoExistente = await Producto.findOne({ where: { nombre: nombre } });
         if (!productoExistente) {
             const nuevoProducto = await Producto.create({
-                idCategoria, idSubcategoria, nombre, descripcion, precio, personalizacion, imagen, tipo, estado
+                idCategoria,
+                idSubcategoria,
+                nombre,
+                descripcion,
+                precio,
+                personalizacion,
+                imagen,
+                tipo,
+                estado,
             });
-            console.log(nuevoProducto);
-            res.status(201).json({ message: "Producto creado exitosamente" });
+            res.status(201).json({ message: "Producto creado exitosamente", producto: nuevoProducto });
         } else {
             res.status(409).json({ error: "El producto ya existe" });
         }
     } catch (error) {
-        console.log(error);
+        console.error("Error al crear el producto:", error);
         res.status(500).json({ error: "Error interno en el servidor" });
     }
 };
+
 
 // Visualizar productos (incluyendo categorías y subcategorías relacionadas)
 export const visualizarProductos = async (req, res) => {
