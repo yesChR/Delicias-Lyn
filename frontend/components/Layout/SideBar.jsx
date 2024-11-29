@@ -7,6 +7,8 @@ import { useAuth } from "../../context/authContext";
 import LoginModal from "../Usuario/Auth";
 import ResetModal from "../Usuario/Reset";
 import ModalInforme from "../Informe/ModalInforme";
+import RoleGuard from '../Guards/RoleGuard';
+
 
 const SideBar = ({ estaAbierto }) => {
   //aqui tengo el valor de la ruta del .env
@@ -194,15 +196,19 @@ const SideBar = ({ estaAbierto }) => {
               ))}
             </div>
           )}
-          <Button
-            fullWidth
-            radius="full"
-            size="sm"
-            className="bg-btnSideBar1 text-md shadow-md"
-            onClick={accionarDespGestiones}
-          >
-            Gestiones
-          </Button>
+          <RoleGuard role={0}>
+
+            <Button
+              fullWidth
+              radius="full"
+              size="sm"
+              className="bg-btnSideBar1 text-md shadow-md"
+              onClick={accionarDespGestiones}
+            >
+              Gestiones
+            </Button>
+          </RoleGuard>
+
           {desplegarGestiones && (
             <div className="gap-2 flex justify-start flex-col">
               <Link
@@ -225,6 +231,7 @@ const SideBar = ({ estaAbierto }) => {
               </Link>
             </div>
           )}
+          <RoleGuard role={0}>
 
           <Button
             fullWidth
@@ -235,6 +242,8 @@ const SideBar = ({ estaAbierto }) => {
           >
             Pedidos
           </Button>
+          </RoleGuard>
+
           {desplegarPedidos && (
             <div className="gap-2 flex justify-start flex-col">
               {estados.map((estado) => (
@@ -265,9 +274,13 @@ const SideBar = ({ estaAbierto }) => {
           >
             Mis pedidos
           </Button>
+          <RoleGuard role={0}>
+
           <Button onClick={onOpen} fullWidth radius="full" size="sm" className="bg-btnSideBar1 text-md shadow-md">
             Informe
           </Button>
+          </RoleGuard>
+
 
           <LoginModal
             isOpen={isLoginOpen}
