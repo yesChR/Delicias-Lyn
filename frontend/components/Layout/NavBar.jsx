@@ -10,7 +10,7 @@ import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@
 import { Link } from "@nextui-org/react";
 import Swal from 'sweetalert2';
 import { useRouter } from "next/router";
-import LoginModal from "../Usuario/Auth"; 
+import LoginModal from "../Usuario/Auth";
 import ResetModal from "../Usuario/Reset";
 import ChangePasswordModal from "../Usuario/ChangePassword";
 import { useState, useEffect } from "react";
@@ -27,16 +27,32 @@ const NavBar = ({ accionarSideBar }) => {
     const router = useRouter();
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     const { isLoggedIn, resetContext } = useAuth(); // Accede a la propiedad de autenticación
-    
+
     const [isLoginOpen, setIsLoginOpen] = useState(false);
     const [isResetOpen, setIsResetOpen] = useState(false);
     const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
     const [estaAutenticado, setEstaAutenticado] = useState(false);
+    const [busqueda, setBusqueda] = useState('');
 
     // Función para verificar si el token existe en localStorage
     const checkToken = () => {
         return localStorage.getItem('TOKEN') !== null;
+    };
+
+    // Función para manejar el cambio en el input
+    const handleInputChange = (event) => {
+        setBusqueda(event.target.value);
+    };
+
+    const manejarBusqueda = () => {
+        if (busqueda.trim() !== '') { // Verifica que haya un valor antes de redirigir
+            // Redirige a la página de búsqueda pasando el valor como parámetro en la URL
+            router.push(`/lupa/?nombre=${busqueda}`);
+        } else {
+            // Si el input está vacío, podrías manejarlo de otra manera, como mostrar un mensaje de error
+            console.log("Por favor ingresa un término de búsqueda.");
+        }
     };
 
     // Actualizar el estado de autenticación cada vez que el componente se renderiza o cuando se borra el token
@@ -148,7 +164,18 @@ const NavBar = ({ accionarSideBar }) => {
                                     radius="full"
                                     placeholder="Buscar..."
                                     labelPlacement="outside"
-                                    endContent={<FiSearch className="text-principal font-bold" />}
+                                    value={busqueda}  // El valor del input está asociado al estado
+                                    onChange={handleInputChange}  // Actualiza el estado cuando el input cambia
+                                    endContent={
+                                        <button
+                                            className="focus:outline-none"
+                                            type="button"
+                                            onClick={manejarBusqueda}  // Ejecuta la función de redirección cuando el usuario hace clic en la lupa
+                                            aria-label="buscar"
+                                        >
+                                            <FiSearch className="text-principal font-bold" />
+                                        </button>
+                                    }
                                     css={{
                                         '&::placeholder': {
                                             fontSize: '1rem',

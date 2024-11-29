@@ -186,3 +186,39 @@ export const editarProductoPorId = async (req, res) => {
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
+
+
+
+export const filtrarProductoLupa = async (req, res) => {
+    const { nombre } = req.params;
+    try {
+        const productos = await Producto.findAll({
+            where: {
+                nombre: {
+                    [Op.like]: `%${nombre}%`
+                } 
+            },
+            include: [
+                {
+                    model: Categoria,
+                    as: "categoria",
+                    attributes: ["idCategoria", "nombre"]
+                },
+                {
+                    model: Subcategoria,
+                    as: "subcategoria",
+                    attributes: ["idSubcategoria", "nombre"]
+                }
+            ]
+        });
+        if (productos.length > 0) {
+            res.status(200).json(productos);
+        } else {
+            res.status(404).json({ error: "Producto no encontrado" });
+        }
+    } catch (error) {
+        res.status(500).json({ error: "Error interno del servidor" });
+    }
+};
+
+

@@ -6,6 +6,7 @@ import {
     actualizarTamañoXProducto,
     eliminarTamañoXProducto,
     filtrarTamañoXProductoPorSubcategoria, 
+    filtrarTamañoXProductoPorNombre
 } from "../controllers/tamañoXproducto.controller";
 
 const router = express.Router();
@@ -19,13 +20,6 @@ router.get("/visualizar", obtenerTamañosXProductos);
 // Ruta para filtrar TamañoXProducto por idSubcategoria
 router.get("/filtrar/subcategoria/:idSubcategoria", filtrarTamañoXProductoPorSubcategoria);  // Nueva ruta para filtrar por subcategoría
 
-// Ruta para obtener una relación TamañoXProducto específica por idProducto y idTamaño
-//router.get("/visualizar/:idProducto/:idTamano", obtenerTamañoXProductoPorId);
-
-// Ruta para actualizar una relación TamañoXProducto (aunque no tiene datos editables)
-//router.put("/actualizar/:idProducto/:idTamano", actualizarTamañoXProducto);
-
-// Ruta para eliminar una relación TamañoXProducto
-//router.delete("/eliminar/:idProducto/:idTamano", eliminarTamañoXProducto);
+router.get("/filtrar/nombre/:nombre", filtrarTamañoXProductoPorNombre);
 
 module.exports = router;

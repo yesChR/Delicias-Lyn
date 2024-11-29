@@ -3,6 +3,7 @@ import { Tamaño } from "../models/tamaño.model";
 import { Producto } from "../models/producto.model";
 import { Categoria } from "../models/categoria.model"; // Modelo de la categoría
 import { Subcategoria } from "../models/subcategoria.model";
+import { Op } from "sequelize"; // Para realizar búsquedas avanzadas
 
 
 // Crear TamañoXProducto
@@ -94,71 +95,48 @@ export const filtrarTamañoXProductoPorSubcategoria = async (req, res) => {
     }
 };
 
-// Obtener TamañoXProducto por ID
-/*export const filtrarTamañoXProducto = async (req, res) => {
-    const { idProducto, idTamano } = req.params; // Parámetros recibidos de la solicitud
+export const filtrarTamañoXProductoPorNombre = async (req, res) => {
+    const { nombre } = req.params; // Obtenemos el ID de la subcategoría desde los parámetros
     try {
-        const filtro = {};
-        if (idProducto) filtro.idProducto = idProducto;
-        if (idTamano) filtro.idTamano = idTamano;
-
-        const tamañoXProducto = await TamañoXProducto.findAll({
-            where: filtro, // Filtrar dinámicamente con los parámetros
+        const tamañosXProductos = await TamañoXProducto.findAll({
             include: [
                 {
                     model: Producto,
                     as: "producto",
-                    attributes: ["idProducto", "nombre", "descripcion", "precio", "imagen"]
+                    where: {
+                        nombre: {
+                            [Op.like]: `%${nombre}%`
+                        }
+                    }, // Filtramos por subcategoría
+                    attributes: ["idProducto", "nombre", "descripcion", "precio", "tipo", "imagen"],
+                    include: [
+                        {
+                            model: Categoria,
+                            as: "categoria",
+                            attributes: ["idCategoria", "nombre"]
+                        },
+                        {
+                            model: Subcategoria,
+                            as: "subcategoria",
+                            attributes: ["idSubcategoria", "nombre"]
+                        }
+                    ]
                 },
                 {
                     model: Tamaño,
-                    as: "tamano",
-                    attributes: ["idTamano", "nombre"]
+                    as: "tamaño",
+                    attributes: ["idTamaño", "nombre"]
                 }
             ]
         });
 
-        if (tamañoXProducto.length > 0) {
-            res.status(200).json(tamañoXProducto);
+        if (tamañosXProductos.length > 0) {
+            res.status(200).json(tamañosXProductos);
         } else {
-            res.status(404).json({ error: "No se encontraron relaciones TamañoXProducto con los parámetros dados" });
+            res.status(404).json({ error: "No se encontraron productos con los tamaños en esta subcategoría" });
         }
     } catch (error) {
-        console.error("Error al filtrar TamañoXProducto:", error);
+        console.error("Error al filtrar TamañoXProducto por subcategoría:", error);
         res.status(500).json({ error: "Error interno del servidor" });
     }
 };
-*/
-
-// Actualizar TamañoXProducto
-/*export const actualizarTamañoXProducto = async (req, res) => {
-    const { idProducto, idTamano } = req.params;
-    try {
-        const tamañoXProducto = await TamañoXProducto.findOne({ where: { idProducto, idTamano } });
-        if (tamañoXProducto) {
-            res.status(200).json({ message: "No hay datos editables en esta relación." });
-        } else {
-            res.status(404).json({ error: "TamañoXProducto no encontrado" });
-        }
-    } catch (error) {
-        console.error("Error al actualizar TamañoXProducto:", error);
-        res.status(500).json({ error: "Error interno del servidor" });
-    }
-};
-*/
-// Eliminar TamañoXProducto
-/*export const eliminarTamañoXProducto = async (req, res) => {
-    const { idProducto, idTamano } = req.params;
-    try {
-        const tamañoXProducto = await TamañoXProducto.findOne({ where: { idProducto, idTamano } });
-        if (tamañoXProducto) {
-            await tamañoXProducto.destroy();
-            res.status(200).json({ message: "TamañoXProducto eliminado exitosamente" });
-        } else {
-            res.status(404).json({ error: "TamañoXProducto no encontrado" });
-        }
-    } catch (error) {
-        console.error("Error al eliminar TamañoXProducto:", error);
-        res.status(500).json({ error: "Error interno del servidor" });
-    }
-};*/
